@@ -62,6 +62,31 @@ public class StringUtil {
 	}
 	
 	//untested
+	public static String[] split(String str, String k)
+	{
+		Vector v = new Vector(32,16);
+		int lle = 0;
+		while(true)
+		{
+			int nle = str.indexOf(k, lle);
+			if(nle == -1)
+			{
+				v.addElement(str.substring(lle, str.length()));
+				break;
+			}
+
+			v.addElement(str.substring(lle, nle));
+			lle = nle+k.length();
+		}
+		String[] a = new String[v.size()];
+		v.copyInto(a);
+		v.removeAllElements();
+		v.trimToSize();
+		v = null;
+		return a;
+	}
+	
+	//untested
 	public static int lastIndexOf(String target, String k, int from, int to)
 	{
 		if(to==-1) to = target.length();

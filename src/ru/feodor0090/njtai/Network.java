@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.lcdui.Image;
 
 public class Network {
 	public static byte[] httpRequest(String url) {
@@ -48,6 +49,11 @@ public class Network {
 					o.close();
 			} catch (IOException e) { }
 		}
+	}
+	
+	public static Image loadImage(String url) {
+		byte[] b = httpRequest(url);
+		return Image.createImage(b, 0, b.length);
 	}
 
 	public static String httpRequestUTF8(String url) {

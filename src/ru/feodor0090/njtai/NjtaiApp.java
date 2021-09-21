@@ -5,6 +5,8 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
+import ru.feodor0090.njtai.ui.NjtaiRootMenu;
+
 public class NjtaiApp extends MIDlet {
 
 	public NjtaiApp() {
@@ -18,6 +20,8 @@ public class NjtaiApp extends MIDlet {
 	private static Display disp;
 	
 	private static String homePage = null;
+	
+	private boolean running = false;
 	
 	public synchronized static String getHomePage() {
 		if(homePage==null) {
@@ -35,6 +39,10 @@ public class NjtaiApp extends MIDlet {
 	protected void startApp() throws MIDletStateChangeException {
 		inst = this;
 		disp = Display.getDisplay(inst);
+		if(!running) {
+			running = true;
+			setScreen(new NjtaiRootMenu());
+		}
 	}
 
 	public static void close() {
