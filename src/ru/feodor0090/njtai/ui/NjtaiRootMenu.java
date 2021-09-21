@@ -26,6 +26,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 	static final String PAGIN_SEC = "<section class=\"pagination\">";
 
 	public void commandAction(Command c, Displayable d) {
+		try {
 		if (c == exitCmd) {
 			NjtaiApp.close();
 		}
@@ -51,6 +52,9 @@ public class NjtaiRootMenu extends List implements CommandListener {
 				// search
 				return;
 			}
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

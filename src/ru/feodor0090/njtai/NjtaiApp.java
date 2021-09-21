@@ -26,6 +26,7 @@ public class NjtaiApp extends MIDlet {
 	public synchronized static String getHomePage() {
 		if(homePage==null) {
 			homePage = Network.httpRequestUTF8(proxy+baseUrl);
+			System.out.println("Home page OK");
 		}
 		return homePage;
 	}

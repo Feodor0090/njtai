@@ -1,6 +1,7 @@
 package ru.feodor0090.njtai.models;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import ru.feodor0090.njtai.StringUtil;
 
@@ -12,10 +13,14 @@ public class MangaObjects implements Enumeration {
 	 */
 	public MangaObjects(String html) {
 		String[] items = StringUtil.split(html, "<div class=\"gallery\"");
-		list = new MangaObject[items.length];
+		Vector v = new Vector();
 		for (int i = 0; i < items.length; i++) {
-			list[i] = new MangaObject(items[i]);
+			if(!items[i].startsWith("<h"))v.addElement( new MangaObject(items[i]));
 		}
+		list = new MangaObject[v.size()];
+		v.copyInto(list);
+		v.removeAllElements();
+		v = null;
 	}
 
 	MangaObject[] list;
