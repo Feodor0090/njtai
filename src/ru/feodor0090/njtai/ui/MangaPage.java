@@ -94,6 +94,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 						}
 					}
 				});
+				NjtaiApp.setScreen(tb);
 			}
 		}
 	}

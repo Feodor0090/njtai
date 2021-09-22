@@ -8,8 +8,6 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
-import javax.microedition.lcdui.List;
-import javax.microedition.lcdui.StringItem;
 
 import ru.feodor0090.njtai.NjtaiApp;
 import ru.feodor0090.njtai.models.MangaObject;
@@ -22,9 +20,11 @@ public class MangaList extends Form implements Runnable, CommandListener {
 	protected MangaObjects content;
 	
 	private Command exitCmd = new Command("Back", Command.BACK, 1);
+	private String title;
 
 	public MangaList(String title, Displayable prev, MangaObjects items) {
-		super(title);
+		super("Loading...");
+		this.title = title;
 		this.prev = prev;
 		content = items;
 		this.setCommandListener(this);
@@ -40,6 +40,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num, this);
 			h.attach(img);
 			this.append(img);
+			setTitle(title);
 		}
 	}
 

@@ -35,13 +35,20 @@ public class ExtendedMangaObject extends MangaObject {
 		}
 	}
 
-	public Image getPage(int i, Canvas caller) {
+	/**
+	 * 
+	 * @param i Number of image (not page!), [0, pages-1].
+	 * @param caller Canvas that want to get image.
+	 * @return Loaded page image.
+	 * @throws InterruptedException If web pages fetching was canceled.
+	 */
+	public synchronized Image getPage(int i, Canvas caller) throws InterruptedException {
 		if (images == null)
 			loadUrls(caller);
-		return Images.get(images[i], false);
+		return Images.get(images[i], caller.getHeight()*3);
 	}
 
-	private void loadUrls(Canvas cnv) {
+	private void loadUrls(Canvas cnv)  throws InterruptedException{
 		try {
 			images = new String[pages];
 			for (int i = 1; i <= pages; i++) {
@@ -54,6 +61,7 @@ public class ExtendedMangaObject extends MangaObject {
 				infoReady = i * 100 / pages;
 				if (cnv != null)
 					cnv.repaint();
+				Thread.sleep(1);
 			}
 		} catch (Exception e) {
 			infoReady = -1;

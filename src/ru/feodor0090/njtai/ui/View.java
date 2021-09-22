@@ -23,6 +23,12 @@ public class View extends Canvas implements Runnable {
 	Image origImg;
 	Image toDraw;
 
+	boolean isZoomed = false;
+	int x = 0;
+	int y = 0;
+
+	Thread preloader;
+
 	public View(ExtendedMangaObject emo, Displayable prev, int page) {
 		this.emo = emo;
 		this.prev = prev;
@@ -33,15 +39,49 @@ public class View extends Canvas implements Runnable {
 
 	public void run() {
 		synchronized (this) {
+			isZoomed = false;
+			x = 0;
+			y = 0;
 			origImg = null;
 			toDraw = null;
-			origImg = emo.getPage(page, this);
+			try {
+				origImg = emo.getPage(page, this);
+				repaint();
+				resize(true);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			repaint();
-			int h = getHeight();
-			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
-			toDraw = ImageUtils.resize(origImg, w, h, true, false);
-			repaint();
+			if (preloader == null && NjtaiApp.allowPreload&& NjtaiApp.enableCache) {
+				preloader = new Thread() {
+					public void run() {
+						preload();
+					}
+				};
+				preloader.start();
+			}
 		}
+	}
+
+	void preload() {
+		for (int i = 0; i < emo.pages; i++) {
+			try {
+				emo.getPage(i + 1, this);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	private void resize(boolean mini) {
+		int h = getHeight();
+		int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
+		if (!mini) {
+			h = h * 3;
+			w = w * 3;
+		}
+		toDraw = ImageUtils.resize(origImg, w, h, true, false);
 	}
 
 	protected void paint(Graphics g) {
@@ -62,7 +102,10 @@ public class View extends Canvas implements Runnable {
 				g.setGrayScale(255);
 				g.drawString(info, getWidth() / 2, getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
 			} else {
-				g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, 0, 0);
+				if (isZoomed) {
+					g.drawImage(toDraw, x, y, Graphics.HCENTER | Graphics.VCENTER);
+				} else
+					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, 0, 0);
 			}
 			String pageNum = page + "/" + emo.pages;
 			Font f = Font.getFont(0, 0, 8);
@@ -84,29 +127,58 @@ public class View extends Canvas implements Runnable {
 
 	void reload() {
 		toDraw = null;
+		origImg = null;
 		loader = new Thread(this);
 		loader.start();
 	}
 
 	protected void keyPressed(int k) {
+		if (k == -7) {
+			Images.reset();
+			if (loader != null && loader.isAlive())
+				loader.interrupt();
+			NjtaiApp.setScreen(prev);
+			return;
+		}
 		if (toDraw == null) {
 			repaint();
 			return;
 		}
-		if (k == -3) {
-			if (page > 1) {
-				page--;
-				reload();
+		if (isZoomed) {
+			if (k == -5) {
+				isZoomed = false;
+				x = 0;
+				y = 0;
+				resize(true);
+			} else if (k == -1) {
+				// up
+				y += getHeight() / 4;
+			} else if (k == -2) {
+				y -= getHeight() / 4;
+			} else if (k == -3) {
+				x += getWidth() / 4;
+			} else if (k == -4) {
+				x -= getWidth() / 4;
 			}
-		} else if (k == -4) {
-			if (page < emo.pages) {
-				page++;
-				reload();
+		} else {
+			if (k == -5) {
+				isZoomed = true;
+				x = getWidth() / 2;
+				y = getHeight() / 2;
+				resize(false);
+			} else if (k == -3) {
+				if (page > 1) {
+					page--;
+					reload();
+				}
+			} else if (k == -4) {
+				if (page < emo.pages) {
+					page++;
+					reload();
+				}
 			}
-		} else if (k == -7) {
-			Images.reset();
-			NjtaiApp.setScreen(prev);
 		}
+
 		repaint();
 	}
 

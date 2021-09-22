@@ -5,7 +5,6 @@ import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextBox;
 
@@ -16,13 +15,13 @@ import ru.feodor0090.njtai.models.MangaObjects;
 public class NjtaiRootMenu extends List implements CommandListener {
 
 	public NjtaiRootMenu() {
-		super("NJTAI", List.IMPLICIT,
-				new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded", "Search by title", "About" }, null);
+		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded",
+				"Search by title", "About" }, null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
 
-	private Command exitCmd = new Command("Exit", Command.BACK, 2);
+	private Command exitCmd = new Command("Exit", Command.EXIT, 2);
 	private Command openCmd = new Command("Go", Command.OK, 1);
 
 	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
@@ -59,10 +58,11 @@ public class NjtaiRootMenu extends List implements CommandListener {
 							}
 						}
 					});
+					NjtaiApp.setScreen(tb);
 					return;
 				case 1:
-					// proxy
-					NjtaiApp.setScreen(new Alert("Not ready yet. nnproject.cc is used for now as proxy."));
+					// sets
+					NjtaiApp.setScreen(new Prefs(this));
 					return;
 				case 2:
 					// popular
@@ -78,6 +78,12 @@ public class NjtaiRootMenu extends List implements CommandListener {
 					// search
 					NjtaiApp.setScreen(new Alert("Not ready yet."));
 					return;
+				case 5:
+					Alert a = new Alert("About & keys tips", "NJTAI v" + NjtaiApp.ver() + "\n Developer: Feodor0090"
+							+ "\n\nControls: OK to zoom in/out, D-PAD to move page when zoomed and switch them when not, RSK to return.", null,
+							AlertType.INFO);
+					a.setTimeout(Alert.FOREVER);
+					NjtaiApp.setScreen(a);
 				}
 			}
 		} catch (Exception e) {
