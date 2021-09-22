@@ -23,6 +23,17 @@ public class NjtaiApp extends MIDlet {
 	
 	private boolean running = false;
 	
+	private static int removeImgOnView = -1;
+	
+	public static boolean shouldClearImgStorageOnView() {
+		if(removeImgOnView==-1) {
+			String model = System.getProperty("microedition.platform");
+			removeImgOnView = model.indexOf("S60")==-1;
+		}
+		
+		return removeImgOnView==1;
+	}
+	
 	public synchronized static String getHomePage() {
 		if(homePage==null) {
 			homePage = Network.httpRequestUTF8(proxy+baseUrl);

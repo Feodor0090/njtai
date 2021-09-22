@@ -8,6 +8,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
+import ru.feodor0090.njtai.Images;
 import ru.feodor0090.njtai.NjtaiApp;
 import ru.feodor0090.njtai.models.ExtendedMangaObject;
 import tube42.lib.imagelib.ImageUtils;
@@ -103,6 +104,7 @@ public class View extends Canvas implements Runnable {
 				reload();
 			}
 		} else if (k == -7) {
+			Images.reset();
 			NjtaiApp.setScreen(prev);
 		}
 		repaint();

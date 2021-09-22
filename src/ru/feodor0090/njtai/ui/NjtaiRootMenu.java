@@ -17,7 +17,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 
 	public NjtaiRootMenu() {
 		super("NJTAI", List.IMPLICIT,
-				new String[] { "Enter number", "Proxy settings", "Popular list", "New", "Search" }, null);
+				new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded", "Search by title", "About" }, null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
@@ -62,7 +62,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 					return;
 				case 1:
 					// proxy
-					NjtaiApp.setScreen(new Alert("Not ready yet. nnproject.cc is used for now."));
+					NjtaiApp.setScreen(new Alert("Not ready yet. nnproject.cc is used for now as proxy."));
 					return;
 				case 2:
 					// popular
@@ -72,7 +72,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 				case 3:
 					// new
 					String section1 = StringUtil.range(NjtaiApp.getHomePage(), NEW_DIV, PAGIN_SEC, false);
-					NjtaiApp.setScreen(new MangaList("Popular list", this, new MangaObjects(section1)));
+					NjtaiApp.setScreen(new MangaList("Recently uploaded", this, new MangaObjects(section1)));
 					return;
 				case 4:
 					// search
