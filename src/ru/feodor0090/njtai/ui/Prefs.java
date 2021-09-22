@@ -18,14 +18,15 @@ import ru.feodor0090.njtai.NjtaiApp;
 public class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private NjtaiRootMenu menu;
-	private Command exitCmd = new Command("Exit", Command.BACK, 2);
+	private Command exitCmd = new Command("Back", Command.BACK, 2);
 	private Command proxyCmd = new Command("Proxy setup", Command.ITEM, 1);
 	
-	public ChoiceGroup cache = new ChoiceGroup("Keep images in RAM (may cause crash on devices with low memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
-	public ChoiceGroup preload = new ChoiceGroup("Preload all pages (may cause crash on devices with low memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
-	public ChoiceGroup files = new ChoiceGroup("Cache everything to file system", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
-	public ChoiceGroup lists = new ChoiceGroup("Keep lists when opening pages (choose no to save memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
-	public ChoiceGroup covers = new ChoiceGroup("Load covers in lists", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
+	public StringItem ramWarn = new StringItem("Warning", "Enabling caching or preloading will likely cause crash on devices with low memory.");
+	public ChoiceGroup cache = new ChoiceGroup("Keep images in RAM", Choice.POPUP, new String[] { "No","Yes"}, null);
+	public ChoiceGroup preload = new ChoiceGroup("Preload all pages", Choice.POPUP, new String[] { "No","Yes"}, null);
+	public ChoiceGroup files = new ChoiceGroup("Cache everything to file system", Choice.POPUP, new String[] { "No","Yes"}, null);
+	public ChoiceGroup lists = new ChoiceGroup("Keep lists when opening pages", Choice.POPUP, new String[] { "No (saves RAM)","Yes"}, null);
+	public ChoiceGroup covers = new ChoiceGroup("Load covers in lists", Choice.POPUP, new String[] { "No","Yes"}, null);
 	public TextField proxy = new TextField("Proxy prefix", NjtaiApp.proxy, 100, 0);
 	public StringItem aboutProxy = new StringItem(null, "Proxy setup", StringItem.BUTTON);
 	
@@ -44,6 +45,7 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 		aboutProxy.setDefaultCommand(proxyCmd);
 		aboutProxy.setItemCommandListener(this);
 		
+		this.append(ramWarn);
 		this.append(cache);
 		this.append(preload);
 		//this.append(files);
