@@ -21,8 +21,11 @@ public class MangaObject {
 		title = StringUtil.range(html, "<div class=\"caption\">", "</div>", false);
 	}
 	
+	public MangaObject() {
+	}
+	
 	public void loadCover() {
-		img = new WeakReference(Images.get(imgUrl));
+		img = new WeakReference(Images.get(imgUrl, true));
 	}
 	
 	//String ex = "<div class=\"gallery\" data-tags=\"\"><a href=\"/g/373772/\" class=\"cover\" style=\"padding:0 0 141.2% 0\"><img class=\"lazyload\" width=\"250\" height=\"353\" data-src=\"https://t.nhentai.net/galleries/2015122/thumb.jpg\" src=\"https://t.nhentai.net/galleries/2015122/thumb.jpg\"><noscript><img src=\"https://t.nhentai.net/galleries/2015122/thumb.jpg\" width=\"250\" height=\"353\"  /></noscript><div class=\"caption\">[Ame Arare] Natsu Asobi | Summer Play (COMIC ExE 32) [English] [SaLamiLid] [Digital]</div></a></div>";

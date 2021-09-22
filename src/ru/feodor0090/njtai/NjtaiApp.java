@@ -55,4 +55,8 @@ public class NjtaiApp extends MIDlet {
 	public static void setScreen(Displayable d) {
 		disp.setCurrent(d);
 	}
+
+	public static int getHeight() {
+		return getScreen().getHeight();
+	}
 }

@@ -1,6 +1,7 @@
 package ru.feodor0090.njtai.ui;
 
 import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
@@ -10,19 +11,24 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.StringItem;
 
+import ru.feodor0090.njtai.NjtaiApp;
 import ru.feodor0090.njtai.models.MangaObject;
 import ru.feodor0090.njtai.models.MangaObjects;
 
-public class MangaList extends Form implements Runnable {
+public class MangaList extends Form implements Runnable, CommandListener {
 	
 	public Thread loader;
 	protected Displayable prev;
 	protected MangaObjects content;
+	
+	private Command exitCmd = new Command("Back", Command.BACK, 1);
 
 	public MangaList(String title, Displayable prev, MangaObjects items) {
 		super(title);
 		this.prev = prev;
 		content = items;
+		this.setCommandListener(this);
+		this.addCommand(exitCmd);
 		loader = new Thread(this);
 		loader.start();
 	}
@@ -31,7 +37,7 @@ public class MangaList extends Form implements Runnable {
 		while(content.hasMoreElements()) {
 			MangaObject o = (MangaObject) content.nextElement();
 			ImageItem img = new ImageItem(o.title, (Image) o.img.get(), 3, null, Item.HYPERLINK);
-			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num);
+			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num, this);
 			h.attach(img);
 			this.append(img);
 		}
@@ -42,8 +48,11 @@ public class MangaList extends Form implements Runnable {
 
 		public static Command openCmd = new Command("Open", Command.ITEM, 1);
 
-		public OpenMangaButtonHandler(int num) {
+		private Displayable prev;
+
+		public OpenMangaButtonHandler(int num, Displayable prev) {
 			this.num = num;
+			this.prev = prev;
 		}
 		
 		public void attach(Item i) {
@@ -53,8 +62,12 @@ public class MangaList extends Form implements Runnable {
 		}
 
 		public void commandAction(Command arg0, Item arg1) {
-			// TODO Auto-generated method stub
 			System.out.println("Opening " + num);
+			NjtaiApp.setScreen(new MangaPage(num, prev));
 		}
+	}
+
+	public void commandAction(Command arg0, Displayable arg1) {
+		if(arg0==exitCmd) NjtaiApp.setScreen(prev);
 	}
 }
