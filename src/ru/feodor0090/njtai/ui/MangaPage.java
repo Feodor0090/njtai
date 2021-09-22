@@ -28,28 +28,37 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	private Item customPage = new StringItem(null, "Enter page number", StringItem.BUTTON);
 	public static Command openCmd = new Command("Select", Command.ITEM, 1);
 	private Command gotoCmd = new Command("Go", Command.OK, 1);
+	
+	boolean stop= false;
 
 	public MangaPage(int num, Displayable prev) {
-		super("Manga page");
+		super("Waiting...");
 		this.num = num;
 		this.prev = prev;
 		this.setCommandListener(this);
 		this.addCommand(exitCmd);
 		loader = new Thread(this);
+		loader.setPriority(Thread.MAX_PRIORITY);
 		loader.start();
 	}
 
 	public void run() {
+		setTitle("Fetching page...");
 		String html = Network.httpRequestUTF8(NjtaiApp.proxy + NjtaiApp.baseUrl + "/g/" + num);
+		setTitle("Processing...");
+		if(stop) return;
 		mo = new ExtendedMangaObject(num, html);
+		setTitle("Loading cover...");
+		if(stop) return;
 		mo.loadCover();
+		if(stop) return;
 		this.append(new ImageItem(null, (Image) mo.img, 0, null));
 		setTitle(mo.title);
 		this.setCommandListener(this);
 		append(new StringItem("Title", mo.title));
 		append(new StringItem("ID", "#" + num));
 		append(new StringItem("Pages", "" + mo.pages));
-		append(new StringItem("Tags", mo.listTags()));
+		append(new StringItem("Tags", mo.tags));
 		firstPage.setItemCommandListener(this);
 		firstPage.setDefaultCommand(openCmd);
 		append(firstPage);
@@ -60,6 +69,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 
 	public void commandAction(Command arg0, Displayable arg1) {
 		if (arg0 == exitCmd) {
+			stop = true;
 			NjtaiApp.setScreen(prev);
 		}
 	}
