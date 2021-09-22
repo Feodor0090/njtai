@@ -42,6 +42,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 			this.append(img);
 			setTitle(title);
 		}
+		setTitle(title);
 	}
 
 	public static class OpenMangaButtonHandler implements ItemCommandListener {
