@@ -17,7 +17,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 
 	public NjtaiRootMenu() {
 		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded",
-				"Search by title", "About" }, null);
+				"Search by title", "About & keys tips" }, null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
@@ -111,6 +111,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 						String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
 						NjtaiApp.setScreen(new MangaList("Search results", menu, new MangaObjects(section1)));
 					} catch (Exception e) {
+						e.printStackTrace();
 						NjtaiApp.setScreen(menu);
 						NjtaiApp.pause(100);
 						NjtaiApp.setScreen(new Alert("Failed to open", "Have you entered something URL-breaking?", null,

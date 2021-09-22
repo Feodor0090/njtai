@@ -12,7 +12,7 @@ import ru.feodor0090.njtai.StringUtil;
 
 public class ExtendedMangaObject extends MangaObject {
 
-	public String[] tags;
+	public String tags;
 	public int pages;
 	public String[] images;
 
@@ -29,10 +29,11 @@ public class ExtendedMangaObject extends MangaObject {
 		pages = Integer.parseInt(pagesStr);
 		try {
 			String tagsSpan = StringUtil.range(html, "Tags:", "</div>", true);
-			tags = StringUtil.splitRanges(tagsSpan, "<span class=\"name\">", "</span>", false);
+			tags = listTags(StringUtil.splitRanges(tagsSpan, "<span class=\"name\">", "</span>", false));
 		} catch (Exception e) {
-			tags = null;
+			tags = "(error)";
 		}
+		System.gc();
 	}
 
 	/**
@@ -68,16 +69,16 @@ public class ExtendedMangaObject extends MangaObject {
 		}
 	}
 
-	public String listTags() {
-		if (tags == null)
+	public static String listTags(String[] list) {
+		if (list == null)
 			return "Error while getting tags.";
-		if (tags.length == 0)
+		if (list.length == 0)
 			return "No tags.";
 		StringBuffer sb = new StringBuffer();
-		sb.append(tags[0]);
-		for (int i = 1; i < tags.length; i++) {
+		sb.append(list[0]);
+		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");
-			sb.append(tags[i]);
+			sb.append(list[i]);
 		}
 		return sb.toString();
 	}

@@ -14,11 +14,11 @@ import ru.feodor0090.njtai.models.MangaObject;
 import ru.feodor0090.njtai.models.MangaObjects;
 
 public class MangaList extends Form implements Runnable, CommandListener {
-	
+
 	public Thread loader;
 	protected Displayable prev;
 	protected MangaObjects content;
-	
+
 	private Command exitCmd = new Command("Back", Command.BACK, 1);
 	private String title;
 
@@ -32,17 +32,24 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		loader = new Thread(this);
 		loader.start();
 	}
-	
+
 	public void run() {
-		while(content.hasMoreElements()) {
+		while (content.hasMoreElements()) {
 			MangaObject o = (MangaObject) content.nextElement();
-			ImageItem img = new ImageItem(o.title, (Image) o.img.get(), 3, null, Item.HYPERLINK);
+			ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
 			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num, this);
 			h.attach(img);
 			this.append(img);
 			setTitle(title);
 		}
+		content = null;
+		loader = null;
 		setTitle(title);
+	}
+
+	public void commandAction(Command arg0, Displayable arg1) {
+		if (arg0 == exitCmd)
+			NjtaiApp.setScreen(prev);
 	}
 
 	public static class OpenMangaButtonHandler implements ItemCommandListener {
@@ -54,9 +61,10 @@ public class MangaList extends Form implements Runnable, CommandListener {
 
 		public OpenMangaButtonHandler(int num, Displayable prev) {
 			this.num = num;
-			this.prev = prev;
+			if (NjtaiApp.keepLists)
+				this.prev = prev;
 		}
-		
+
 		public void attach(Item i) {
 			i.addCommand(openCmd);
 			i.setDefaultCommand(openCmd);
@@ -64,12 +72,8 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		}
 
 		public void commandAction(Command arg0, Item arg1) {
-			System.out.println("Opening " + num);
-			NjtaiApp.setScreen(new MangaPage(num, prev));
+			NjtaiApp.setScreen(new MangaPage(num, NjtaiApp.keepLists ? prev : new NjtaiRootMenu()));
 		}
 	}
 
-	public void commandAction(Command arg0, Displayable arg1) {
-		if(arg0==exitCmd) NjtaiApp.setScreen(prev);
-	}
 }

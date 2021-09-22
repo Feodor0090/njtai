@@ -1,7 +1,11 @@
-MIDlet-Version: 1.0.13
-MIDlet-Vendor: Feodor0090
+MIDlet-1: NJTAI,/nhentai.png,ru.feodor0090.njtai.NjtaiApp
 MIDlet-Jar-URL: njtai.jar
+MIDlet-Icon: /nhentai.png
 MicroEdition-Configuration: CLDC-1.1
-MIDlet-1: NJTAI,,ru.feodor0090.njtai.NjtaiApp
-MicroEdition-Profile: MIDP-2.1
+MIDlet-Version: 1.0.18
 MIDlet-Name: NJTAI
+MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
+MIDlet-Vendor: Feodor0090
+MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.Connector.https
+MicroEdition-Profile: MIDP-2.0
+Background: False

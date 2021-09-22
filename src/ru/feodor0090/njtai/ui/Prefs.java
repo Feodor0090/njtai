@@ -24,6 +24,8 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 	public ChoiceGroup cache = new ChoiceGroup("Keep images in RAM (may cause crash on devices with low memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
 	public ChoiceGroup preload = new ChoiceGroup("Preload all pages (may cause crash on devices with low memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
 	public ChoiceGroup files = new ChoiceGroup("Cache everything to file system", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
+	public ChoiceGroup lists = new ChoiceGroup("Keep lists when opening pages (choose no to save memory)", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
+	public ChoiceGroup covers = new ChoiceGroup("Load covers in lists", Choice.EXCLUSIVE, new String[] { "No","Yes"}, null);
 	public TextField proxy = new TextField("Proxy prefix", NjtaiApp.proxy, 100, 0);
 	public StringItem aboutProxy = new StringItem(null, "Proxy setup", StringItem.BUTTON);
 	
@@ -32,16 +34,21 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 		this.menu = menu;
 		
 		setCommandListener(this);
+		addCommand(exitCmd);
 		
 		cache.setSelectedIndex(NjtaiApp.enableCache?1:0, true);
 		preload.setSelectedIndex(NjtaiApp.allowPreload?1:0, true);
 		files.setSelectedIndex(NjtaiApp.useFiles?1:0, true);
+		lists.setSelectedIndex(NjtaiApp.keepLists?1:0, true);
+		covers.setSelectedIndex(NjtaiApp.loadCovers?1:0, true);
 		aboutProxy.setDefaultCommand(proxyCmd);
 		aboutProxy.setItemCommandListener(this);
 		
 		this.append(cache);
 		this.append(preload);
 		//this.append(files);
+		this.append(lists);
+		this.append(covers);
 		this.append(proxy);
 		this.append(aboutProxy);
 	}
@@ -59,6 +66,8 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 			NjtaiApp.enableCache = cache.getSelectedIndex()==1;
 			NjtaiApp.allowPreload = preload.getSelectedIndex()==1;
 			NjtaiApp.useFiles = files.getSelectedIndex()==1;
+			NjtaiApp.keepLists = lists.getSelectedIndex()==1;
+			NjtaiApp.loadCovers = covers.getSelectedIndex()==1;
 			NjtaiApp.proxy = proxy.getString();
 			NjtaiApp.setScreen(menu);
 			if(!NjtaiApp.savePrefs()) {
