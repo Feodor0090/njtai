@@ -1,5 +1,6 @@
 package ru.feodor0090.njtai.ui;
 
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -34,9 +35,11 @@ public class NjtaiRootMenu extends List implements CommandListener {
 			switch (getSelectedIndex()) {
 			case 0:
 				// number;
+				NjtaiApp.setScreen(new Alert("Not ready yet."));
 				return;
 			case 1:
 				// proxy
+				NjtaiApp.setScreen(new Alert("Not ready yet. nnproject.cc is used for now."));
 				return;
 			case 2:
 				// popular
@@ -50,6 +53,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 				return;
 			case 4:
 				// search
+				NjtaiApp.setScreen(new Alert("Not ready yet."));
 				return;
 			}
 		}

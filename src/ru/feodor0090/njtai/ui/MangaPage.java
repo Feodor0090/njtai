@@ -1,5 +1,6 @@
 package ru.feodor0090.njtai.ui;
 
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -39,7 +40,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 		String html = Network.httpRequestUTF8(NjtaiApp.proxy+NjtaiApp.baseUrl+"/g/"+num);
 		mo = new ExtendedMangaObject(num, html);
 		mo.loadCover();
-		this.append(new ImageItem(null, (Image) mo.img.get(), 3, null));
+		this.append(new ImageItem(null, (Image) mo.img.get(), 0, null));
 		setTitle(mo.title);
 		this.setCommandListener(this);
 		append(new StringItem("Title", mo.title));
@@ -62,7 +63,13 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	}
 
 	public void commandAction(Command c, Item i) {
-		
+		if(c==openCmd) {
+			if(i==firstPage) {
+				NjtaiApp.setScreen(new View(mo, this, 1));
+			} else if(i==customPage) {
+				NjtaiApp.setScreen(new Alert("Not ready yet."));
+			}
+		}
 	}
 
 }
