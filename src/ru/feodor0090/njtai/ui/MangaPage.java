@@ -30,28 +30,32 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	private Command gotoCmd = new Command("Go", Command.OK, 1);
 	
 	boolean stop= false;
+	
+	private StringItem progress = new StringItem("Loading data", "");
 
 	public MangaPage(int num, Displayable prev) {
-		super("Waiting...");
+		super("Manga page");
 		this.num = num;
 		this.prev = prev;
 		this.setCommandListener(this);
 		this.addCommand(exitCmd);
+		this.append(progress);
 		loader = new Thread(this);
 		loader.setPriority(Thread.MAX_PRIORITY);
 		loader.start();
 	}
 
 	public void run() {
-		setTitle("Fetching page...");
+		status("Fetching page (1/3)");
 		String html = Network.httpRequestUTF8(NjtaiApp.proxy + NjtaiApp.baseUrl + "/g/" + num);
-		setTitle("Processing...");
+		status("Processing data (2/3)");
 		if(stop) return;
 		mo = new ExtendedMangaObject(num, html);
-		setTitle("Loading cover...");
+		status("Downloading cover (3/3)");
 		if(stop) return;
 		mo.loadCover();
 		if(stop) return;
+		this.deleteAll();
 		this.append(new ImageItem(null, (Image) mo.img, 0, null));
 		setTitle(mo.title);
 		this.setCommandListener(this);
@@ -65,6 +69,10 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 		customPage.setItemCommandListener(this);
 		customPage.setDefaultCommand(openCmd);
 		append(customPage);
+	}
+
+	private void status(String string) {
+		progress.setText(string);
 	}
 
 	public void commandAction(Command arg0, Displayable arg1) {
