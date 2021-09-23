@@ -22,6 +22,10 @@ public class MangaList extends Form implements Runnable, CommandListener {
 	private Command exitCmd = new Command("Back", Command.BACK, 1);
 	private String title;
 
+	protected void sizeChanged(int arg0, int arg1) {
+		// ща напишем
+	}
+
 	public MangaList(String title, Displayable prev, MangaObjects items) {
 		super("Loading...");
 		this.title = title;

@@ -48,6 +48,10 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	public void run() {
 		status("Fetching page (1/3)");
 		String html = Network.httpRequestUTF8(NjtaiApp.proxy + NjtaiApp.baseUrl + "/g/" + num);
+		if(html==null) {
+			status("Network error! Check connection, return to previous screen and try again.");
+			return;
+		}
 		status("Processing data (2/3)");
 		if(stop) return;
 		mo = new ExtendedMangaObject(num, html);
@@ -85,7 +89,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	public void commandAction(Command c, Item i) {
 		if (c == openCmd) {
 			if (i == firstPage) {
-				NjtaiApp.setScreen(new View(mo, this, 1));
+				NjtaiApp.setScreen(new View(mo, this, 0));
 			} else if (i == customPage) {
 				final TextBox tb = new TextBox("Enter page number:", "", 7, 2);
 				tb.addCommand(gotoCmd);
@@ -99,10 +103,10 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 						} else if (c == gotoCmd) {
 							try {
 								int n = Integer.parseInt(tb.getString());
-								if (n < 1)
-									n = 1;
-								if (n > mo.pages)
-									n = mo.pages;
+								if (n < 0)
+									n = 0;
+								if (n >= mo.pages)
+									n = mo.pages-1;
 								NjtaiApp.setScreen(new View(mo, menu, n));
 							} catch (Exception e) {
 								NjtaiApp.setScreen(menu);
