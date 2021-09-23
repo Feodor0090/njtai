@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai;
+package njtai;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 import javax.microedition.rms.RecordStore;
 
-import ru.feodor0090.njtai.ui.MMenu;
+import njtai.ui.MMenu;
 
 public class NJTAI extends MIDlet {
 

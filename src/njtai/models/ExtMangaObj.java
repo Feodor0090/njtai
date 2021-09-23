@@ -1,11 +1,11 @@
-package ru.feodor0090.njtai.models;
+package njtai.models;
 
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Image;
 
-import ru.feodor0090.njtai.Images;
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.StringUtil;
+import njtai.Images;
+import njtai.NJTAI;
+import njtai.StringUtil;
 
 public class ExtMangaObj extends MangaObj {
 

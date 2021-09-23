@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai.ui;
+package njtai.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -8,9 +8,9 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import ru.feodor0090.njtai.Images;
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.ExtMangaObj;
+import njtai.Images;
+import njtai.NJTAI;
+import njtai.models.ExtMangaObj;
 
 public class View extends Canvas implements Runnable {
 

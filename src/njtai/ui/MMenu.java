@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai.ui;
+package njtai.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -8,9 +8,9 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextBox;
 
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.StringUtil;
-import ru.feodor0090.njtai.models.MangaObjs;
+import njtai.NJTAI;
+import njtai.StringUtil;
+import njtai.models.MangaObjs;
 
 public final class MMenu extends List implements CommandListener {
 

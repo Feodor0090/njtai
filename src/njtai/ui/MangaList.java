@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai.ui;
+package njtai.ui;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -8,9 +8,9 @@ import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.MangaObj;
-import ru.feodor0090.njtai.models.MangaObjs;
+import njtai.NJTAI;
+import njtai.models.MangaObj;
+import njtai.models.MangaObjs;
 
 public class MangaList extends Form implements Runnable, CommandListener {
 

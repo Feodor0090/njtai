@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai.ui;
+package njtai.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -13,8 +13,8 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.ExtMangaObj;
+import njtai.NJTAI;
+import njtai.models.ExtMangaObj;
 
 public class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
 

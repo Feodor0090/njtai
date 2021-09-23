@@ -1,10 +1,10 @@
-package ru.feodor0090.njtai.models;
+package njtai.models;
 
 import java.util.Enumeration;
 import java.util.Vector;
 
-import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.StringUtil;
+import njtai.NJTAI;
+import njtai.StringUtil;
 
 public class MangaObjs implements Enumeration {
 	/**

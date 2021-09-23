@@ -1,4 +1,4 @@
-package ru.feodor0090.njtai;
+package njtai;
 
 import java.util.Hashtable;
 
