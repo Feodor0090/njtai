@@ -19,7 +19,6 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
-		imgs = new String[pages];
 
 		// pages
 		String pagesStr = StringUtil.range(StringUtil.range(html, "Pages:", "</div", false), "<span class=\"name\">",
@@ -27,6 +26,8 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		System.out.println(pagesStr);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
+		
+		imgs = new String[pages];
 
 		// img and title
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
