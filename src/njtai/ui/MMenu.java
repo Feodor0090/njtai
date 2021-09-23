@@ -118,7 +118,7 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 5:
 			Alert a = new Alert("Controls",
-					"OK to zoom in/out, D-PAD to move page when zoomed " + "and switch them when not, RSK to return.",
+					"OK - change zoom; D-PAD - move page / turn page; RSK - return.",
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
