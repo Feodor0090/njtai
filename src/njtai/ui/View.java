@@ -116,12 +116,9 @@ public class View extends Canvas implements Runnable {
 	int lw = getWidth();
 
 	protected void sizeChanged(int nw, int nh) {
-		/*x -= lw / 2;
-		x += nw / 2;
-		y -= lh / 2;
-		y += nh / 2;
-		lh = nh;
-		lw = nw;*/
+		/*
+		 * x -= lw / 2; x += nw / 2; y -= lh / 2; y += nh / 2; lh = nh; lw = nw;
+		 */
 	}
 
 	static String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", "close" };
@@ -176,9 +173,10 @@ public class View extends Canvas implements Runnable {
 				if (y > hh)
 					y = hh;
 				if (zoom != 1) {
-					g.drawImage(toDraw, x+getWidth()/2, y+getHeight()/2, Graphics.HCENTER | Graphics.VCENTER);
+					g.drawImage(toDraw, x + getWidth() / 2, y + getHeight() / 2, Graphics.HCENTER | Graphics.VCENTER);
 				} else {
-					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, 0, 0);
+					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, (getHeight() - toDraw.getHeight()) / 2,
+							0);
 				}
 
 				// touch captions
@@ -192,7 +190,7 @@ public class View extends Canvas implements Runnable {
 					: null;
 			String ram;
 			{
-				long used = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+				long used = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 				used /= 1024;
 				if (used <= 4096) {
 					ram = used + "kb";
@@ -205,8 +203,7 @@ public class View extends Canvas implements Runnable {
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 			if (prefetch != null)
 				g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
-			g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(), f.stringWidth(ram),
-					f.getHeight());
+			g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(), f.stringWidth(ram), f.getHeight());
 
 			g.setGrayScale(255);
 			g.drawString(pageNum, 0, 0, 0);
@@ -294,7 +291,8 @@ public class View extends Canvas implements Runnable {
 		} else {
 			if (k == -5) {
 				zoom = 2;
-				x = 0;y=0;
+				x = 0;
+				y = 0;
 				resize(zoom);
 			} else if (k == -3) {
 				if (page > 0) {
