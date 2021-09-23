@@ -21,7 +21,7 @@ import ru.feodor0090.njtai.NJTAI;
  */
 final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
-	private NjtaiRootMenu menu;
+	private MMenu menu;
 	private final Command bkC = new Command("Back", 2, 2);
 	private final Command prC = new Command("Proxy setup", 8, 1);
 	
@@ -39,7 +39,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 	private final TextField proxy = new TextField("Proxy prefix", NJTAI.proxy, 100, 0);
 	private final StringItem aboutProxy = new StringItem(null, "Proxy setup", StringItem.BUTTON);
 	
-	public Prefs(NjtaiRootMenu menu) {
+	public Prefs(MMenu menu) {
 		super("NJTAI settings");
 		this.menu = menu;
 		

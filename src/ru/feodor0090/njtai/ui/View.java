@@ -11,8 +11,7 @@ import javax.microedition.lcdui.Image;
 import ru.feodor0090.njtai.Images;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.models.ExtMangaObj;
-import tube42.lib.imagelib.ColorUtils;
-import tube42.lib.imagelib.ImageUtils;
+import tube42.ImgUtil;
 
 public class View extends Canvas implements Runnable {
 
@@ -87,7 +86,7 @@ public class View extends Canvas implements Runnable {
 
 		h = h * size;
 		w = w * size;
-		toDraw = ImageUtils.resize(origImg, w, h, true, false);
+		toDraw = ImgUtil.resize(origImg, w, h, true);
 	}
 
 	static String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", "close" };
@@ -264,7 +263,7 @@ public class View extends Canvas implements Runnable {
 	int sx, sy;
 
 	protected void pointerPressed(int x, int y) {
-		if(toDraw==null&&y > getHeight() - 50&&x>getWidth()*2/3) {
+		if (toDraw == null && y > getHeight() - 50 && x > getWidth() * 2 / 3) {
 			keyPressed(-7);
 			return;
 		}
@@ -351,7 +350,7 @@ public class View extends Canvas implements Runnable {
 	 */
 	public static void fillGrad(Graphics g, int x, int y, int w, int h, int c1, int c2) {
 		for (int i = 0; i < h; i++) {
-			g.setColor(ColorUtils.blend(c2, c1, i * 255 / h));
+			g.setColor(ImgUtil.blend(c2, c1, i * 255 / h));
 			g.drawLine(x, y + i, x + w, y + i);
 		}
 	}

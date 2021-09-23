@@ -6,7 +6,7 @@ import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 import javax.microedition.rms.RecordStore;
 
-import ru.feodor0090.njtai.ui.NjtaiRootMenu;
+import ru.feodor0090.njtai.ui.MMenu;
 
 public class NJTAI extends MIDlet {
 
@@ -135,7 +135,7 @@ public class NJTAI extends MIDlet {
 		if (!running) {
 			running = true;
 			loadPrefs();
-			setScr(new NjtaiRootMenu());
+			setScr(new MMenu());
 		}
 	}
 

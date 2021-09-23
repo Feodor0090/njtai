@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 import javax.microedition.lcdui.Image;
 
-import tube42.lib.imagelib.ImageUtils;
+import tube42.ImgUtil;
 
 public class Images {
 	private static Hashtable cache = new Hashtable();
@@ -31,7 +31,7 @@ public class Images {
 		if (mini) {
 			int h = NJTAI.getHeight() * 2 / 3;
 			int w = (int) (((float) h / i.getHeight()) * i.getWidth());
-			i = ImageUtils.resize(i, w, h, true, false);
+			i = ImgUtil.resize(i, w, h, true);
 		} else {
 			if (NJTAI.cache)
 				cache.put(url1, i);
@@ -56,7 +56,7 @@ public class Images {
 		Image i = Network.loadImage(url);
 		int h = targetH;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
-		i = ImageUtils.resize(i, w, h, true, false);
+		i = ImgUtil.resize(i, w, h, true);
 		if (NJTAI.cache)
 			cache.put(url1, i);
 		return i;

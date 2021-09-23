@@ -13,9 +13,9 @@ import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 import ru.feodor0090.njtai.models.MangaObjs;
 
-public class NjtaiRootMenu extends List implements CommandListener {
+public final class MMenu extends List implements CommandListener {
 
-	public NjtaiRootMenu() {
+	public MMenu() {
 		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded",
 				"Search by title", "About & keys tips" }, null);
 		this.addCommand(exitCmd);
@@ -43,7 +43,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 					final TextBox tb = new TextBox("Enter ID:", "", 7, 2);
 					tb.addCommand(openCmd);
 					tb.addCommand(exitCmd);
-					final NjtaiRootMenu menu = this;
+					final MMenu menu = this;
 					tb.setCommandListener(new CommandListener() {
 
 						public void commandAction(Command c, Displayable arg1) {
@@ -98,7 +98,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 		final TextBox tb = new TextBox("Enter query:", "", 80, 0);
 		tb.addCommand(openCmd);
 		tb.addCommand(exitCmd);
-		final NjtaiRootMenu menu = this;
+		final MMenu menu = this;
 		tb.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable arg1) {

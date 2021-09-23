@@ -4,7 +4,6 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
@@ -41,7 +40,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		while (content.hasMoreElements()) {
 			MangaObj o = (MangaObj) content.nextElement();
 			ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
-			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num, this);
+			OMBHdlr h = new OMBHdlr(o.num, this);
 			h.attach(img);
 			this.append(img);
 			setTitle(title);
@@ -56,14 +55,14 @@ public class MangaList extends Form implements Runnable, CommandListener {
 			NJTAI.setScr(prev);
 	}
 
-	public static class OpenMangaButtonHandler implements ItemCommandListener {
+	public static class OMBHdlr implements ItemCommandListener {
 		private int num;
 
 		public static Command openCmd = new Command("Open", Command.ITEM, 1);
 
 		private Displayable prev;
 
-		public OpenMangaButtonHandler(int num, Displayable prev) {
+		public OMBHdlr(int num, Displayable prev) {
 			this.num = num;
 			if (NJTAI.keepLists)
 				this.prev = prev;
@@ -76,7 +75,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		}
 
 		public void commandAction(Command arg0, Item arg1) {
-			NJTAI.setScr(new MangaPage(num, NJTAI.keepLists ? prev : new NjtaiRootMenu()));
+			NJTAI.setScr(new MangaPage(num, NJTAI.keepLists ? prev : new MMenu()));
 		}
 	}
 
