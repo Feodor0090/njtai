@@ -45,8 +45,8 @@ public class View extends Canvas implements Runnable {
 			synchronized (this) {
 				error = false;
 				zoom = 1;
-				x = getWidth() / 2;
-				y = getHeight() / 2;
+				x = 0;
+				y = 0;
 				origImg = null;
 				toDraw = null;
 				try {
@@ -115,12 +115,12 @@ public class View extends Canvas implements Runnable {
 	int lw = getWidth();
 
 	protected void sizeChanged(int nw, int nh) {
-		x -= lw / 2;
+		/*x -= lw / 2;
 		x += nw / 2;
 		y -= lh / 2;
 		y += nh / 2;
 		lh = nh;
-		lw = nw;
+		lw = nw;*/
 	}
 
 	static String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", "close" };
@@ -164,8 +164,18 @@ public class View extends Canvas implements Runnable {
 
 				}
 			} else {
+				int hw = toDraw.getWidth() / 2;
+				int hh = toDraw.getHeight() / 2;
+				if (x < -hw)
+					x = -hw;
+				if (x > hw)
+					x = hw;
+				if (y < -hh)
+					y = -hh;
+				if (y > hh)
+					y = hh;
 				if (zoom != 1) {
-					g.drawImage(toDraw, x, y, Graphics.HCENTER | Graphics.VCENTER);
+					g.drawImage(toDraw, x+getWidth()/2, y+getHeight()/2, Graphics.HCENTER | Graphics.VCENTER);
 				} else {
 					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, 0, 0);
 				}
@@ -182,11 +192,11 @@ public class View extends Canvas implements Runnable {
 			String ram;
 			{
 				long used = Runtime.getRuntime().totalMemory();
-				used /=1024;
-				if(used<=4096) {
-					ram = used+"kb";
+				used /= 1024;
+				if (used <= 4096) {
+					ram = used + "kb";
 				} else {
-					ram = (used/1024)+"mb";
+					ram = (used / 1024) + "mb";
 				}
 			}
 			g.setGrayScale(0);
@@ -194,14 +204,15 @@ public class View extends Canvas implements Runnable {
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 			if (prefetch != null)
 				g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
-			g.fillRect(getWidth() - f.stringWidth(zoomN), getHeight() - f.getHeight(), f.stringWidth(zoomN), f.getHeight());
-			
+			g.fillRect(getWidth() - f.stringWidth(zoomN), getHeight() - f.getHeight(), f.stringWidth(zoomN),
+					f.getHeight());
+
 			g.setGrayScale(255);
 			g.drawString(pageNum, 0, 0, 0);
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
 			if (prefetch != null)
 				g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
-			g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM|Graphics.RIGHT);
+			g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -282,8 +293,7 @@ public class View extends Canvas implements Runnable {
 		} else {
 			if (k == -5) {
 				zoom = 2;
-				x = getWidth() / 2;
-				y = getHeight() / 2;
+				x = 0;y=0;
 				resize(zoom);
 			} else if (k == -3) {
 				if (page > 0) {
