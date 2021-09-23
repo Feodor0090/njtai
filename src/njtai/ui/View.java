@@ -8,7 +8,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
-import njtai.Images;
+import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
@@ -30,6 +30,7 @@ public class View extends Canvas implements Runnable {
 	int y = 0;
 
 	Thread preloader;
+	private boolean error;
 
 	public View(ExtMangaObj emo, Displayable prev, int page) {
 		this.emo = emo;
@@ -41,16 +42,19 @@ public class View extends Canvas implements Runnable {
 
 	public void run() {
 		synchronized (this) {
+			error = false;
 			zoom = 1;
 			x = getWidth() / 2;
 			y = getHeight() / 2;
 			origImg = null;
 			toDraw = null;
 			try {
-				origImg = emo.getPage(page, this);
+				origImg = emo.getPage(page);
 				repaint();
-				if (origImg == null)
+				if (origImg == null) {
+					error = true;
 					return;
+				}
 				resize(1);
 				zoom = 1;
 			} catch (InterruptedException e) {
@@ -71,7 +75,7 @@ public class View extends Canvas implements Runnable {
 	void preload() {
 		for (int i = 0; i < emo.pages; i++) {
 			try {
-				emo.getPage(i + 1, this);
+				emo.getPage(i + 1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return;
@@ -82,6 +86,11 @@ public class View extends Canvas implements Runnable {
 	private void resize(int size) {
 		int h = getHeight();
 		int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
+
+		if (w > getWidth()) {
+			w = getWidth();
+			h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+		}
 
 		h = h * size;
 		w = w * size;
@@ -103,14 +112,14 @@ public class View extends Canvas implements Runnable {
 
 			if (toDraw == null) {
 				String info;
-				if (emo.infoReady == -1) {
+				if (error) {
+					info = "Failed to load image.";
+				} else if (emo.infoReady == -1) {
 					info = "Failed to fetch pages.";
 				} else if (emo.infoReady == -2) {
 					info = "Waiting...";
-				} else if (emo.infoReady == 100) {
-					info = origImg == null ? "Loading image..." : "Resizing...";
 				} else {
-					info = "Fetching pages info " + emo.infoReady + "%";
+					info = origImg == null ? "Loading image..." : "Resizing...";
 				}
 				g.setGrayScale(255);
 				g.drawString(info, getWidth() / 2, getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
@@ -142,12 +151,18 @@ public class View extends Canvas implements Runnable {
 			}
 			String pageNum = (page + 1) + "/" + emo.pages;
 			String zoomN = "x" + zoom;
+			String prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching pages " + emo.infoReady + "%")
+					: null;
 			g.setGrayScale(0);
 			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
+			if (prefetch != null)
+				g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
 			g.setGrayScale(255);
 			g.drawString(pageNum, 0, 0, 0);
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
+			if (prefetch != null)
+				g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -194,7 +209,8 @@ public class View extends Canvas implements Runnable {
 
 	protected void keyPressed(int k) {
 		if (k == -7) {
-			Images.reset();
+			Imgs.reset();
+			emo.cancelPrefetch();
 			if (loader != null && loader.isAlive())
 				loader.interrupt();
 			if (preloader != null && preloader.isAlive())

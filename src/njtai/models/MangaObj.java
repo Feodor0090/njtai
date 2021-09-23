@@ -2,7 +2,8 @@ package njtai.models;
 
 import javax.microedition.lcdui.Image;
 
-import njtai.Images;
+import njtai.Imgs;
+import njtai.NJTAI;
 import njtai.StringUtil;
 
 public class MangaObj {
@@ -27,6 +28,6 @@ public class MangaObj {
 	}
 
 	public void loadCover() {
-		img = Images.get(imgUrl, true);
+		img = Imgs.get(imgUrl, NJTAI.getHeight() * 2 / 3, false);
 	}
 }

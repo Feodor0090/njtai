@@ -12,13 +12,13 @@ import njtai.NJTAI;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 
-public class MangaList extends Form implements Runnable, CommandListener {
+final class MangaList extends Form implements Runnable, CommandListener {
 
-	public Thread loader;
-	protected Displayable prev;
-	protected MangaObjs content;
+	private Thread loader;
+	private Displayable prev;
+	private MangaObjs objs;
 
-	private Command exitCmd = new Command("Back", Command.BACK, 1);
+	private Command back = new Command("Back", Command.BACK, 1);
 	private String title;
 
 	protected void sizeChanged(int arg0, int arg1) {
@@ -29,53 +29,52 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		super("Loading...");
 		this.title = title;
 		this.prev = prev;
-		content = items;
+		objs = items;
 		this.setCommandListener(this);
-		this.addCommand(exitCmd);
+		this.addCommand(back);
 		loader = new Thread(this);
 		loader.start();
 	}
 
 	public void run() {
-		while (content.hasMoreElements()) {
-			MangaObj o = (MangaObj) content.nextElement();
+		while (objs.hasMoreElements()) {
+			MangaObj o = (MangaObj) objs.nextElement();
 			ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
-			OMBHdlr h = new OMBHdlr(o.num, this);
+			OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
 			h.attach(img);
 			this.append(img);
 			setTitle(title);
 		}
-		content = null;
+		objs = null;
 		loader = null;
 		setTitle(title);
 	}
 
-	public void commandAction(Command arg0, Displayable arg1) {
-		if (arg0 == exitCmd)
+	public void commandAction(Command c, Displayable d) {
+		if (c == back)
 			NJTAI.setScr(prev);
 	}
 
 	public static class OMBHdlr implements ItemCommandListener {
-		private int num;
+		private int n;
 
-		public static Command openCmd = new Command("Open", Command.ITEM, 1);
+		public static Command o = new Command("Open", 8, 1);
 
-		private Displayable prev;
+		private Displayable p;
 
-		public OMBHdlr(int num, Displayable prev) {
-			this.num = num;
-			if (NJTAI.keepLists)
-				this.prev = prev;
+		public OMBHdlr(int id, Displayable pr) {
+			n = id;
+			p = pr;
 		}
 
 		public void attach(Item i) {
-			i.addCommand(openCmd);
-			i.setDefaultCommand(openCmd);
+			i.addCommand(o);
+			i.setDefaultCommand(o);
 			i.setItemCommandListener(this);
 		}
 
-		public void commandAction(Command arg0, Item arg1) {
-			NJTAI.setScr(new MangaPage(num, NJTAI.keepLists ? prev : new MMenu()));
+		public void commandAction(Command c, Item i) {
+			NJTAI.setScr(new MangaPage(n, p));
 		}
 	}
 

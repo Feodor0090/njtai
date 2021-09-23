@@ -22,7 +22,9 @@ public final class MMenu extends List implements CommandListener {
 	}
 
 	private Command exitCmd = new Command("Exit", Command.EXIT, 2);
+	private Command backCmd = new Command("Back", Command.BACK, 2);
 	private Command openCmd = new Command("Go", Command.OK, 1);
+	private Command searchCmd = new Command("Search", Command.OK, 1);
 
 	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
 	static final String NEW_DIV = "<div class=\"container index-container\">";
@@ -32,6 +34,35 @@ public final class MMenu extends List implements CommandListener {
 
 	public void commandAction(Command c, Displayable d) {
 		try {
+			if (c == backCmd) {
+				NJTAI.setScr(this);
+				return;
+			}
+			if (c == searchCmd) {
+				try {
+					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + ((TextBox)d).getString();
+					String data = NJTAI.httpUtf(q);
+					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
+					NJTAI.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
+				} catch (Exception e) {
+					e.printStackTrace();
+					NJTAI.setScr(this);
+					NJTAI.pause(100);
+					NJTAI.setScr(new Alert("Failed to open", "Have you entered something URL-breaking?", null,
+							AlertType.ERROR));
+				}
+				return;
+			}
+			if (c == openCmd) {
+				try {
+					NJTAI.setScr(new MangaPage(Integer.parseInt(((TextBox)d).getString()), this));
+				} catch (Exception e) {
+					NJTAI.setScr(this);
+					NJTAI.pause(100);
+					NJTAI.setScr(new Alert("Failed to go to page",
+							"Have you entered correct number?", null, AlertType.ERROR));
+				}
+			}
 			if (c == exitCmd) {
 				NJTAI.close();
 			}
@@ -41,25 +72,8 @@ public final class MMenu extends List implements CommandListener {
 					// number;
 					final TextBox tb = new TextBox("Enter ID:", "", 7, 2);
 					tb.addCommand(openCmd);
-					tb.addCommand(exitCmd);
-					final MMenu menu = this;
-					tb.setCommandListener(new CommandListener() {
-
-						public void commandAction(Command c, Displayable arg1) {
-							if (c == exitCmd) {
-								NJTAI.setScr(menu);
-							} else if (c == openCmd) {
-								try {
-									NJTAI.setScr(new MangaPage(Integer.parseInt(tb.getString()), menu));
-								} catch (Exception e) {
-									NJTAI.setScr(menu);
-									NJTAI.pause(100);
-									NJTAI.setScr(new Alert("Failed to go to page",
-											"Have you entered correct number?", null, AlertType.ERROR));
-								}
-							}
-						}
-					});
+					tb.addCommand(backCmd);
+					tb.setCommandListener(this);
 					NJTAI.setScr(tb);
 					return;
 				case 1:
@@ -95,30 +109,9 @@ public final class MMenu extends List implements CommandListener {
 
 	private void search() {
 		final TextBox tb = new TextBox("Enter query:", "", 80, 0);
-		tb.addCommand(openCmd);
-		tb.addCommand(exitCmd);
-		final MMenu menu = this;
-		tb.setCommandListener(new CommandListener() {
-
-			public void commandAction(Command c, Displayable arg1) {
-				if (c == exitCmd) {
-					NJTAI.setScr(menu);
-				} else if (c == openCmd) {
-					try {
-						String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + tb.getString();
-						String data = NJTAI.httpUtf(q);
-						String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
-						NJTAI.setScr(new MangaList("Search results", menu, new MangaObjs(section1)));
-					} catch (Exception e) {
-						e.printStackTrace();
-						NJTAI.setScr(menu);
-						NJTAI.pause(100);
-						NJTAI.setScr(new Alert("Failed to open", "Have you entered something URL-breaking?", null,
-								AlertType.ERROR));
-					}
-				}
-			}
-		});
+		tb.addCommand(searchCmd);
+		tb.addCommand(backCmd);
+		tb.setCommandListener(this);
 		NJTAI.setScr(tb);
 	}
 
