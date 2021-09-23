@@ -14,6 +14,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.Imgs;
+import njtai.MangaDownloader;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
@@ -26,6 +27,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Command back = new Command("Back", Command.BACK, 1);
 	private Item page1 = new StringItem(null, "Open first page", StringItem.BUTTON);
 	private Item pageN = new StringItem(null, "Enter page number", StringItem.BUTTON);
+	private Item save = new StringItem(null, "Download", StringItem.BUTTON);
 	public static Command open = new Command("Select", Command.ITEM, 1);
 	private Command goTo = new Command("Go", Command.OK, 1);
 
@@ -94,6 +96,9 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		pageN.setItemCommandListener(this);
 		pageN.setDefaultCommand(open);
 		append(pageN);
+		save.setItemCommandListener(this);
+		save.setDefaultCommand(open);
+		append(save);
 	}
 
 	private void status(String string) {
@@ -139,6 +144,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 					}
 				});
 				NJTAI.setScr(tb);
+			} else if (i == save) {
+				(new MangaDownloader(mo, this)).start();
 			}
 		}
 	}
