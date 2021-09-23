@@ -27,6 +27,7 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 	public ChoiceGroup files = new ChoiceGroup("Cache everything to file system", Choice.POPUP, new String[] { "No","Yes"}, null);
 	public ChoiceGroup lists = new ChoiceGroup("Keep lists when opening pages", Choice.POPUP, new String[] { "No (saves RAM)","Yes"}, null);
 	public ChoiceGroup covers = new ChoiceGroup("Load covers in lists", Choice.POPUP, new String[] { "No","Yes"}, null);
+	public ChoiceGroup urls = new ChoiceGroup("Preload image urls", Choice.POPUP, new String[] { "No","Yes"}, null);
 	public TextField proxy = new TextField("Proxy prefix", NjtaiApp.proxy, 100, 0);
 	public StringItem aboutProxy = new StringItem(null, "Proxy setup", StringItem.BUTTON);
 	
@@ -42,6 +43,7 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 		files.setSelectedIndex(NjtaiApp.useFiles?1:0, true);
 		lists.setSelectedIndex(NjtaiApp.keepLists?1:0, true);
 		covers.setSelectedIndex(NjtaiApp.loadCovers?1:0, true);
+		urls.setSelectedIndex(NjtaiApp.prefetchUrls?1:0, true);
 		aboutProxy.setDefaultCommand(proxyCmd);
 		aboutProxy.setItemCommandListener(this);
 		
@@ -51,6 +53,7 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 		//this.append(files);
 		this.append(lists);
 		this.append(covers);
+		this.append(urls);
 		this.append(proxy);
 		this.append(aboutProxy);
 	}
@@ -70,10 +73,11 @@ public class Prefs extends Form implements ItemCommandListener, CommandListener 
 			NjtaiApp.useFiles = files.getSelectedIndex()==1;
 			NjtaiApp.keepLists = lists.getSelectedIndex()==1;
 			NjtaiApp.loadCovers = covers.getSelectedIndex()==1;
+			NjtaiApp.prefetchUrls = urls.getSelectedIndex()==1;
 			NjtaiApp.proxy = proxy.getString();
 			NjtaiApp.setScreen(menu);
 			if(!NjtaiApp.savePrefs()) {
-				Alert a = new Alert("Settngs", "Failed to write settings. They will reset after exit.", null,
+				Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 						AlertType.ERROR);
 				a.setTimeout(Alert.FOREVER);
 				NjtaiApp.setScreen(a);

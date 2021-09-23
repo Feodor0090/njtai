@@ -29,7 +29,7 @@ public class NjtaiApp extends MIDlet {
 	public static boolean useFiles = false;
 	public static boolean keepLists = true;
 	public static boolean loadCovers = true;
-	public static boolean flag6 = true;
+	public static boolean prefetchUrls = true;
 	public static boolean flag7 = true;
 	public static boolean flag8 = true;
 
@@ -52,7 +52,7 @@ public class NjtaiApp extends MIDlet {
 			sb.append('`');
 			sb.append(loadCovers ? "1" : "0");
 			sb.append('`');
-			sb.append(flag6 ? "1" : "0");
+			sb.append(prefetchUrls ? "1" : "0");
 			sb.append('`');
 			sb.append(flag7 ? "1" : "0");
 			sb.append('`');
@@ -89,7 +89,7 @@ public class NjtaiApp extends MIDlet {
 			useFiles = s[2].equals("1");
 			keepLists = s[3].equals("1");
 			loadCovers = s[4].equals("1");
-			flag6 = s[5].equals("1");
+			prefetchUrls = s[5].equals("1");
 			flag7 = s[6].equals("1");
 			flag8 = s[7].equals("1");
 			proxy = s[8];
@@ -100,6 +100,7 @@ public class NjtaiApp extends MIDlet {
 			useFiles = false;
 			keepLists = true;
 			loadCovers = true;
+			prefetchUrls = true;
 			proxy = "http://nnproject.cc/proxy.php?";
 		}
 	}
