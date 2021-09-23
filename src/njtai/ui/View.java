@@ -36,6 +36,7 @@ public class View extends Canvas implements Runnable {
 		this.emo = emo;
 		this.prev = prev;
 		this.page = page;
+		NJTAI.clearHP();
 		reload();
 		setFullScreenMode(true);
 	}

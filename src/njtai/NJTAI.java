@@ -130,12 +130,20 @@ public class NJTAI extends MIDlet {
 	 * @throws IOException
 	 */
 	public synchronized static String getHP() throws IOException {
-		if (hp == null) {
-			hp = httpUtf(proxy + baseUrl);
+		String s = hp;
+		if (s == null) {
+			s = httpUtf(proxy + baseUrl);
+			if ((Runtime.getRuntime().totalMemory() != 2048 * 1024)) {
+				hp = s;
+			}
 		}
-		if (hp == null)
+		if (s == null)
 			throw new IOException();
-		return hp;
+		return s;
+	}
+	
+	public synchronized static void clearHP() {
+		hp = null;
 	}
 
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {

@@ -50,6 +50,8 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			objs = null;
 			loader = null;
 			System.gc();
+			NJTAI.keepLists = false;
+			NJTAI.savePrefs();
 			append(new StringItem("Error", "Not enough memory to show full list"));
 		}
 	}
