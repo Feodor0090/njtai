@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
+import javax.microedition.lcdui.StringItem;
 
 import njtai.NJTAI;
 import njtai.models.MangaObj;
@@ -21,10 +22,6 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	private Command back = new Command("Back", Command.BACK, 1);
 	private String title;
 
-	protected void sizeChanged(int arg0, int arg1) {
-		// ща напишем
-	}
-
 	public MangaList(String title, Displayable prev, MangaObjs items) {
 		super("Loading...");
 		this.title = title;
@@ -37,17 +34,24 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	}
 
 	public void run() {
-		while (objs.hasMoreElements()) {
-			MangaObj o = (MangaObj) objs.nextElement();
-			ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
-			OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
-			h.attach(img);
-			this.append(img);
+		try {
+			while (objs.hasMoreElements()) {
+				MangaObj o = (MangaObj) objs.nextElement();
+				ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
+				OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
+				h.attach(img);
+				this.append(img);
+				setTitle(title);
+			}
+			objs = null;
+			loader = null;
 			setTitle(title);
+		} catch (OutOfMemoryError e) {
+			objs = null;
+			loader = null;
+			System.gc();
+			append(new StringItem("Error", "Not enough memory to show full list"));
 		}
-		objs = null;
-		loader = null;
-		setTitle(title);
 	}
 
 	public void commandAction(Command c, Displayable d) {

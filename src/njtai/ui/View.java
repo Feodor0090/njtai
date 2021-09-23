@@ -143,7 +143,7 @@ public class View extends Canvas implements Runnable {
 				} else if (emo.infoReady == -1) {
 					info = "Failed to fetch pages.";
 				} else if (emo.infoReady == -2) {
-					info = "Waiting...";
+					info = "Waiting loader...";
 				} else {
 					info = origImg == null ? "Loading image..." : "Resizing...";
 				}
@@ -191,7 +191,7 @@ public class View extends Canvas implements Runnable {
 					: null;
 			String ram;
 			{
-				long used = Runtime.getRuntime().totalMemory();
+				long used = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 				used /= 1024;
 				if (used <= 4096) {
 					ram = used + "kb";
@@ -204,7 +204,7 @@ public class View extends Canvas implements Runnable {
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 			if (prefetch != null)
 				g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
-			g.fillRect(getWidth() - f.stringWidth(zoomN), getHeight() - f.getHeight(), f.stringWidth(zoomN),
+			g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(), f.stringWidth(ram),
 					f.getHeight());
 
 			g.setGrayScale(255);

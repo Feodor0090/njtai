@@ -114,7 +114,7 @@ public class NJTAI extends MIDlet {
 			useFiles = false;
 			keepLists = true;
 			loadCovers = true;
-			prldUrl = true;
+			prldUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			proxy = "http://nnproject.cc/proxy.php?";
 		}
 	}
