@@ -17,8 +17,8 @@ import njtai.models.MangaObjs;
 public final class MMenu extends List implements CommandListener {
 
 	public MMenu() {
-		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Settings", "Popular list", "Recently uploaded",
-				"Search by title", "About & keys tips" }, null);
+		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Popular list", "Recently uploaded",
+				"Search by title", "Settings", "Keyboard controls help", "About" }, null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
@@ -69,40 +69,7 @@ public final class MMenu extends List implements CommandListener {
 				NJTAI.close();
 			}
 			if (c == List.SELECT_COMMAND) {
-				switch (getSelectedIndex()) {
-				case 0:
-					// number;
-					final TextBox tb = new TextBox("Enter ID:", "", 7, 2);
-					tb.addCommand(openCmd);
-					tb.addCommand(backCmd);
-					tb.setCommandListener(this);
-					NJTAI.setScr(tb);
-					return;
-				case 1:
-					// sets
-					NJTAI.setScr(new Prefs(this));
-					return;
-				case 2:
-					// popular
-					String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
-					NJTAI.setScr(new MangaList("Popular list", this, new MangaObjs(section)));
-					return;
-				case 3:
-					// new
-					String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
-					NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjs(section1)));
-					return;
-				case 4:
-					// search
-					search();
-					return;
-				case 5:
-					Alert a = new Alert("About & keys tips", "NJTAI v" + NJTAI.ver() + "\n Developer: Feodor0090"
-							+ "\n\nControls: OK to zoom in/out, D-PAD to move page when zoomed and switch them when not, RSK to return.",
-							null, AlertType.INFO);
-					a.setTimeout(Alert.FOREVER);
-					NJTAI.setScr(a);
-				}
+				mainMenuLinks();
 			}
 		} catch (Throwable t) {
 			System.gc();
@@ -118,6 +85,47 @@ public final class MMenu extends List implements CommandListener {
 				info = t.toString();
 			}
 			NJTAI.setScr(new Alert("Error", info, null, AlertType.ERROR));
+		}
+	}
+
+	private void mainMenuLinks() throws IOException {
+		switch (getSelectedIndex()) {
+		case 0:
+			// number;
+			final TextBox tb = new TextBox("Enter ID:", "", 7, 2);
+			tb.addCommand(openCmd);
+			tb.addCommand(backCmd);
+			tb.setCommandListener(this);
+			NJTAI.setScr(tb);
+			return;
+		case 4:
+			// sets
+			NJTAI.setScr(new Prefs(this));
+			return;
+		case 1:
+			// popular
+			String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
+			NJTAI.setScr(new MangaList("Popular list", this, new MangaObjs(section)));
+			return;
+		case 2:
+			// new
+			String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
+			NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjs(section1)));
+			return;
+		case 3:
+			// search
+			search();
+			return;
+		case 5:
+			Alert a = new Alert("Controls",
+					"OK to zoom in/out, D-PAD to move page when zoomed " + "and switch them when not, RSK to return.",
+					null, AlertType.INFO);
+			a.setTimeout(Alert.FOREVER);
+			NJTAI.setScr(a);
+		case 6:
+			Alert a1 = new Alert("About", "NJTAI v" + NJTAI.ver() + "\n Developer: Feodor0090", null, AlertType.INFO);
+			a1.setTimeout(Alert.FOREVER);
+			NJTAI.setScr(a1);
 		}
 	}
 
