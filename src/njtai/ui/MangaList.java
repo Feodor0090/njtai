@@ -22,8 +22,11 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	private Command back = new Command("Back", Command.BACK, 1);
 	private String title;
 
+	static boolean wasOom = false;
+
 	public MangaList(String title, Displayable prev, MangaObjs items) {
 		super("Loading...");
+		wasOom = false;
 		this.title = title;
 		this.prev = prev;
 		objs = items;
@@ -47,6 +50,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			loader = null;
 			setTitle(title);
 		} catch (OutOfMemoryError e) {
+			wasOom = true;
 			objs = null;
 			loader = null;
 			System.gc();
@@ -80,7 +84,15 @@ final class MangaList extends Form implements Runnable, CommandListener {
 		}
 
 		public void commandAction(Command c, Item i) {
-			NJTAI.setScr(new MangaPage(n, p));
+			if (wasOom) {
+				if (NJTAI.getScr() instanceof Form) {
+					((Form) NJTAI.getScr()).deleteAll();
+				}
+				NJTAI.setScr(new Form("Loading..."));
+				System.gc();
+				Thread.yield();
+			}
+			NJTAI.setScr(new MangaPage(n, wasOom ? null : p));
 		}
 	}
 

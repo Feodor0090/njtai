@@ -103,7 +103,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			stop = true;
-			NJTAI.setScr(p);
+			NJTAI.setScr(p == null ? new MMenu() : p);
 		}
 	}
 
