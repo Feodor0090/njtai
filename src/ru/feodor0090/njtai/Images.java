@@ -40,6 +40,7 @@ public class Images {
 	}
 
 	public static Image get(String url, int targetH) {
+		if(url==null)return null;
 		// cache lookup
 		if (cache.containsKey(url))
 			return (Image) cache.get(url);
