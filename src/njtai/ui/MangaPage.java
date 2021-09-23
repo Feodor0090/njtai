@@ -124,11 +124,11 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 						} else if (c == goTo) {
 							try {
 								int n = Integer.parseInt(tb.getString());
-								if (n < 0)
-									n = 0;
-								if (n >= mo.pages)
-									n = mo.pages - 1;
-								NJTAI.setScr(new View(mo, menu, n));
+								if (n < 1)
+									n = 1;
+								if (n > mo.pages)
+									n = mo.pages;
+								NJTAI.setScr(new View(mo, menu, n - 1));
 							} catch (Exception e) {
 								NJTAI.setScr(menu);
 								NJTAI.pause(100);
