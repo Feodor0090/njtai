@@ -13,6 +13,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
+import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
@@ -27,47 +28,62 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Item pageN = new StringItem(null, "Enter page number", StringItem.BUTTON);
 	public static Command open = new Command("Select", Command.ITEM, 1);
 	private Command goTo = new Command("Go", Command.OK, 1);
-	
-	boolean stop= false;
-	
+
+	boolean stop = false;
+
 	private StringItem prgrs = new StringItem("Loading data", "");
 
 	public MangaPage(int num, Displayable prev) {
 		super("Manga page");
 		id = num;
 		p = prev;
-		
+
 		setCommandListener(this);
 		addCommand(back);
 		append(prgrs);
 		setCommandListener(this);
-		
+
 		l = new Thread(this);
 		l.setPriority(10);
 		l.start();
 	}
 
 	public void run() {
+		try {
+			loadPage();
+		} catch (OutOfMemoryError e) {
+			System.gc();
+			Imgs.reset();
+			deleteAll();
+			append(prgrs);
+			status("Not enough memory to load!");
+		}
+	}
+
+	private void loadPage() {
 		status("Fetching page (1/3)");
 		String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id);
-		if(html==null) {
+		if (html == null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;
 		}
-		
+
 		status("Processing data (2/3)");
-		if(stop) return;
+		if (stop)
+			return;
 		mo = new ExtMangaObj(id, html);
-		
+
 		status("Downloading cover (3/3)");
-		if(stop) return;
+		if (stop)
+			return;
 		mo.loadCover();
-		if(stop) return;
-		
+		if (stop)
+			return;
+
 		deleteAll();
 		append(new ImageItem(null, (Image) mo.img, 0, null));
 		setTitle(mo.title);
-		
+
 		append(new StringItem("Title", mo.title));
 		append(new StringItem("ID", "#" + id));
 		append(new StringItem("Pages", "" + mo.pages));
@@ -111,12 +127,13 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 								if (n < 0)
 									n = 0;
 								if (n >= mo.pages)
-									n = mo.pages-1;
+									n = mo.pages - 1;
 								NJTAI.setScr(new View(mo, menu, n));
 							} catch (Exception e) {
 								NJTAI.setScr(menu);
 								NJTAI.pause(100);
-								NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
+								NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
+										AlertType.ERROR));
 							}
 						}
 					}

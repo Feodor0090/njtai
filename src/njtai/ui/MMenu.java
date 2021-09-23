@@ -1,5 +1,7 @@
 package njtai.ui;
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
@@ -40,7 +42,7 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == searchCmd) {
 				try {
-					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + ((TextBox)d).getString();
+					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + ((TextBox) d).getString();
 					String data = NJTAI.httpUtf(q);
 					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
 					NJTAI.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
@@ -55,12 +57,12 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == openCmd) {
 				try {
-					NJTAI.setScr(new MangaPage(Integer.parseInt(((TextBox)d).getString()), this));
+					NJTAI.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this));
 				} catch (Exception e) {
 					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Failed to go to page",
-							"Have you entered correct number?", null, AlertType.ERROR));
+					NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
+							AlertType.ERROR));
 				}
 			}
 			if (c == exitCmd) {
@@ -102,8 +104,20 @@ public final class MMenu extends List implements CommandListener {
 					NJTAI.setScr(a);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Throwable t) {
+			System.gc();
+			t.printStackTrace();
+			NJTAI.setScr(this);
+			NJTAI.pause(100);
+			String info;
+			if (t instanceof OutOfMemoryError) {
+				info = "Not enough memory!";
+			} else if (t instanceof IOException) {
+				info = "Failed to connect.";
+			} else {
+				info = t.toString();
+			}
+			NJTAI.setScr(new Alert("Error", info, null, AlertType.ERROR));
 		}
 	}
 

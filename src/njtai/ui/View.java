@@ -41,34 +41,42 @@ public class View extends Canvas implements Runnable {
 	}
 
 	public void run() {
-		synchronized (this) {
-			error = false;
-			zoom = 1;
-			x = getWidth() / 2;
-			y = getHeight() / 2;
-			origImg = null;
-			toDraw = null;
-			try {
-				origImg = emo.getPage(page);
-				repaint();
-				if (origImg == null) {
-					error = true;
-					return;
-				}
-				resize(1);
+		try {
+			synchronized (this) {
+				error = false;
 				zoom = 1;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			repaint();
-			if (preloader == null && NJTAI.prldImg && NJTAI.cache) {
-				preloader = new Thread() {
-					public void run() {
-						preload();
+				x = getWidth() / 2;
+				y = getHeight() / 2;
+				origImg = null;
+				toDraw = null;
+				try {
+					origImg = emo.getPage(page);
+					repaint();
+					if (origImg == null) {
+						error = true;
+						return;
 					}
-				};
-				preloader.start();
+					resize(1);
+					zoom = 1;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				repaint();
+				if (preloader == null && NJTAI.prldImg && NJTAI.cache) {
+					preloader = new Thread() {
+						public void run() {
+							preload();
+						}
+					};
+					preloader.start();
+				}
 			}
+		} catch (OutOfMemoryError e) {
+			Imgs.reset();
+			NJTAI.setScr(prev);
+			NJTAI.pause(100);
+			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing.", null, AlertType.ERROR));
+			return;
 		}
 	}
 
@@ -78,6 +86,12 @@ public class View extends Canvas implements Runnable {
 				emo.getPage(i + 1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				return;
+			} catch (OutOfMemoryError e) {
+				Imgs.reset();
+				NJTAI.setScr(prev);
+				NJTAI.pause(100);
+				NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing.", null, AlertType.ERROR));
 				return;
 			}
 		}
@@ -95,6 +109,18 @@ public class View extends Canvas implements Runnable {
 		h = h * size;
 		w = w * size;
 		toDraw = NJTAI.resize(origImg, w, h);
+	}
+
+	int lh = getHeight();
+	int lw = getWidth();
+
+	protected void sizeChanged(int nw, int nh) {
+		x -= lw / 2;
+		x += nw / 2;
+		y -= lh / 2;
+		y += nh / 2;
+		lh = nh;
+		lw = nw;
 	}
 
 	static String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", "close" };
@@ -153,16 +179,29 @@ public class View extends Canvas implements Runnable {
 			String zoomN = "x" + zoom;
 			String prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching pages " + emo.infoReady + "%")
 					: null;
+			String ram;
+			{
+				long used = Runtime.getRuntime().totalMemory();
+				used /=1024;
+				if(used<=4096) {
+					ram = used+"kb";
+				} else {
+					ram = (used/1024)+"mb";
+				}
+			}
 			g.setGrayScale(0);
 			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 			if (prefetch != null)
 				g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
+			g.fillRect(getWidth() - f.stringWidth(zoomN), getHeight() - f.getHeight(), f.stringWidth(zoomN), f.getHeight());
+			
 			g.setGrayScale(255);
 			g.drawString(pageNum, 0, 0, 0);
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
 			if (prefetch != null)
 				g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
+			g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM|Graphics.RIGHT);
 		} catch (Exception e) {
 			e.printStackTrace();
 

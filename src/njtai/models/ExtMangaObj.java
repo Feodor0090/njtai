@@ -96,12 +96,18 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	private synchronized void loadUrl(int pageN) {
 		if (imgs[pageN - 1] != null)
 			return;
-		String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
-		String span = StringUtil.range(html, "<section id=\"image-container", "</section", false);
-		html = null;
-		System.gc();
-		String url = StringUtil.range(span, "<img src=\"", "\"", false);
-		imgs[pageN - 1] = url;
+		try {
+			String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
+			String span = StringUtil.range(html, "<section id=\"image-container", "</section", false);
+			html = null;
+			System.gc();
+			String url = StringUtil.range(span, "<img src=\"", "\"", false);
+			imgs[pageN - 1] = url;
+		} catch (OutOfMemoryError e) {
+			imgs = null;
+			System.gc();
+			imgs = new String[pages];
+		}
 	}
 
 	public static String listTags(String[] list) {

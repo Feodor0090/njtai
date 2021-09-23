@@ -127,11 +127,14 @@ public class NJTAI extends MIDlet {
 	 * Gets home page.
 	 * 
 	 * @return Content of the page.
+	 * @throws IOException
 	 */
-	public synchronized static String getHP() {
+	public synchronized static String getHP() throws IOException {
 		if (hp == null) {
 			hp = httpUtf(proxy + baseUrl);
 		}
+		if (hp == null)
+			throw new IOException();
 		return hp;
 	}
 
@@ -233,7 +236,7 @@ public class NJTAI extends MIDlet {
 			return null;
 		}
 	}
-	
+
 	// tube42 lib
 	public static final int blend(final int c1, final int c2, final int value256) {
 
@@ -268,7 +271,7 @@ public class NJTAI extends MIDlet {
 
 		int[] dst = new int[size_w * size_h];
 
-			resize_rgb_filtered(src_i, dst, w, h, size_w, size_h);
+		resize_rgb_filtered(src_i, dst, w, h, size_w, size_h);
 
 		// not needed anymore
 		src_i = null;
