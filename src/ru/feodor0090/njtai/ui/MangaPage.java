@@ -15,12 +15,12 @@ import javax.microedition.lcdui.TextBox;
 
 import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.ExtendedMangaObject;
+import ru.feodor0090.njtai.models.ExtMangaObj;
 
 public class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
 
 	int num;
-	ExtendedMangaObject mo;
+	ExtMangaObj mo;
 	Thread loader;
 	private Displayable prev;
 	private Command exitCmd = new Command("Back", Command.BACK, 1);
@@ -54,7 +54,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 		}
 		status("Processing data (2/3)");
 		if(stop) return;
-		mo = new ExtendedMangaObject(num, html);
+		mo = new ExtMangaObj(num, html);
 		status("Downloading cover (3/3)");
 		if(stop) return;
 		mo.loadCover();

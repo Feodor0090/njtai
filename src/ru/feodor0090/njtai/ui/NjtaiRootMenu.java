@@ -11,7 +11,7 @@ import javax.microedition.lcdui.TextBox;
 import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
-import ru.feodor0090.njtai.models.MangaObjects;
+import ru.feodor0090.njtai.models.MangaObjs;
 
 public class NjtaiRootMenu extends List implements CommandListener {
 
@@ -70,12 +70,12 @@ public class NjtaiRootMenu extends List implements CommandListener {
 				case 2:
 					// popular
 					String section = StringUtil.range(NJTAI.getHomePage(), POPULAR_DIV, NEW_DIV, false);
-					NJTAI.setScr(new MangaList("Popular list", this, new MangaObjects(section)));
+					NJTAI.setScr(new MangaList("Popular list", this, new MangaObjs(section)));
 					return;
 				case 3:
 					// new
 					String section1 = StringUtil.range(NJTAI.getHomePage(), NEW_DIV, PAGIN_SEC, false);
-					NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjects(section1)));
+					NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjs(section1)));
 					return;
 				case 4:
 					// search
@@ -109,7 +109,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 						String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + tb.getString();
 						String data = Network.httpRequestUTF8(q);
 						String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
-						NJTAI.setScr(new MangaList("Search results", menu, new MangaObjects(section1)));
+						NJTAI.setScr(new MangaList("Search results", menu, new MangaObjs(section1)));
 					} catch (Exception e) {
 						e.printStackTrace();
 						NJTAI.setScr(menu);

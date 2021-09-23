@@ -10,14 +10,14 @@ import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 
 import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.MangaObject;
-import ru.feodor0090.njtai.models.MangaObjects;
+import ru.feodor0090.njtai.models.MangaObj;
+import ru.feodor0090.njtai.models.MangaObjs;
 
 public class MangaList extends Form implements Runnable, CommandListener {
 
 	public Thread loader;
 	protected Displayable prev;
-	protected MangaObjects content;
+	protected MangaObjs content;
 
 	private Command exitCmd = new Command("Back", Command.BACK, 1);
 	private String title;
@@ -26,7 +26,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		// ща напишем
 	}
 
-	public MangaList(String title, Displayable prev, MangaObjects items) {
+	public MangaList(String title, Displayable prev, MangaObjs items) {
 		super("Loading...");
 		this.title = title;
 		this.prev = prev;
@@ -39,7 +39,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 
 	public void run() {
 		while (content.hasMoreElements()) {
-			MangaObject o = (MangaObject) content.nextElement();
+			MangaObj o = (MangaObj) content.nextElement();
 			ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
 			OpenMangaButtonHandler h = new OpenMangaButtonHandler(o.num, this);
 			h.attach(img);

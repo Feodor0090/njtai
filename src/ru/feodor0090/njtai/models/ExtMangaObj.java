@@ -1,7 +1,5 @@
 package ru.feodor0090.njtai.models;
 
-import java.util.Vector;
-
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Image;
 
@@ -10,15 +8,15 @@ import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 
-public class ExtendedMangaObject extends MangaObject {
+public class ExtMangaObj extends MangaObj {
 
 	public String tags;
 	public int pages;
-	public String[] images;
+	public String[] imgs;
 
 	public int infoReady = -2;
 
-	public ExtendedMangaObject(int num, String html) {
+	public ExtMangaObj(int num, String html) {
 		this.num = num;
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
 		title = StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1>", false),
@@ -44,21 +42,21 @@ public class ExtendedMangaObject extends MangaObject {
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public synchronized Image getPage(int i, Canvas caller) throws InterruptedException {
-		if (images == null)
+		if (imgs == null)
 			loadUrls(caller);
-		return Images.get(images[i], caller.getHeight()*3);
+		return Images.get(imgs[i], caller.getHeight()*3);
 	}
 
 	private void loadUrls(Canvas cnv)  throws InterruptedException{
 		try {
-			images = new String[pages];
+			imgs = new String[pages];
 			for (int i = 1; i <= pages; i++) {
 				String html = Network.httpRequestUTF8(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + i);
 				String span = StringUtil.range(html, "<section id=\"image-container", "</section", false);
 				html = null;
 				System.gc();
 				String url = StringUtil.range(span, "<img src=\"", "\"", false);
-				images[i - 1] = url;
+				imgs[i - 1] = url;
 				infoReady = i * 100 / pages;
 				if (cnv != null)
 					cnv.repaint();

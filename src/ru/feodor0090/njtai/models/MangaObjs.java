@@ -6,31 +6,31 @@ import java.util.Vector;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 
-public class MangaObjects implements Enumeration {
+public class MangaObjs implements Enumeration {
 	/**
 	 * Parses this object from html fragment.
 	 * 
 	 * @param html
 	 */
-	public MangaObjects(String html) {
+	public MangaObjs(String html) {
 		String[] items = StringUtil.split(html, "<div class=\"gallery\"");
 		Vector v = new Vector();
 		for (int i = 0; i < items.length; i++) {
 			try {
 				if (!items[i].startsWith("<h"))
-					v.addElement(new MangaObject(items[i]));
+					v.addElement(new MangaObj(items[i]));
 			} catch (RuntimeException e) {
 				System.out.println("Failed on " + i);
 				e.printStackTrace();
 			}
 		}
-		list = new MangaObject[v.size()];
+		list = new MangaObj[v.size()];
 		v.copyInto(list);
 		v.removeAllElements();
 		v = null;
 	}
 
-	MangaObject[] list;
+	MangaObj[] list;
 
 	int next = 0;
 

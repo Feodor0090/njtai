@@ -10,14 +10,14 @@ import javax.microedition.lcdui.Image;
 
 import ru.feodor0090.njtai.Images;
 import ru.feodor0090.njtai.NJTAI;
-import ru.feodor0090.njtai.models.ExtendedMangaObject;
+import ru.feodor0090.njtai.models.ExtMangaObj;
 import tube42.lib.imagelib.ColorUtils;
 import tube42.lib.imagelib.ImageUtils;
 
 public class View extends Canvas implements Runnable {
 
 	Thread loader;
-	private ExtendedMangaObject emo;
+	private ExtMangaObj emo;
 	private Displayable prev;
 	/**
 	 * Number of page from zero.
@@ -33,7 +33,7 @@ public class View extends Canvas implements Runnable {
 
 	Thread preloader;
 
-	public View(ExtendedMangaObject emo, Displayable prev, int page) {
+	public View(ExtMangaObj emo, Displayable prev, int page) {
 		this.emo = emo;
 		this.prev = prev;
 		this.page = page;
