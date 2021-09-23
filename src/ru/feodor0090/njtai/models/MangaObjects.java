@@ -3,7 +3,7 @@ package ru.feodor0090.njtai.models;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import ru.feodor0090.njtai.NjtaiApp;
+import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 
 public class MangaObjects implements Enumeration {
@@ -39,7 +39,7 @@ public class MangaObjects implements Enumeration {
 	}
 
 	public Object nextElement() {
-		if(NjtaiApp.loadCovers) list[next].loadCover();
+		if(NJTAI.loadCovers) list[next].loadCover();
 		next++;
 		return list[next - 1];
 	}

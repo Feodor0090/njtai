@@ -8,16 +8,16 @@ import javax.microedition.rms.RecordStore;
 
 import ru.feodor0090.njtai.ui.NjtaiRootMenu;
 
-public class NjtaiApp extends MIDlet {
+public class NJTAI extends MIDlet {
 
-	public NjtaiApp() {
+	public NJTAI() {
 		inst = this;
 	}
 
 	public static String proxy = "http://nnproject.cc/proxy.php?";
 	public static String baseUrl = "nhentai.net";
 
-	private static NjtaiApp inst;
+	private static NJTAI inst;
 	private static Display disp;
 
 	private static String homePage = null;

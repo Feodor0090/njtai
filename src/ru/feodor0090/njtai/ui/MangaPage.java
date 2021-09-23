@@ -14,7 +14,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
 import ru.feodor0090.njtai.Network;
-import ru.feodor0090.njtai.NjtaiApp;
+import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.models.ExtendedMangaObject;
 
 public class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
@@ -47,7 +47,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 
 	public void run() {
 		status("Fetching page (1/3)");
-		String html = Network.httpRequestUTF8(NjtaiApp.proxy + NjtaiApp.baseUrl + "/g/" + num);
+		String html = Network.httpRequestUTF8(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num);
 		if(html==null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;
@@ -82,14 +82,14 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	public void commandAction(Command arg0, Displayable arg1) {
 		if (arg0 == exitCmd) {
 			stop = true;
-			NjtaiApp.setScreen(prev);
+			NJTAI.setScreen(prev);
 		}
 	}
 
 	public void commandAction(Command c, Item i) {
 		if (c == openCmd) {
 			if (i == firstPage) {
-				NjtaiApp.setScreen(new View(mo, this, 0));
+				NJTAI.setScreen(new View(mo, this, 0));
 			} else if (i == customPage) {
 				final TextBox tb = new TextBox("Enter page number:", "", 7, 2);
 				tb.addCommand(gotoCmd);
@@ -99,7 +99,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 
 					public void commandAction(Command c, Displayable arg1) {
 						if (c == exitCmd) {
-							NjtaiApp.setScreen(menu);
+							NJTAI.setScreen(menu);
 						} else if (c == gotoCmd) {
 							try {
 								int n = Integer.parseInt(tb.getString());
@@ -107,16 +107,16 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 									n = 0;
 								if (n >= mo.pages)
 									n = mo.pages-1;
-								NjtaiApp.setScreen(new View(mo, menu, n));
+								NJTAI.setScreen(new View(mo, menu, n));
 							} catch (Exception e) {
-								NjtaiApp.setScreen(menu);
-								NjtaiApp.pause(100);
-								NjtaiApp.setScreen(new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
+								NJTAI.setScreen(menu);
+								NJTAI.pause(100);
+								NJTAI.setScreen(new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
 							}
 						}
 					}
 				});
-				NjtaiApp.setScreen(tb);
+				NJTAI.setScreen(tb);
 			}
 		}
 	}

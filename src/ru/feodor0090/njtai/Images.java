@@ -24,16 +24,16 @@ public class Images {
 			url = url.substring(8);
 		if (url.startsWith("http://"))
 			url = url.substring(7);
-		url = NjtaiApp.proxy + url;
+		url = NJTAI.proxy + url;
 		System.out.println("Loading " + url);
 
 		Image i = Network.loadImage(url);
 		if (mini) {
-			int h = NjtaiApp.getHeight() * 2 / 3;
+			int h = NJTAI.getHeight() * 2 / 3;
 			int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 			i = ImageUtils.resize(i, w, h, true, false);
 		} else {
-			if (NjtaiApp.enableCache)
+			if (NJTAI.enableCache)
 				cache.put(url1, i);
 		}
 		return i;
@@ -50,14 +50,14 @@ public class Images {
 			url = url.substring(8);
 		if (url.startsWith("http://"))
 			url = url.substring(7);
-		url = NjtaiApp.proxy + url;
+		url = NJTAI.proxy + url;
 		System.out.println("Loading " + url);
 
 		Image i = Network.loadImage(url);
 		int h = targetH;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 		i = ImageUtils.resize(i, w, h, true, false);
-		if (NjtaiApp.enableCache)
+		if (NJTAI.enableCache)
 			cache.put(url1, i);
 		return i;
 	}

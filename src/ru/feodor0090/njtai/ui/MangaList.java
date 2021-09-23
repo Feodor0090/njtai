@@ -9,7 +9,7 @@ import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 
-import ru.feodor0090.njtai.NjtaiApp;
+import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.models.MangaObject;
 import ru.feodor0090.njtai.models.MangaObjects;
 
@@ -53,7 +53,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 
 	public void commandAction(Command arg0, Displayable arg1) {
 		if (arg0 == exitCmd)
-			NjtaiApp.setScreen(prev);
+			NJTAI.setScreen(prev);
 	}
 
 	public static class OpenMangaButtonHandler implements ItemCommandListener {
@@ -65,7 +65,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 
 		public OpenMangaButtonHandler(int num, Displayable prev) {
 			this.num = num;
-			if (NjtaiApp.keepLists)
+			if (NJTAI.keepLists)
 				this.prev = prev;
 		}
 
@@ -76,7 +76,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		}
 
 		public void commandAction(Command arg0, Item arg1) {
-			NjtaiApp.setScreen(new MangaPage(num, NjtaiApp.keepLists ? prev : new NjtaiRootMenu()));
+			NJTAI.setScreen(new MangaPage(num, NJTAI.keepLists ? prev : new NjtaiRootMenu()));
 		}
 	}
 

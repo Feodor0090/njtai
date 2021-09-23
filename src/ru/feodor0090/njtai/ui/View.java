@@ -9,7 +9,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import ru.feodor0090.njtai.Images;
-import ru.feodor0090.njtai.NjtaiApp;
+import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.models.ExtendedMangaObject;
 import tube42.lib.imagelib.ColorUtils;
 import tube42.lib.imagelib.ImageUtils;
@@ -59,7 +59,7 @@ public class View extends Canvas implements Runnable {
 				e.printStackTrace();
 			}
 			repaint();
-			if (preloader == null && NjtaiApp.allowPreload && NjtaiApp.enableCache) {
+			if (preloader == null && NJTAI.allowPreload && NJTAI.enableCache) {
 				preloader = new Thread() {
 					public void run() {
 						preload();
@@ -154,7 +154,7 @@ public class View extends Canvas implements Runnable {
 			e.printStackTrace();
 
 			try {
-				NjtaiApp.setScreen(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+				NJTAI.setScreen(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -201,7 +201,7 @@ public class View extends Canvas implements Runnable {
 				loader.interrupt();
 			if (preloader != null && preloader.isAlive())
 				preloader.interrupt();
-			NjtaiApp.setScreen(prev);
+			NJTAI.setScreen(prev);
 			return;
 		}
 		if (toDraw == null) {
