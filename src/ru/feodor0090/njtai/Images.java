@@ -33,7 +33,7 @@ public class Images {
 			int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 			i = ImageUtils.resize(i, w, h, true, false);
 		} else {
-			if (NJTAI.enableCache)
+			if (NJTAI.cache)
 				cache.put(url1, i);
 		}
 		return i;
@@ -57,7 +57,7 @@ public class Images {
 		int h = targetH;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 		i = ImageUtils.resize(i, w, h, true, false);
-		if (NJTAI.enableCache)
+		if (NJTAI.cache)
 			cache.put(url1, i);
 		return i;
 	}

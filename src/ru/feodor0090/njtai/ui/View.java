@@ -59,7 +59,7 @@ public class View extends Canvas implements Runnable {
 				e.printStackTrace();
 			}
 			repaint();
-			if (preloader == null && NJTAI.allowPreload && NJTAI.enableCache) {
+			if (preloader == null && NJTAI.prldImg && NJTAI.cache) {
 				preloader = new Thread() {
 					public void run() {
 						preload();
@@ -154,7 +154,7 @@ public class View extends Canvas implements Runnable {
 			e.printStackTrace();
 
 			try {
-				NJTAI.setScreen(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -201,7 +201,7 @@ public class View extends Canvas implements Runnable {
 				loader.interrupt();
 			if (preloader != null && preloader.isAlive())
 				preloader.interrupt();
-			NJTAI.setScreen(prev);
+			NJTAI.setScr(prev);
 			return;
 		}
 		if (toDraw == null) {

@@ -46,12 +46,12 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		setCommandListener(this);
 		addCommand(bkC);
 		
-		cache.setSelectedIndex(NJTAI.enableCache?1:0, true);
-		preload.setSelectedIndex(NJTAI.allowPreload?1:0, true);
+		cache.setSelectedIndex(NJTAI.cache?1:0, true);
+		preload.setSelectedIndex(NJTAI.prldImg?1:0, true);
 		files.setSelectedIndex(NJTAI.useFiles?1:0, true);
 		lists.setSelectedIndex(NJTAI.keepLists?1:0, true);
 		covers.setSelectedIndex(NJTAI.loadCovers?1:0, true);
-		urls.setSelectedIndex(NJTAI.prefetchUrls?1:0, true);
+		urls.setSelectedIndex(NJTAI.prldUrl?1:0, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
 		
@@ -76,19 +76,19 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private final void cmd(Command c) {
 		if(c==bkC) {
-			NJTAI.enableCache = cache.getSelectedIndex()==1;
-			NJTAI.allowPreload = preload.getSelectedIndex()==1;
+			NJTAI.cache = cache.getSelectedIndex()==1;
+			NJTAI.prldImg = preload.getSelectedIndex()==1;
 			NJTAI.useFiles = files.getSelectedIndex()==1;
 			NJTAI.keepLists = lists.getSelectedIndex()==1;
 			NJTAI.loadCovers = covers.getSelectedIndex()==1;
-			NJTAI.prefetchUrls = urls.getSelectedIndex()==1;
+			NJTAI.prldUrl = urls.getSelectedIndex()==1;
 			NJTAI.proxy = proxy.getString();
-			NJTAI.setScreen(menu);
+			NJTAI.setScr(menu);
 			if(!NJTAI.savePrefs()) {
 				Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 						AlertType.ERROR);
 				a.setTimeout(Alert.FOREVER);
-				NJTAI.setScreen(a);
+				NJTAI.setScr(a);
 			}
 		} else if(c==prC) {
 			Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and blocks. "
@@ -96,7 +96,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 					+ "request it via CURL and return content.", null,
 					AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
-			NJTAI.setScreen(a);
+			NJTAI.setScr(a);
 		}
 	}
  

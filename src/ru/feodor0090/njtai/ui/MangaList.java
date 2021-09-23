@@ -53,7 +53,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 
 	public void commandAction(Command arg0, Displayable arg1) {
 		if (arg0 == exitCmd)
-			NJTAI.setScreen(prev);
+			NJTAI.setScr(prev);
 	}
 
 	public static class OpenMangaButtonHandler implements ItemCommandListener {
@@ -76,7 +76,7 @@ public class MangaList extends Form implements Runnable, CommandListener {
 		}
 
 		public void commandAction(Command arg0, Item arg1) {
-			NJTAI.setScreen(new MangaPage(num, NJTAI.keepLists ? prev : new NjtaiRootMenu()));
+			NJTAI.setScr(new MangaPage(num, NJTAI.keepLists ? prev : new NjtaiRootMenu()));
 		}
 	}
 

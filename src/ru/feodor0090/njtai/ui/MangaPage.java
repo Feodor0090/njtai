@@ -82,14 +82,14 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 	public void commandAction(Command arg0, Displayable arg1) {
 		if (arg0 == exitCmd) {
 			stop = true;
-			NJTAI.setScreen(prev);
+			NJTAI.setScr(prev);
 		}
 	}
 
 	public void commandAction(Command c, Item i) {
 		if (c == openCmd) {
 			if (i == firstPage) {
-				NJTAI.setScreen(new View(mo, this, 0));
+				NJTAI.setScr(new View(mo, this, 0));
 			} else if (i == customPage) {
 				final TextBox tb = new TextBox("Enter page number:", "", 7, 2);
 				tb.addCommand(gotoCmd);
@@ -99,7 +99,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 
 					public void commandAction(Command c, Displayable arg1) {
 						if (c == exitCmd) {
-							NJTAI.setScreen(menu);
+							NJTAI.setScr(menu);
 						} else if (c == gotoCmd) {
 							try {
 								int n = Integer.parseInt(tb.getString());
@@ -107,16 +107,16 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 									n = 0;
 								if (n >= mo.pages)
 									n = mo.pages-1;
-								NJTAI.setScreen(new View(mo, menu, n));
+								NJTAI.setScr(new View(mo, menu, n));
 							} catch (Exception e) {
-								NJTAI.setScreen(menu);
+								NJTAI.setScr(menu);
 								NJTAI.pause(100);
-								NJTAI.setScreen(new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
+								NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
 							}
 						}
 					}
 				});
-				NJTAI.setScreen(tb);
+				NJTAI.setScr(tb);
 			}
 		}
 	}

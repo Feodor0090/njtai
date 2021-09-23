@@ -48,34 +48,34 @@ public class NjtaiRootMenu extends List implements CommandListener {
 
 						public void commandAction(Command c, Displayable arg1) {
 							if (c == exitCmd) {
-								NJTAI.setScreen(menu);
+								NJTAI.setScr(menu);
 							} else if (c == openCmd) {
 								try {
-									NJTAI.setScreen(new MangaPage(Integer.parseInt(tb.getString()), menu));
+									NJTAI.setScr(new MangaPage(Integer.parseInt(tb.getString()), menu));
 								} catch (Exception e) {
-									NJTAI.setScreen(menu);
+									NJTAI.setScr(menu);
 									NJTAI.pause(100);
-									NJTAI.setScreen(new Alert("Failed to go to page",
+									NJTAI.setScr(new Alert("Failed to go to page",
 											"Have you entered correct number?", null, AlertType.ERROR));
 								}
 							}
 						}
 					});
-					NJTAI.setScreen(tb);
+					NJTAI.setScr(tb);
 					return;
 				case 1:
 					// sets
-					NJTAI.setScreen(new Prefs(this));
+					NJTAI.setScr(new Prefs(this));
 					return;
 				case 2:
 					// popular
 					String section = StringUtil.range(NJTAI.getHomePage(), POPULAR_DIV, NEW_DIV, false);
-					NJTAI.setScreen(new MangaList("Popular list", this, new MangaObjects(section)));
+					NJTAI.setScr(new MangaList("Popular list", this, new MangaObjects(section)));
 					return;
 				case 3:
 					// new
 					String section1 = StringUtil.range(NJTAI.getHomePage(), NEW_DIV, PAGIN_SEC, false);
-					NJTAI.setScreen(new MangaList("Recently uploaded", this, new MangaObjects(section1)));
+					NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjects(section1)));
 					return;
 				case 4:
 					// search
@@ -86,7 +86,7 @@ public class NjtaiRootMenu extends List implements CommandListener {
 							+ "\n\nControls: OK to zoom in/out, D-PAD to move page when zoomed and switch them when not, RSK to return.",
 							null, AlertType.INFO);
 					a.setTimeout(Alert.FOREVER);
-					NJTAI.setScreen(a);
+					NJTAI.setScr(a);
 				}
 			}
 		} catch (Exception e) {
@@ -103,24 +103,24 @@ public class NjtaiRootMenu extends List implements CommandListener {
 
 			public void commandAction(Command c, Displayable arg1) {
 				if (c == exitCmd) {
-					NJTAI.setScreen(menu);
+					NJTAI.setScr(menu);
 				} else if (c == openCmd) {
 					try {
 						String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + tb.getString();
 						String data = Network.httpRequestUTF8(q);
 						String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
-						NJTAI.setScreen(new MangaList("Search results", menu, new MangaObjects(section1)));
+						NJTAI.setScr(new MangaList("Search results", menu, new MangaObjects(section1)));
 					} catch (Exception e) {
 						e.printStackTrace();
-						NJTAI.setScreen(menu);
+						NJTAI.setScr(menu);
 						NJTAI.pause(100);
-						NJTAI.setScreen(new Alert("Failed to open", "Have you entered something URL-breaking?", null,
+						NJTAI.setScr(new Alert("Failed to open", "Have you entered something URL-breaking?", null,
 								AlertType.ERROR));
 					}
 				}
 			}
 		});
-		NJTAI.setScreen(tb);
+		NJTAI.setScr(tb);
 	}
 
 }
