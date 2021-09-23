@@ -13,7 +13,6 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
-import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.models.ExtMangaObj;
 
@@ -47,7 +46,7 @@ public class MangaPage extends Form implements Runnable, CommandListener, ItemCo
 
 	public void run() {
 		status("Fetching page (1/3)");
-		String html = Network.httpRequestUTF8(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num);
+		String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num);
 		if(html==null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;

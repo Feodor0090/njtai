@@ -4,7 +4,6 @@ import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Image;
 
 import ru.feodor0090.njtai.Images;
-import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 
@@ -51,7 +50,7 @@ public class ExtMangaObj extends MangaObj {
 		try {
 			imgs = new String[pages];
 			for (int i = 1; i <= pages; i++) {
-				String html = Network.httpRequestUTF8(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + i);
+				String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + i);
 				String span = StringUtil.range(html, "<section id=\"image-container", "</section", false);
 				html = null;
 				System.gc();

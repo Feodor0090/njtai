@@ -8,7 +8,6 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextBox;
 
-import ru.feodor0090.njtai.Network;
 import ru.feodor0090.njtai.NJTAI;
 import ru.feodor0090.njtai.StringUtil;
 import ru.feodor0090.njtai.models.MangaObjs;
@@ -69,12 +68,12 @@ public final class MMenu extends List implements CommandListener {
 					return;
 				case 2:
 					// popular
-					String section = StringUtil.range(NJTAI.getHomePage(), POPULAR_DIV, NEW_DIV, false);
+					String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
 					NJTAI.setScr(new MangaList("Popular list", this, new MangaObjs(section)));
 					return;
 				case 3:
 					// new
-					String section1 = StringUtil.range(NJTAI.getHomePage(), NEW_DIV, PAGIN_SEC, false);
+					String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
 					NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjs(section1)));
 					return;
 				case 4:
@@ -107,7 +106,7 @@ public final class MMenu extends List implements CommandListener {
 				} else if (c == openCmd) {
 					try {
 						String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + tb.getString();
-						String data = Network.httpRequestUTF8(q);
+						String data = NJTAI.httpUtf(q);
 						String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
 						NJTAI.setScr(new MangaList("Search results", menu, new MangaObjs(section1)));
 					} catch (Exception e) {
