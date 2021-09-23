@@ -16,6 +16,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	private Thread urlFetcher = null;
 
 	public int infoReady = -2;
+	private boolean prefetched = false;
 
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
@@ -26,7 +27,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		System.out.println(pagesStr);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
-		
+
 		imgs = new String[pages];
 
 		// img and title
@@ -56,10 +57,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 		if (imgs[i] == null) {
 			loadUrl(i + 1);
-			if (NJTAI.prldUrl) {
-				urlFetcher = new Thread(this);
-				urlFetcher.setPriority(10);
-				urlFetcher.start();
+			if (NJTAI.prldUrl && !(NJTAI.prldImg && NJTAI.cache)) {
+				if (!prefetched) {
+					prefetched = true;
+					urlFetcher = new Thread(this);
+					urlFetcher.setPriority(10);
+					urlFetcher.start();
+				}
+			} else {
+				infoReady = 100;
 			}
 		}
 		return Imgs.get(imgs[i], NJTAI.getScr().getHeight() * 3, true);

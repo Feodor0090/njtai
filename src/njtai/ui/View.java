@@ -84,7 +84,7 @@ public class View extends Canvas implements Runnable {
 	void preload() {
 		for (int i = 0; i < emo.pages; i++) {
 			try {
-				emo.getPage(i + 1);
+				emo.getPage(i);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				return;
