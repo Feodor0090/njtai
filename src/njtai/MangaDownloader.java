@@ -67,6 +67,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		}
 
+		boolean filesExisted = false;
+		boolean ioError = false;
+
 		for (int i = 0; i < o.pages; i++) {
 			String url = o.loadUrl(i + 1);
 
@@ -79,10 +82,11 @@ public class MangaDownloader extends Thread implements CommandListener {
 				fc = (FileConnection) Connector.open(folder + o.num + "_" + (i + 1) + ".jpg");
 				if (fc.exists()) {
 					fc.close();
-					return;
+					filesExisted = true;
+					continue;
 				}
 				fc.create();
-				
+
 				if (url.startsWith("https://"))
 					url = url.substring(8);
 				if (url.startsWith("http://"))
@@ -109,7 +113,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-
+				ioError = true;
 				try {
 					if (ou != null)
 						ou.close();
@@ -134,7 +138,15 @@ public class MangaDownloader extends Thread implements CommandListener {
 		NJTAI.setScr(prev);
 		NJTAI.pause(100);
 		try {
-			NJTAI.setScr(new Alert("NJTAI", "All pages were downloaded.", null, AlertType.CONFIRMATION));
+			if (ioError) {
+				NJTAI.setScr(new Alert("NJTAI",
+						"IO error has occurped. Check, are all the files valid.", null,
+						AlertType.ERROR));
+			} else if(filesExisted) {
+				NJTAI.setScr(new Alert("NJTAI", "Some files existed - they were not overwritten.", null,
+						AlertType.WARNING));
+			}else {
+				NJTAI.setScr(new Alert("NJTAI", "All pages were downloaded.", null, AlertType.CONFIRMATION));}
 		} catch (Exception e) {
 		}
 	}
