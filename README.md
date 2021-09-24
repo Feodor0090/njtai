@@ -24,7 +24,7 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 - JSR-75 to download titles
 - Nokia/SE keyboard layout (it's different from very old motorolla/siemens devices)
 
-### Setting your own proxy up
+## Setting your own proxy up
 You need an http server. Create a script that will take URL from request params, query it via curl or something else and return it's content.
 
 Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`):
@@ -43,6 +43,6 @@ echo $res;
 
 Make sure it's accessible via pure http without cloudflare/etc. checks!
 
-### Building
+## Building
 Use Eclipse IDE with MTJ and S40v5 sdk or NetBeans with j2me sdk 3.0. 
 To build from command line, you need to compile all files with 1.3 java compability, preverify them using `preverify.exe` from SDK and pack in JAR.
