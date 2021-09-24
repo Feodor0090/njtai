@@ -42,7 +42,104 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == searchCmd) {
 				try {
-					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + ((TextBox) d).getString();
+					String st = ((TextBox) d).getString();
+					st = st.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' ');
+					StringBuffer sb = new StringBuffer();
+					for (int i = 0; i < st.length(); i++) {
+						switch (st.charAt(i)) {
+						case '!':
+							sb.append("%21");
+							break;
+						case '#':
+							sb.append("%23");
+							break;
+						case '$':
+							sb.append("%24");
+							break;
+						case '%':
+							sb.append("%25");
+							break;
+						case '&':
+							sb.append("%26");
+							break;
+						case '\'':
+							sb.append("%27");
+							break;
+						case '(':
+							sb.append("%28");
+							break;
+						case ')':
+							sb.append("%29");
+							break;
+						case '*':
+							sb.append("%2A");
+							break;
+						case '+':
+							sb.append("%2B");
+							break;
+						case ',':
+							sb.append("%2C");
+							break;
+						case '/':
+							sb.append("%2F");
+							break;
+						case ':':
+							sb.append("%3A");
+							break;
+						case ';':
+							sb.append("%3B");
+							break;
+						case '=':
+							sb.append("%3D");
+							break;
+						case '?':
+							sb.append("%3F");
+							break;
+						case '@':
+							sb.append("%40");
+							break;
+						case '[':
+							sb.append("%5B");
+							break;
+						case ']':
+							sb.append("%5D");
+							break;
+						case '{':
+							sb.append("%7B");
+							break;
+						case '|':
+							sb.append("%7C");
+							break;
+						case '}':
+							sb.append("%7D");
+							break;
+						case '\\':
+							sb.append("%5C");
+							break;
+						case '~':
+							sb.append("%7E");
+							break;
+						case '-':
+							sb.append("%2D");
+							break;
+						case '_':
+							sb.append("%5F");
+							break;
+						case '"':
+							sb.append("%22");
+							break;
+						case '.':
+							sb.append("%2E");
+							break;
+						case ' ':
+							sb.append("%20");
+							break;
+						default:
+							sb.append(st.charAt(i));
+							break;
+						}
+					}
+					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + sb.toString();
 					String data = NJTAI.httpUtf(q);
 					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
 					NJTAI.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
@@ -117,9 +214,8 @@ public final class MMenu extends List implements CommandListener {
 			search();
 			return;
 		case 5:
-			Alert a = new Alert("Controls",
-					"OK - change zoom; D-PAD - move page / turn page; RSK - return.",
-					null, AlertType.INFO);
+			Alert a = new Alert("Controls", "OK - change zoom; D-PAD - move page / turn page; RSK - return.", null,
+					AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
 			return;
