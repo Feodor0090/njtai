@@ -122,10 +122,12 @@ public final class MMenu extends List implements CommandListener {
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
+			return;
 		case 6:
 			Alert a1 = new Alert("About", "NJTAI v" + NJTAI.ver() + "\n Developer: Feodor0090", null, AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a1);
+			return;
 		}
 	}
 

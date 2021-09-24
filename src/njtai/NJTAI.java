@@ -196,7 +196,6 @@ public class NJTAI extends MIDlet {
 			o = new ByteArrayOutputStream();
 			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
-			// hc.setRequestProperty("User-Agent", userAgent(userAgent));
 
 			i = hc.openInputStream();
 			byte[] b = new byte[16384];

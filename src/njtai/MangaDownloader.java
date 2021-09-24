@@ -50,52 +50,80 @@ public class MangaDownloader extends Thread implements CommandListener {
 		g = new Gauge(null, false, 100, 0);
 		a.setIndicator(g);
 		a.setString("Downloading");
+
+		FileConnection fc = null;
+
+		String folder = dir + o.num + "/";
+		// folder
+		try {
+			fc = (FileConnection) Connector.open(folder, 3);
+			if (!fc.exists())
+				fc.mkdir();
+		} catch (Exception e) {
+		} finally {
+			try {
+				fc.close();
+			} catch (IOException e) {
+			}
+		}
+
 		for (int i = 0; i < o.pages; i++) {
 			String url = o.loadUrl(i + 1);
-			FileConnection fc;
-			DataOutputStream ou = null;
-			HttpConnection hc = null;
-			InputStream in = null;
-			try {
-				fc = (FileConnection) Connector.open(dir + o.num + "/", 3);
-				if (!fc.exists())
-					fc.mkdir();
-				fc.close();
-				fc = (FileConnection) Connector.open(dir + o.num + "/" + o.num + "_" + (i + 1) + ".jpg", 3);
-				if (fc.exists()) {
 
+			DataOutputStream ou = null;
+			HttpConnection httpCon = null;
+			InputStream ins = null;
+
+			try {
+
+				fc = (FileConnection) Connector.open(folder + o.num + "_" + (i + 1) + ".jpg");
+				if (fc.exists()) {
+					fc.close();
+					return;
 				}
 				fc.create();
-				hc = (HttpConnection) Connector.open(url);
-				hc.setRequestMethod("GET");
+				
+				if (url.startsWith("https://"))
+					url = url.substring(8);
+				if (url.startsWith("http://"))
+					url = url.substring(7);
+				url = NJTAI.proxy + url;
+				httpCon = (HttpConnection) Connector.open(url);
+				httpCon.setRequestMethod("GET");
 
-				in = hc.openInputStream();
-				byte[] b = new byte[16384];
+				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
+				byte[] buf = new byte[1024 * 64];
 
-				int c;
-				while ((c = in.read(b)) != -1) {
-					// var10 += (long) var7;
-					ou.write(b, 0, c);
+				int len = 1;
+				if (ins == null) {
+					throw new RuntimeException("Input stream is lost");
+				}
+				while ((len = ins.read(buf)) != -1) {
+					ou.write(buf, 0, len);
 					ou.flush();
 				}
-			} catch (NullPointerException e) {
-			} catch (IOException e) {
-			} finally {
-				try {
-					if (in != null)
-						in.close();
-				} catch (IOException e) {
-				}
-				try {
-					if (hc != null)
-						hc.close();
-				} catch (IOException e) {
-				}
+				ou.close();
+				httpCon.close();
+				fc.close();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+
 				try {
 					if (ou != null)
 						ou.close();
-				} catch (IOException e) {
+				} catch (IOException e1) {
+				}
+				try {
+					if (fc != null)
+						fc.close();
+				} catch (IOException e1) {
+				}
+				try {
+					if (httpCon != null)
+						httpCon.close();
+				} catch (IOException e1) {
 				}
 			}
 			g.setValue(i * 100 / o.pages);
@@ -156,6 +184,16 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 			try {
 				String dir = "file:///C:/Data/Images/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				fc.close();
+			}
+			try {
+				String dir = "file:///root/";
 				fc = (FileConnection) Connector.open(dir, Connector.READ);
 				if (!fc.exists())
 					throw new RuntimeException();

@@ -76,33 +76,40 @@ public class View extends Canvas implements Runnable {
 			Imgs.reset();
 			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing.", null, AlertType.ERROR));
+			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
+					AlertType.ERROR));
 			return;
 		}
 	}
+
+	int preloadProgress = 100;
 
 	void preload() {
 		for (int i = 0; i < emo.pages; i++) {
 			try {
 				emo.getPage(i);
+				preloadProgress = i * 100 / emo.pages;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				preloadProgress = 100;
 				return;
 			} catch (OutOfMemoryError e) {
 				Imgs.reset();
 				NJTAI.setScr(prev);
 				NJTAI.pause(100);
-				NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing.", null, AlertType.ERROR));
+				NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable preloading.",
+						null, AlertType.ERROR));
 				return;
 			}
 		}
+		preloadProgress = 100;
 	}
 
 	private void resize(int size) {
 		toDraw = null;
 		System.gc();
 		repaint();
-		
+
 		int h = getHeight();
 		int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
 
@@ -169,23 +176,27 @@ public class View extends Canvas implements Runnable {
 	private void paintHUD(Graphics g, Font f) {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = "x" + zoom;
-		String prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching pages " + emo.infoReady + "%")
-				: null;
+		String prefetch;
+		if (preloadProgress == 100) {
+			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
+		} else {
+			prefetch = "preloading "+preloadProgress+"%";
+		}
 		String ram;
 		{
 			long used = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 			used /= 1024;
 			if (used <= 4096) {
-				ram = used + "kb";
+				ram = used + "K";
 			} else {
-				ram = (used / 1024) + "mb";
+				ram = (used / 1024) + "M";
 			}
 		}
 		g.setGrayScale(0);
 		g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 		g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 		if (prefetch != null)
-			g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(pageNum), f.getHeight());
+			g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(prefetch), f.getHeight());
 		g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(), f.stringWidth(ram), f.getHeight());
 
 		g.setGrayScale(255);
@@ -232,8 +243,7 @@ public class View extends Canvas implements Runnable {
 			g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
 			// captions
 			g.setGrayScale(255);
-			g.drawString(touchCaps[5], getWidth() * 5 / 6, getHeight() - 25 - fh / 2,
-					Graphics.TOP | Graphics.HCENTER);
+			g.drawString(touchCaps[5], getWidth() * 5 / 6, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 
 		}
 	}

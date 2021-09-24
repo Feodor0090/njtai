@@ -51,7 +51,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @return Loaded page image.
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
-	public synchronized Image getPage(int i) throws InterruptedException {
+	public Image getPage(int i) throws InterruptedException {
 		if (imgs == null) {
 			imgs = new String[pages];
 		}
@@ -61,8 +61,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				if (!prefetched) {
 					prefetched = true;
 					urlFetcher = new Thread(this);
-					urlFetcher.setPriority(10);
+					urlFetcher.setPriority(Thread.MAX_PRIORITY);
 					urlFetcher.start();
+					Thread.sleep(500);
 				}
 			} else {
 				infoReady = 100;
