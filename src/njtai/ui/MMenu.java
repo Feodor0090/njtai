@@ -17,16 +17,21 @@ import njtai.models.MangaObjs;
 public final class MMenu extends List implements CommandListener {
 
 	public MMenu() {
-		super("NJTAI", List.IMPLICIT, new String[] { "Enter number", "Popular list", "Recently uploaded",
-				"Search by title", "Settings", "Keyboard controls help", "About" }, null);
+		super("NJTAI", List.IMPLICIT,
+				NJTAI.rus
+						? (new String[] { "Ввести номер", "Популярные", "Новые", "Поиск", "Настройки",
+								"Управление клавиатурой", "О программе" })
+						: (new String[] { "Enter ID", "Popular", "Recently added", "Search", "Settings",
+								"Keyboard controls", "About" }),
+				null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
 
-	private Command exitCmd = new Command("Exit", Command.EXIT, 2);
-	private Command backCmd = new Command("Back", Command.BACK, 2);
-	private Command openCmd = new Command("Go", Command.OK, 1);
-	private Command searchCmd = new Command("Search", Command.OK, 1);
+	private Command exitCmd = new Command(NJTAI.rus?"Выход":"Exit", Command.EXIT, 2);
+	private Command backCmd = new Command(NJTAI.rus?"Назад":"Back", Command.BACK, 2);
+	private Command openCmd = new Command(NJTAI.rus?"Открыть":"Go", Command.OK, 1);
+	private Command searchCmd = new Command(NJTAI.rus?"Поиск":"Search", Command.OK, 1);
 
 	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
 	static final String NEW_DIV = "<div class=\"container index-container\">";
@@ -189,7 +194,7 @@ public final class MMenu extends List implements CommandListener {
 		switch (getSelectedIndex()) {
 		case 0:
 			// number;
-			final TextBox tb = new TextBox("Enter ID:", "", 7, 2);
+			final TextBox tb = new TextBox(NJTAI.rus?"Введите номер:":"Enter ID:", "", 7, 2);
 			tb.addCommand(openCmd);
 			tb.addCommand(backCmd);
 			tb.setCommandListener(this);
@@ -202,25 +207,25 @@ public final class MMenu extends List implements CommandListener {
 		case 1:
 			// popular
 			String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
-			NJTAI.setScr(new MangaList("Popular list", this, new MangaObjs(section)));
+			NJTAI.setScr(new MangaList(NJTAI.rus?"Популярные":"Popular", this, new MangaObjs(section)));
 			return;
 		case 2:
 			// new
 			String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
-			NJTAI.setScr(new MangaList("Recently uploaded", this, new MangaObjs(section1)));
+			NJTAI.setScr(new MangaList(NJTAI.rus?"Новые":"Recently added", this, new MangaObjs(section1)));
 			return;
 		case 3:
 			// search
 			search();
 			return;
 		case 5:
-			Alert a = new Alert("Controls", "OK - change zoom; D-PAD - move page / turn page; RSK - return.", null,
+			Alert a = new Alert(NJTAI.rus?"Управление":"Controls", NJTAI.rus?"OK - масштабирование;\nD-PAD - перемещение/переключение страницы;\nПСК - назад.":"OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.", null,
 					AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
 			return;
 		case 6:
-			Alert a1 = new Alert("About", "NJTAI v" + NJTAI.ver() + "\n Developer: Feodor0090", null, AlertType.INFO);
+			Alert a1 = new Alert(NJTAI.rus?"О программе":"About", "NJTAI v" + NJTAI.ver() + "\n Developer: Feodor0090", null, AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a1);
 			return;
@@ -228,7 +233,7 @@ public final class MMenu extends List implements CommandListener {
 	}
 
 	private void search() {
-		final TextBox tb = new TextBox("Enter query:", "", 80, 0);
+		final TextBox tb = new TextBox(NJTAI.rus?"Введите запрос:":"Enter query:", "", 80, 0);
 		tb.addCommand(searchCmd);
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);

@@ -19,13 +19,13 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	private Displayable prev;
 	private MangaObjs objs;
 
-	private Command back = new Command("Back", Command.BACK, 1);
+	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
 	private String title;
 
 	static boolean wasOom = false;
 
 	public MangaList(String title, Displayable prev, MangaObjs items) {
-		super("Loading...");
+		super(NJTAI.rus ? "Загрузка..." : "Loading...");
 		wasOom = false;
 		this.title = title;
 		this.prev = prev;
@@ -56,7 +56,9 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			System.gc();
 			NJTAI.keepLists = false;
 			NJTAI.savePrefs();
-			append(new StringItem("Error", "Not enough memory to show full list"));
+			append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
+					NJTAI.rus ? "Не хватило памяти для отображения полного списка"
+							: "Not enough memory to show full list"));
 		}
 	}
 
@@ -68,7 +70,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	public static class OMBHdlr implements ItemCommandListener {
 		private int n;
 
-		public static Command o = new Command("Open", 8, 1);
+		public static Command o = new Command(NJTAI.rus ? "Открыть" : "Open", 8, 1);
 
 		private Displayable p;
 
@@ -88,7 +90,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 				if (NJTAI.getScr() instanceof Form) {
 					((Form) NJTAI.getScr()).deleteAll();
 				}
-				NJTAI.setScr(new Form("Loading..."));
+				NJTAI.setScr(new Form(NJTAI.rus ? "Загрузка..." : "Loading..."));
 				System.gc();
 				Thread.yield();
 			}

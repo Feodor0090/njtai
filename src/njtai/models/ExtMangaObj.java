@@ -57,7 +57,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 		if (imgs[i] == null) {
 			loadUrl(i + 1);
-			if (NJTAI.prldUrl && !(NJTAI.prldImg && NJTAI.cache)) {
+			if (NJTAI.preloadUrl && !(NJTAI.preloadImg && NJTAI.cache)) {
 				if (!prefetched) {
 					prefetched = true;
 					urlFetcher = new Thread(this);

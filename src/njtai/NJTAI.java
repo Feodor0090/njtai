@@ -37,15 +37,15 @@ public class NJTAI extends MIDlet {
 	/**
 	 * Enable images preloading?
 	 */
-	public static boolean prldImg = false;
+	public static boolean preloadImg = false;
 	public static boolean cache = false;
-	public static boolean useFiles = false;
+	public static boolean loadCoverAtPage = true;
 	public static boolean keepLists = true;
 	public static boolean loadCovers = true;
 	/**
 	 * Enable urls preloading?
 	 */
-	public static boolean prldUrl = true;
+	public static boolean preloadUrl = true;
 	public static boolean flag7 = true;
 	public static boolean flag8 = true;
 
@@ -53,20 +53,22 @@ public class NJTAI extends MIDlet {
 		return System.getProperty("microedition.platform").indexOf("S60") != -1;
 	}
 
+	public static boolean rus = false;
+
 	public static boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append(prldImg ? "1" : "0");
+			s.append(preloadImg ? "1" : "0");
 			s.append('`');
 			s.append(cache ? "1" : "0");
 			s.append('`');
-			s.append(useFiles ? "1" : "0");
+			s.append(loadCoverAtPage ? "1" : "0");
 			s.append('`');
 			s.append(keepLists ? "1" : "0");
 			s.append('`');
 			s.append(loadCovers ? "1" : "0");
 			s.append('`');
-			s.append(prldUrl ? "1" : "0");
+			s.append(preloadUrl ? "1" : "0");
 			s.append('`');
 			s.append(flag7 ? "1" : "0");
 			s.append('`');
@@ -98,23 +100,23 @@ public class NJTAI extends MIDlet {
 			byte[] d = r.getRecord(1);
 			r.closeRecordStore();
 			String[] s = StringUtil.splitFull(new String(d), '`');
-			prldImg = s[0].equals("1");
+			preloadImg = s[0].equals("1");
 			cache = s[1].equals("1");
-			useFiles = s[2].equals("1");
+			loadCoverAtPage = s[2].equals("1");
 			keepLists = s[3].equals("1");
 			loadCovers = s[4].equals("1");
-			prldUrl = s[5].equals("1");
+			preloadUrl = s[5].equals("1");
 			flag7 = s[6].equals("1");
 			flag8 = s[7].equals("1");
 			proxy = s[8];
 		} catch (Exception e) {
 			e.printStackTrace();
-			prldImg = false;
+			preloadImg = false;
 			cache = false;
-			useFiles = false;
+			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			keepLists = true;
 			loadCovers = true;
-			prldUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
+			preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			proxy = "http://nnproject.cc/proxy.php?";
 		}
 	}
@@ -141,7 +143,7 @@ public class NJTAI extends MIDlet {
 			throw new IOException();
 		return s;
 	}
-	
+
 	public synchronized static void clearHP() {
 		hp = null;
 	}
@@ -153,6 +155,8 @@ public class NJTAI extends MIDlet {
 	}
 
 	protected void startApp() throws MIDletStateChangeException {
+		String locale = System.getProperty("microedition.locale");
+		rus = (locale != null && locale.equals("ru_RU"));
 		inst = this;
 		dsp = Display.getDisplay(inst);
 		if (!running) {

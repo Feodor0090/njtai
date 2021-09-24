@@ -24,16 +24,16 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private ExtMangaObj mo;
 	private Thread l;
 	private Displayable p;
-	private Command back = new Command("Back", Command.BACK, 1);
-	private Item page1 = new StringItem(null, "Open first page", StringItem.BUTTON);
-	private Item pageN = new StringItem(null, "Enter page number", StringItem.BUTTON);
-	private Item save = new StringItem(null, "Download", StringItem.BUTTON);
-	public static Command open = new Command("Select", Command.ITEM, 1);
+	private Command back = new Command(NJTAI.rus?"Назад":"Back", Command.BACK, 1);
+	private Item page1 = new StringItem(null, NJTAI.rus?"Открыть первую страницу":"Open first page", StringItem.BUTTON);
+	private Item pageN = new StringItem(null, NJTAI.rus?"Ввести номер страницы":"Enter page number", StringItem.BUTTON);
+	private Item save = new StringItem(null, NJTAI.rus?"Скачать":"Download", StringItem.BUTTON);
+	public static Command open = new Command(NJTAI.rus?"Выбрать":"Select", Command.ITEM, 1);
 	private Command goTo = new Command("Go", Command.OK, 1);
 
 	boolean stop = false;
 
-	private StringItem prgrs = new StringItem("Loading data", "");
+	private StringItem prgrs = new StringItem(NJTAI.rus?"Загрузка данных":"Loading data", "");
 
 	public MangaPage(int num, Displayable prev) {
 		super("Manga page");
@@ -63,19 +63,19 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	private void loadPage() {
-		status("Fetching page (1/3)");
+		status(NJTAI.rus?"Загрузка страницы (1/3)":"Fetching page (1/3)");
 		String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id);
 		if (html == null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;
 		}
 
-		status("Processing data (2/3)");
+		status(NJTAI.rus?"Обработка данныых (2/3)":"Processing data (2/3)");
 		if (stop)
 			return;
 		mo = new ExtMangaObj(id, html);
 
-		status("Downloading cover (3/3)");
+		status(NJTAI.rus?"Скачивание обложки (3/3)":"Downloading cover (3/3)");
 		if (stop)
 			return;
 		mo.loadCover();
@@ -86,10 +86,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		append(new ImageItem(null, (Image) mo.img, 0, null));
 		setTitle(mo.title);
 
-		append(new StringItem("Title", mo.title));
+		append(new StringItem(NJTAI.rus?"Название":"Title", mo.title));
 		append(new StringItem("ID", "#" + id));
-		append(new StringItem("Pages", "" + mo.pages));
-		append(new StringItem("Tags", mo.tags));
+		append(new StringItem(NJTAI.rus?"Страницы":"Pages", "" + mo.pages));
+		append(new StringItem(NJTAI.rus?"Тэги":"Tags", mo.tags));
 		page1.setItemCommandListener(this);
 		page1.setDefaultCommand(open);
 		append(page1);
@@ -117,7 +117,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			if (i == page1) {
 				NJTAI.setScr(new View(mo, this, 0));
 			} else if (i == pageN) {
-				final TextBox tb = new TextBox("Enter page number:", "", 7, 2);
+				final TextBox tb = new TextBox(NJTAI.rus?"Номер страницы:":"Enter page number:", "", 7, 2);
 				tb.addCommand(goTo);
 				tb.addCommand(back);
 				final Displayable menu = this;

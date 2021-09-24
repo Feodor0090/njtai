@@ -63,7 +63,7 @@ public class View extends Canvas implements Runnable {
 					e.printStackTrace();
 				}
 				repaint();
-				if (preloader == null && NJTAI.prldImg && NJTAI.cache) {
+				if (preloader == null && NJTAI.preloadImg && NJTAI.cache) {
 					preloader = new Thread() {
 						public void run() {
 							preload();
@@ -89,6 +89,7 @@ public class View extends Canvas implements Runnable {
 			try {
 				emo.getPage(i);
 				preloadProgress = i * 100 / emo.pages;
+				repaint();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				preloadProgress = 100;
@@ -132,7 +133,7 @@ public class View extends Canvas implements Runnable {
 		 */
 	}
 
-	static String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", "close" };
+	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", NJTAI.rus?"закрыть":"close" };
 
 	boolean touchCtrlShown = true;
 
@@ -227,9 +228,9 @@ public class View extends Canvas implements Runnable {
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
 		} else if (emo.infoReady == -2) {
-			info = "Waiting loader...";
+			info = NJTAI.rus?"Ожидание загрузчика...":"Waiting loader...";
 		} else {
-			info = origImg == null ? "Loading image..." : "Resizing...";
+			info = origImg == null ? (NJTAI.rus?"Загрузка изображения...":"Loading image...") : (NJTAI.rus?"Масштабирование...":"Resizing...");
 		}
 		g.setGrayScale(255);
 		g.drawString(info, getWidth() / 2, getHeight() / 2, Graphics.HCENTER | Graphics.TOP);

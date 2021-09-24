@@ -23,23 +23,30 @@ import njtai.NJTAI;
 final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
-	private final Command bkC = new Command("Back", 2, 2);
+	private final Command bkC = new Command(NJTAI.rus ? "Назад" : "Back", 2, 2);
 	private final Command prC = new Command("Proxy setup", 8, 1);
 
-	private final String[] yn = new String[] { "No", "Yes" };
-	private final String[] ynr = new String[] { "No (saves RAM)", "Yes" };
+	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
+	private final String[] ynr = new String[] { NJTAI.rus ? "Нет (экономит память)" : "No (saves RAM)",
+			NJTAI.rus ? "Да" : "Yes" };
 
-	private final StringItem ramWarn = new StringItem("Warning",
-			"Enabling preloading/caching will cause crash on low memory devices.");
+	private final StringItem ramWarn = new StringItem(NJTAI.rus ? "Предупреждение" : "Warning",
+			NJTAI.rus ? "Включение предзагрузки или кэширования приведёт к ошибкам на устройствах с небольшой памятью."
+					: "Enabling preloading/caching will cause crash on low memory devices.");
+	private final StringItem s40Warn = new StringItem(NJTAI.rus ? "Работа на S40" : "Working on S40", NJTAI.rus
+			? ("Памяти S40 не хватит для просмотра, но хватит для скачивания. Отключите загрузку обложек в списках и на "
+					+ "странице, сохранение списков и кэш для работы. Рекомендовано использовать поиск по ID, а не по названию.")
+			: ("S40's memory is enough for downloading, but not for viewing. "
+					+ "Disable covers and lists keeping to make it work. Using ID input (not search) is recommended."));
 
-	private final ChoiceGroup cache = new ChoiceGroup("Keep loaded images in RAM", 4, yn, null);
-	private final ChoiceGroup preload = new ChoiceGroup("Preload all images", 4, yn, null);
-	private final ChoiceGroup files = new ChoiceGroup("Cache everything to file system", 4, yn, null);
-	private final ChoiceGroup lists = new ChoiceGroup("Keep lists when opening pages", 4, ynr, null);
-	private final ChoiceGroup covers = new ChoiceGroup("Load covers in lists", 4, ynr, null);
-	private final ChoiceGroup urls = new ChoiceGroup("Preload image urls", 4, yn, null);
-	private final TextField proxy = new TextField("Proxy prefix", NJTAI.proxy, 100, 0);
-	private final StringItem aboutProxy = new StringItem(null, "Setting your own proxy", StringItem.BUTTON);
+	private final ChoiceGroup cache = new ChoiceGroup(NJTAI.rus?"Сохранять загруженны изображения в ОЗУ":"Keep loaded images in RAM", 4, yn, null);
+	private final ChoiceGroup preload = new ChoiceGroup(NJTAI.rus?"Предзагружать все изображения":"Preload all images", 4, yn, null);
+	private final ChoiceGroup pageCover = new ChoiceGroup(NJTAI.rus?"Загружать обложку на странице":"Load cover in manga page", 4, ynr, null);
+	private final ChoiceGroup lists = new ChoiceGroup(NJTAI.rus?"Запоминать списки при открытии страницы":"Keep lists when opening pages", 4, ynr, null);
+	private final ChoiceGroup covers = new ChoiceGroup(NJTAI.rus?"Загружать обложку в списках":"Load covers in lists", 4, ynr, null);
+	private final ChoiceGroup urls = new ChoiceGroup(NJTAI.rus?"Предзагружать URL страниц":"Preload image urls", 4, yn, null);
+	private final TextField proxy = new TextField(NJTAI.rus?"Префикс прокси":"Proxy prefix", NJTAI.proxy, 100, 0);
+	private final StringItem aboutProxy = new StringItem(null, NJTAI.rus?"Настройка вашего прокси":"Setting your own proxy", StringItem.BUTTON);
 
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
@@ -49,18 +56,20 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		addCommand(bkC);
 
 		cache.setSelectedIndex(NJTAI.cache ? 1 : 0, true);
-		preload.setSelectedIndex(NJTAI.prldImg ? 1 : 0, true);
-		files.setSelectedIndex(NJTAI.useFiles ? 1 : 0, true);
+		preload.setSelectedIndex(NJTAI.preloadImg ? 1 : 0, true);
+		pageCover.setSelectedIndex(NJTAI.loadCoverAtPage ? 1 : 0, true);
 		lists.setSelectedIndex(NJTAI.keepLists ? 1 : 0, true);
 		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
-		urls.setSelectedIndex(NJTAI.prldUrl ? 1 : 0, true);
+		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
 
 		this.append(ramWarn);
+		if (Runtime.getRuntime().totalMemory() == 2048 * 1024)
+			append(s40Warn);
 		this.append(cache);
 		this.append(preload);
-		// this.append(files);
+		this.append(pageCover);
 		this.append(lists);
 		this.append(covers);
 		this.append(urls);
@@ -79,11 +88,11 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 	private final void cmd(Command c) {
 		if (c == bkC) {
 			NJTAI.cache = cache.getSelectedIndex() == 1;
-			NJTAI.prldImg = preload.getSelectedIndex() == 1;
-			NJTAI.useFiles = files.getSelectedIndex() == 1;
+			NJTAI.preloadImg = preload.getSelectedIndex() == 1;
+			NJTAI.loadCoverAtPage = pageCover.getSelectedIndex() == 1;
 			NJTAI.keepLists = lists.getSelectedIndex() == 1;
 			NJTAI.loadCovers = covers.getSelectedIndex() == 1;
-			NJTAI.prldUrl = urls.getSelectedIndex() == 1;
+			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.proxy = proxy.getString();
 			NJTAI.setScr(menu);
 			if (!NJTAI.savePrefs()) {
