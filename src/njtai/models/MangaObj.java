@@ -28,6 +28,12 @@ public class MangaObj {
 	}
 
 	public void loadCover() {
-		img = Imgs.get(imgUrl, NJTAI.getHeight() * 2 / 3, false);
+		byte[] d = Imgs.get(imgUrl);
+		Image i = Image.createImage(d, 0, d.length);
+		d = null;
+		System.gc();
+		int h = NJTAI.getHeight() * 2 / 3;
+		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
+		img = NJTAI.resize(i, w, h);
 	}
 }

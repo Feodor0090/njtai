@@ -35,10 +35,14 @@ public class NJTAI extends MIDlet {
 	private boolean running = false;
 
 	/**
-	 * Enable images preloading?
+	 * Should images be kept or preloaded?
+	 * <ul>
+	 * <li>0 - nothing should be kept
+	 * <li>1 - view may keep already viewed images
+	 * <li>2 - images can be preloaded
+	 * </ul>
 	 */
-	public static boolean preloadImg = false;
-	public static boolean cache = false;
+	public static int cachingPolicy = 0;
 	public static boolean loadCoverAtPage = true;
 	public static boolean keepLists = true;
 	public static boolean loadCovers = true;
@@ -58,9 +62,9 @@ public class NJTAI extends MIDlet {
 	public static boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append(preloadImg ? "1" : "0");
+			s.append("0");
 			s.append('`');
-			s.append(cache ? "1" : "0");
+			s.append(String.valueOf(cachingPolicy));
 			s.append('`');
 			s.append(loadCoverAtPage ? "1" : "0");
 			s.append('`');
@@ -100,8 +104,8 @@ public class NJTAI extends MIDlet {
 			byte[] d = r.getRecord(1);
 			r.closeRecordStore();
 			String[] s = StringUtil.splitFull(new String(d), '`');
-			preloadImg = s[0].equals("1");
-			cache = s[1].equals("1");
+			//preloadImg = s[0].equals("1"); // 0 is not used anymore
+			cachingPolicy = Integer.parseInt(s[1]);
 			loadCoverAtPage = s[2].equals("1");
 			keepLists = s[3].equals("1");
 			loadCovers = s[4].equals("1");
@@ -111,8 +115,7 @@ public class NJTAI extends MIDlet {
 			proxy = s[8];
 		} catch (Exception e) {
 			e.printStackTrace();
-			preloadImg = false;
-			cache = false;
+			cachingPolicy = 1;
 			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			keepLists = true;
 			loadCovers = true;

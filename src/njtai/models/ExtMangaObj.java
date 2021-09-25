@@ -1,7 +1,6 @@
 package njtai.models;
 
 import javax.microedition.lcdui.Canvas;
-import javax.microedition.lcdui.Image;
 
 import njtai.Imgs;
 import njtai.NJTAI;
@@ -51,14 +50,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @return Loaded page image.
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
-	public Image getPage(int i) throws InterruptedException {
+	public byte[] getPage(int i) throws InterruptedException {
 		if (imgs == null) {
 			imgs = new String[pages];
 		}
 		if (imgs[i] == null) {
 			loadUrl(i + 1);
-			if (NJTAI.preloadUrl && !(NJTAI.preloadImg && NJTAI.cache)) {
+			if (NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
 				if (!prefetched) {
+					Thread.sleep(100);
 					prefetched = true;
 					urlFetcher = new Thread(this);
 					urlFetcher.setPriority(Thread.MAX_PRIORITY);
@@ -69,7 +69,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				infoReady = 100;
 			}
 		}
-		return Imgs.get(imgs[i], NJTAI.getScr().getHeight() * 3, true);
+		return Imgs.get(imgs[i]);
 	}
 
 	private void loadUrls() throws InterruptedException {
