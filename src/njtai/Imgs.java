@@ -2,7 +2,7 @@ package njtai;
 
 public class Imgs {
 
-	public static byte[] get(String url) {
+	public static byte[] getImg(String url) {
 		if (url == null)
 			return null;
 

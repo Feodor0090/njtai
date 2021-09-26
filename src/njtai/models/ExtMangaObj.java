@@ -69,7 +69,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				infoReady = 100;
 			}
 		}
-		return Imgs.get(imgs[i]);
+		return Imgs.getImg(imgs[i]);
 	}
 
 	private void loadUrls() throws InterruptedException {

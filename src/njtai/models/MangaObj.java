@@ -28,7 +28,7 @@ public class MangaObj {
 	}
 
 	public void loadCover() {
-		byte[] d = Imgs.get(imgUrl);
+		byte[] d = Imgs.getImg(imgUrl);
 		Image i = Image.createImage(d, 0, d.length);
 		d = null;
 		System.gc();
