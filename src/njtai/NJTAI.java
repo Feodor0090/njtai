@@ -122,7 +122,7 @@ public class NJTAI extends MIDlet {
 			keepBitmap = true;
 			preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			proxy = "http://nnproject.cc/proxy.php?";
-			view = 0;
+			view = 1;
 		}
 	}
 

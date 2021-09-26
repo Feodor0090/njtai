@@ -89,6 +89,8 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		append(urls);
 		append(proxy);
 		append(aboutProxy);
+		append(new StringItem("Beta features", "Better not to touch them."));
+		append(view);
 	}
 
 	public final void commandAction(Command c, Displayable arg1) {

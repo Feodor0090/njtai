@@ -502,9 +502,11 @@ public abstract class View extends Canvas implements Runnable {
 	public static View create(ExtMangaObj mo, Displayable d, int i) {
 		if (NJTAI.view == 1)
 			return new ViewSWR(mo, d, i);
-		if (NJTAI.view == 2 || System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1) {
+		if (NJTAI.view == 2)
 			return new ViewHWA(mo, d, i);
-		}
+		if (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1)
+			return new ViewHWA(mo, d, i);
+
 		return new ViewSWR(mo, d, i);
 	}
 }
