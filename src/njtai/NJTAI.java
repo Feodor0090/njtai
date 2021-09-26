@@ -50,7 +50,7 @@ public class NJTAI extends MIDlet {
 	 * Enable urls preloading?
 	 */
 	public static boolean preloadUrl = true;
-	public static boolean flag7 = true;
+	public static boolean keepBitmap = true;
 	public static boolean flag8 = true;
 
 	public static boolean isS60() {
@@ -74,7 +74,7 @@ public class NJTAI extends MIDlet {
 			s.append('`');
 			s.append(preloadUrl ? "1" : "0");
 			s.append('`');
-			s.append(flag7 ? "1" : "0");
+			s.append(keepBitmap ? "1" : "0");
 			s.append('`');
 			s.append(flag8 ? "1" : "0");
 			s.append('`');
@@ -110,7 +110,7 @@ public class NJTAI extends MIDlet {
 			keepLists = s[3].equals("1");
 			loadCovers = s[4].equals("1");
 			preloadUrl = s[5].equals("1");
-			flag7 = s[6].equals("1");
+			keepBitmap = s[6].equals("1");
 			flag8 = s[7].equals("1");
 			proxy = s[8];
 		} catch (Exception e) {
@@ -119,6 +119,7 @@ public class NJTAI extends MIDlet {
 			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			keepLists = true;
 			loadCovers = true;
+			keepBitmap = true;
 			preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			proxy = "http://nnproject.cc/proxy.php?";
 		}

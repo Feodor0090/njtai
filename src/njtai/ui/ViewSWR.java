@@ -19,16 +19,22 @@ public class ViewSWR extends View {
 	}
 
 	Image toDraw;
+	Image orig;
 
 	protected void resize(int size) {
 		try {
 			toDraw = null;
 			System.gc();
 			repaint();
-			byte[] b = getImage(page).toByteArray();
-			Image origImg = Image.createImage(b, 0, b.length);
-			b = null;
-			System.gc();
+			Image origImg;
+			if (NJTAI.keepBitmap) {
+				origImg = orig;
+			} else {
+				byte[] b = getImage(page).toByteArray();
+				origImg = Image.createImage(b, 0, b.length);
+				b = null;
+				System.gc();
+			}
 			int h = getHeight();
 			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
 
@@ -86,39 +92,33 @@ public class ViewSWR extends View {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = "x" + zoom;
 		String prefetch = null;
-		if (preloadProgress == 101) {
-			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
-		} else {
-			if (preloadProgress < 100)
-				prefetch = "preloading " + preloadProgress + "% (" + canStorePages()+" left)";
-			else if (preloadProgress == 104) {
-				prefetch = "OOM";
-			} else if (preloadProgress > 101)
-				prefetch = "code " + (preloadProgress % 100);
-		}
-		String ram;
-		{
-			long used = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-			used /= 1024;
-			if (used <= 4096) {
-				ram = used + "K";
-			} else {
-				ram = (used / 1024) + "M";
-			}
-		}
+		// if (preloadProgress == 101) {
+		prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
+		/*
+		 * } else { if (preloadProgress < 100) prefetch = "preloading " +
+		 * preloadProgress + "%"; else if (preloadProgress == 104) { prefetch = "OOM"; }
+		 * else if (preloadProgress > 101) prefetch = "code " + (preloadProgress % 100);
+		 * }
+		 */
+		/*
+		 * String ram; { long used = Runtime.getRuntime().totalMemory() -
+		 * Runtime.getRuntime().freeMemory(); used /= 1024; if (used <= 4096) { ram =
+		 * used + "K"; } else { ram = (used / 1024) + "M"; } }
+		 */
 		g.setGrayScale(0);
 		g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 		g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 		if (prefetch != null)
 			g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(prefetch), f.getHeight());
-		g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(), f.stringWidth(ram), f.getHeight());
+		// g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(),
+		// f.stringWidth(ram), f.getHeight());
 
 		g.setGrayScale(255);
 		g.drawString(pageNum, 0, 0, 0);
 		g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
 		if (prefetch != null)
 			g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
-		g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
+		// g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
 	}
 
 	private void limitOffset() {
@@ -143,7 +143,7 @@ public class ViewSWR extends View {
 		} else if (emo.infoReady == -2) {
 			info = NJTAI.rus ? "Ожидание загрузчика..." : "Waiting loader...";
 		} else {
-			info = (cache[page] == null) ? (NJTAI.rus ? "Загрузка изображения..." : "Loading image...")
+			info = (cache[page] == null || orig == null) ? (NJTAI.rus ? "Загрузка изображения..." : "Loading image...")
 					: (NJTAI.rus ? "Масштабирование..." : "Resizing...");
 		}
 		g.setGrayScale(255);
@@ -202,8 +202,15 @@ public class ViewSWR extends View {
 
 	protected void reset() {
 		toDraw = null;
+		orig = null;
 	}
 
 	protected void prepare(ByteArrayOutputStream d) throws InterruptedException {
+		if (NJTAI.keepBitmap) {
+			byte[] b = d.toByteArray();
+			orig = Image.createImage(b, 0, b.length);
+			b = null;
+			System.gc();
+		}
 	}
 }
