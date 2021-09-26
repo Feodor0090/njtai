@@ -1,5 +1,7 @@
 package njtai.ui;
 
+import java.io.ByteArrayOutputStream;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Displayable;
@@ -15,24 +17,32 @@ public class ViewSWR extends View {
 	public ViewSWR(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
 	}
+
 	Image toDraw;
 
 	protected void resize(int size) {
-		toDraw = null;
-		System.gc();
-		repaint();
-		Image origImg = Image.createImage(cache[page], 0, cache[page].length);
-		int h = getHeight();
-		int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
+		try {
+			toDraw = null;
+			System.gc();
+			repaint();
+			byte[] b = getImage(page).toByteArray();
+			Image origImg = Image.createImage(b, 0, b.length);
+			b = null;
+			System.gc();
+			int h = getHeight();
+			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
 
-		if (w > getWidth()) {
-			w = getWidth();
-			h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+			if (w > getWidth()) {
+				w = getWidth();
+				h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+			}
+
+			h = h * size;
+			w = w * size;
+			toDraw = NJTAI.resize(origImg, w, h);
+		} catch (Throwable e) {
+			error = true;
 		}
-
-		h = h * size;
-		w = w * size;
-		toDraw = NJTAI.resize(origImg, w, h);
 	}
 
 	protected void paint(Graphics g) {
@@ -75,11 +85,16 @@ public class ViewSWR extends View {
 	private void paintHUD(Graphics g, Font f) {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = "x" + zoom;
-		String prefetch;
-		if (preloadProgress == 100) {
+		String prefetch = null;
+		if (preloadProgress == 101) {
 			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
 		} else {
-			prefetch = "preloading " + preloadProgress + "%";
+			if (preloadProgress < 100)
+				prefetch = "preloading " + preloadProgress + "% (" + canStorePages()+" left)";
+			else if (preloadProgress == 104) {
+				prefetch = "OOM";
+			} else if (preloadProgress > 101)
+				prefetch = "code " + (preloadProgress % 100);
 		}
 		String ram;
 		{
@@ -128,7 +143,7 @@ public class ViewSWR extends View {
 		} else if (emo.infoReady == -2) {
 			info = NJTAI.rus ? "Ожидание загрузчика..." : "Waiting loader...";
 		} else {
-			info = (cache[page]==null) ? (NJTAI.rus ? "Загрузка изображения..." : "Loading image...")
+			info = (cache[page] == null) ? (NJTAI.rus ? "Загрузка изображения..." : "Loading image...")
 					: (NJTAI.rus ? "Масштабирование..." : "Resizing...");
 		}
 		g.setGrayScale(255);
@@ -189,6 +204,6 @@ public class ViewSWR extends View {
 		toDraw = null;
 	}
 
-	protected void prepare(byte[] d) throws InterruptedException {
+	protected void prepare(ByteArrayOutputStream d) throws InterruptedException {
 	}
 }

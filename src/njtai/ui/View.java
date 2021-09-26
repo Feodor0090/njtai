@@ -1,5 +1,8 @@
 package njtai.ui;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
@@ -19,7 +22,7 @@ public abstract class View extends Canvas implements Runnable {
 	 */
 	protected int page;
 
-	protected byte[][] cache;
+	protected ByteArrayOutputStream[] cache;
 
 	protected int zoom = 1;
 	protected int x = 0;
@@ -36,17 +39,26 @@ public abstract class View extends Canvas implements Runnable {
 	 * @return Data of loaded image.
 	 * @throws InterruptedException
 	 */
-	protected byte[] loadImage(int n) throws InterruptedException {
+	protected ByteArrayOutputStream getImage(int n) throws InterruptedException {
 		if (cache == null)
-			cache = new byte[emo.pages][];
+			cache = new ByteArrayOutputStream[emo.pages];
 
 		if (cache[n] != null)
 			return cache[n];
 
 		synchronized (cache) {
 			byte[] b = emo.getPage(n);
-			cache[n] = b;
-			return b;
+			try {
+				ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+
+				s.write(b);
+
+				cache[n] = s;
+				return s;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 	}
 
@@ -54,10 +66,8 @@ public abstract class View extends Canvas implements Runnable {
 	 * Releases some images to prevent OOM errors.
 	 */
 	protected synchronized void emergencyCacheClear() {
-		for (int i = 0; i < page; i++) {
-			if (canStorePages() <= 2) {
-				cache[i] = null;
-			}
+		for (int i = 0; i < page - 1; i++) {
+			cache[i] = null;
 		}
 		for (int i = emo.pages - 1; i > page; i--) {
 			if (cache[i] != null) {
@@ -77,11 +87,15 @@ public abstract class View extends Canvas implements Runnable {
 		int free = 0;
 		try {
 			String nokiaMem = System.getProperty("com.nokia.memoryramfree");
-			free = Integer.parseInt(nokiaMem);
+			free = Math.min(Integer.parseInt(nokiaMem), 14 * 1024 * 1024);
 		} catch (Throwable t) {
-			free = (int) Math.min(Runtime.getRuntime().freeMemory(), ((long) Integer.MAX_VALUE - 2));
+			free = (int) Runtime.getRuntime().freeMemory();
 		}
-		return Math.max(0, (free - 10 * 1024 * 1024) / (300 * 1024));
+		free = free - (10 * 1024 * 1024);
+		int p = free / (300 * 1024);
+		if (p < 0)
+			p = 0;
+		return p;
 	}
 
 	protected synchronized void checkCacheAfterPageSwitch() {
@@ -129,7 +143,7 @@ public abstract class View extends Canvas implements Runnable {
 				y = 0;
 				reset();
 				try {
-					prepare(loadImage(page));
+					prepare(getImage(page));
 					repaint();
 					resize(1);
 					zoom = 1;
@@ -174,28 +188,31 @@ public abstract class View extends Canvas implements Runnable {
 				continue;
 			try {
 				if (canStorePages() < 1) {
-					preloadProgress = 100;
+					preloadProgress = 102;
 					preloader = null;
 					return;
 				}
-				loadImage(i);
+				getImage(i);
 				if (preloadProgress != 100)
 					preloadProgress = i * 100 / emo.pages;
 				repaint();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				preloadProgress = 100;
+				preloadProgress = 103;
+				repaint();
 				preloader = null;
 				return;
 			} catch (OutOfMemoryError e) {
 				emergencyCacheClear();
-				preloadProgress = 100;
+				preloadProgress = 104;
 				preloader = null;
+				repaint();
 				return;
 			}
 		}
 		preloadProgress = 100;
 		preloader = null;
+		repaint();
 	}
 
 	/**
@@ -206,7 +223,7 @@ public abstract class View extends Canvas implements Runnable {
 	/**
 	 * Implementation must prepare {@link #page} for drawing. No resizing is needed.
 	 */
-	protected abstract void prepare(byte[] data) throws InterruptedException;
+	protected abstract void prepare(ByteArrayOutputStream data) throws InterruptedException;
 
 	/**
 	 * Called when image must change it's zoom.
