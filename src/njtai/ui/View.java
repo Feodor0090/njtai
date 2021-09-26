@@ -250,6 +250,32 @@ public abstract class View extends Canvas implements Runnable {
 		// g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
 	}
 	
+	protected void drawTouchControls(Graphics g, Font f) {
+		int fh = f.getHeight();
+		// grads
+		fillGrad(g, 0, 0, getWidth(), 50, 0x222222, 0);
+		fillGrad(g, 0, getHeight() - 50, getWidth(), 51, 0, 0x222222);
+		// hor lines
+		g.setGrayScale(255);
+		g.drawLine(0, 50, getWidth(), 50);
+		g.drawLine(0, getHeight() - 50, getWidth(), getHeight() - 50);
+		// captions
+		for (int i = 0; i < 3; i++) {
+			g.setGrayScale(255);
+			g.drawString(touchCaps[i], getWidth() * (1 + i * 2) / 6, 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
+		}
+		for (int i = 3; i < 6; i++) {
+			g.setGrayScale(255);
+			g.drawString(touchCaps[i], getWidth() * (1 + (i - 3) * 2) / 6, getHeight() - 25 - fh / 2,
+					Graphics.TOP | Graphics.HCENTER);
+		}
+		// vert lines between btns
+		g.drawLine(getWidth() / 3, 0, getWidth() / 3, 50);
+		g.drawLine(getWidth() * 2 / 3, 0, getWidth() * 2 / 3, 50);
+		g.drawLine(getWidth() / 3, getHeight() - 50, getWidth() / 3, getHeight());
+		g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
+	}
+	
 	protected abstract void limitOffset();
 
 	protected void paintNullImg(Graphics g, Font f) {
@@ -473,6 +499,9 @@ public abstract class View extends Canvas implements Runnable {
 	}
 
 	public static View create(ExtMangaObj mo, Displayable d, int i) {
+		if(System.getProperty("microedition.platform").indexOf("sw_platform_version=5.")!=-1) {
+			return new ViewHWA(mo, d, i);
+		}
 		return new ViewSWR(mo, d, i);
 	}
 }

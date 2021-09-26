@@ -6,6 +6,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.m3g.*;
 
+import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
 public class ViewHWA extends View {
@@ -15,7 +16,7 @@ public class ViewHWA extends View {
 	}
 
 	PagePart[] p = null;
-	int iw,ih;
+	int iw, ih;
 
 	protected void reset() {
 		p = null;
@@ -38,8 +39,8 @@ public class ViewHWA extends View {
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
-		x = iw/2;
-		y = ih/2;
+		x = iw / 2;
+		y = ih / 2;
 	}
 
 	protected void resize(int size) {
@@ -58,9 +59,47 @@ public class ViewHWA extends View {
 	}
 
 	protected void paint(Graphics g) {
-		
+		try {
+			Font f = Font.getFont(0, 0, 8);
+			g.setFont(f);
+
+			// bg fill
+			
+
+			if (p == null) {
+				g.setGrayScale(0);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				paintNullImg(g, f);
+			} else {
+				limitOffset();
+				Graphics3D g3 = Graphics3D.getInstance();
+				g3.bindTarget(g);
+				Background b = new Background();
+				b.setColorClearEnable(true);
+				b.setDepthClearEnable(true);
+				g3.clear(b);
+				setupM3G(g3);
+				for (int i = 0; i < p.length; i++) {
+					p[i].paint(g3);
+				}
+				g3.releaseTarget();
+				// touch captions
+				if (hasPointerEvents() && touchCtrlShown) {
+					drawTouchControls(g, f);
+				}
+			}
+			paintHUD(g, f);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			try {
+				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
-	
+
 	protected void limitOffset() {
 		if (x < 0)
 			x = 0;
@@ -74,7 +113,7 @@ public class ViewHWA extends View {
 
 	protected void setupM3G(Graphics3D g3d) {
 		Camera cam = new Camera();
-		cam.setParallel(getHeight(), getWidth()/(float)getHeight(), 0.1f, 900f);
+		cam.setParallel(ih / zoom, getWidth() / (float) getHeight(), 0.1f, 900f);
 		Transform t = new Transform();
 		t.postTranslate(x, y, 100);
 		Light l = new Light();
