@@ -84,12 +84,13 @@ public abstract class View extends Canvas implements Runnable {
 	 * @return Aproximatry count of pages that is safe to load.
 	 */
 	protected int canStorePages() {
+		int f = (int) Runtime.getRuntime().freeMemory();
 		int free = 0;
 		try {
 			String nokiaMem = System.getProperty("com.nokia.memoryramfree");
-			free = Math.min(Integer.parseInt(nokiaMem), 14 * 1024 * 1024);
+			free = (int) Math.min(Integer.parseInt(nokiaMem), (15 * 1024 * 1024)-(Runtime.getRuntime().totalMemory()-f));
 		} catch (Throwable t) {
-			free = (int) Runtime.getRuntime().freeMemory();
+			free = f;
 		}
 		free = free - (10 * 1024 * 1024);
 		int p = free / (300 * 1024);
@@ -106,7 +107,7 @@ public abstract class View extends Canvas implements Runnable {
 			}
 		} else {
 			if (canStorePages() <= 2) {
-				for (int i = 0; i < page; i++) {
+				for (int i = 0; i < page-1; i++) {
 					if (canStorePages() <= 2) {
 						cache[i] = null;
 					}
