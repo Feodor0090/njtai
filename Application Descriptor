@@ -4,7 +4,7 @@ MIDlet-Icon: /nhentai.png
 Nokia-MIDlet-Category: Internet
 MicroEdition-Configuration: CLDC-1.1
 Nokia-Scalable-Icon-MIDlet-1: /njtai_opt.svg
-MIDlet-Version: 1.1.18
+MIDlet-Version: 1.1.19
 MIDlet-Vendor: Feodor0090
 MIDlet-Name: NJTAI
 MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.

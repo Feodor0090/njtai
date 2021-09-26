@@ -46,7 +46,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		FileConnection fc = null;
 
-		String folder = dir + o.num + " - " + o.title + "/";
+		String folder = getFolderName();
 		// folder
 		try {
 			fc = (FileConnection) Connector.open(folder, 3);
@@ -115,7 +115,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		FileConnection fc = null;
 
-		String folder = dir + o.num + " - " + o.title + "/";
+		String folder = getFolderName();
 
 		DataInputStream di = null;
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -161,6 +161,19 @@ public class MangaDownloader extends Thread implements CommandListener {
 		return null;
 	}
 
+	public String getFolderName() {
+		StringBuffer t = new StringBuffer();
+		for (int i = 0; (i < o.title.length() && i < 32); i++) {
+			char c = o.title.charAt(i);
+			if (c == 32 || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-'
+					|| c == '_' || c == '!') {
+				t.append(c);
+			}
+		}
+
+		return dir + o.num + " - " + t.toString() + "/";
+	}
+
 	public void run() {
 		Alert a = new Alert(o.title, "Looking for the folder", null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
@@ -188,7 +201,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		FileConnection fc = null;
 
-		String folder = dir + o.num + " - " + o.title + "/";
+		String folder = getFolderName();
 		// folder
 		try {
 			fc = (FileConnection) Connector.open(folder, 3);

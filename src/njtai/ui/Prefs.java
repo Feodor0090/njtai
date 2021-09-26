@@ -59,7 +59,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
 	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
-	private final ChoiceGroup files = new ChoiceGroup("Cache to memory card", 4, yn, null);
+	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus?"Кэшировать на карту памяти":"Cache to memory card", 4, yn, null);
 
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
@@ -86,12 +86,12 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		append(pageCover);
 		append(covers);
 		append(lists);
+		append(files);
 		append(bitmaps);
 		append(urls);
 		append(proxy);
 		append(aboutProxy);
 		append(new StringItem("Beta features", "Better not to touch them."));
-		append(files);
 		append(view);
 	}
 
