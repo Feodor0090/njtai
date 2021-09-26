@@ -15,6 +15,7 @@ public class ViewHWA extends View {
 	}
 
 	PagePart[] p = null;
+	int iw,ih;
 
 	protected void reset() {
 		p = null;
@@ -24,6 +25,8 @@ public class ViewHWA extends View {
 		reset();
 		byte[] d = data.toByteArray();
 		Image i = Image.createImage(d, 0, d.length);
+		ih = i.getHeight();
+		iw = i.getWidth();
 		Vector v = new Vector();
 		int s = 512;
 		for (int x = 0; x < i.getWidth() + s - 1; x++) {
@@ -35,6 +38,8 @@ public class ViewHWA extends View {
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
+		x = iw/2;
+		y = ih/2;
 	}
 
 	protected void resize(int size) {
@@ -53,8 +58,18 @@ public class ViewHWA extends View {
 	}
 
 	protected void paint(Graphics g) {
-		// TODO Auto-generated method stub
-
+		
+	}
+	
+	protected void limitOffset() {
+		if (x < 0)
+			x = 0;
+		if (x > iw)
+			x = iw;
+		if (y < 0)
+			y = 0;
+		if (y > ih)
+			y = ih;
 	}
 
 	protected void setupM3G(Graphics3D g3d) {
