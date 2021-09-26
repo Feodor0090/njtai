@@ -52,7 +52,8 @@ public class NJTAI extends MIDlet {
 	public static boolean preloadUrl = true;
 	public static boolean keepBitmap = true;
 	public static int view = 0;
-
+	public static boolean files;
+	
 	public static boolean isS60() {
 		return System.getProperty("microedition.platform").indexOf("S60") != -1;
 	}
@@ -62,7 +63,7 @@ public class NJTAI extends MIDlet {
 	public static boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append("0");
+			s.append(files?"1":"0");
 			s.append('`');
 			s.append(String.valueOf(cachingPolicy));
 			s.append('`');
@@ -104,7 +105,7 @@ public class NJTAI extends MIDlet {
 			byte[] d = r.getRecord(1);
 			r.closeRecordStore();
 			String[] s = StringUtil.splitFull(new String(d), '`');
-			// preloadImg = s[0].equals("1"); // 0 is not used anymore
+			files = s[0].equals("1");
 			cachingPolicy = Integer.parseInt(s[1]);
 			loadCoverAtPage = s[2].equals("1");
 			keepLists = s[3].equals("1");
@@ -115,6 +116,7 @@ public class NJTAI extends MIDlet {
 			proxy = s[8];
 		} catch (Exception e) {
 			e.printStackTrace();
+			files = false;
 			cachingPolicy = 1;
 			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			keepLists = true;

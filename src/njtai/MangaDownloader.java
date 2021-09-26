@@ -1,5 +1,7 @@
 package njtai;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +30,137 @@ public class MangaDownloader extends Thread implements CommandListener {
 	Command stopCmd = new Command("Cancel", Command.STOP, 1);
 	boolean stop = false;
 
+	static String dir;
+
+	public synchronized void cache(ByteArrayOutputStream a, int i) {
+		if (dir == null)
+			dir = checkBasePath();
+		if (dir == null) {
+			NJTAI.setScr(prev);
+			NJTAI.pause(100);
+			NJTAI.setScr(new Alert("Downloader error",
+					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
+					null, AlertType.ERROR));
+			return;
+		}
+
+		FileConnection fc = null;
+
+		String folder = dir + o.num + " - " + o.title + "/";
+		// folder
+		try {
+			fc = (FileConnection) Connector.open(folder, 3);
+			if (!fc.exists())
+				fc.mkdir();
+		} catch (Exception e) {
+		} finally {
+			try {
+				fc.close();
+			} catch (IOException e) {
+			}
+		}
+
+		DataOutputStream ou = null;
+
+		try {
+			String n;
+			int j = i + 1;
+			if (j < 10) {
+				n = "00" + j;
+			} else if (j < 100) {
+				n = "0" + j;
+			} else {
+				n = "" + j;
+			}
+			fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
+			if (fc.exists()) {
+				fc.close();
+				return;
+			}
+			fc.create();
+			ou = fc.openDataOutputStream();
+			byte[] buf = a.toByteArray();
+
+			ou.write(buf, 0, buf.length);
+			ou.flush();
+			ou.close();
+			fc.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (ou != null)
+					ou.close();
+			} catch (IOException e1) {
+			}
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e1) {
+			}
+		}
+	}
+
+	public synchronized ByteArrayOutputStream read(int i) {
+		if (dir == null)
+			dir = checkBasePath();
+		if (dir == null) {
+			NJTAI.setScr(prev);
+			NJTAI.pause(100);
+			NJTAI.setScr(new Alert("Downloader error",
+					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
+					null, AlertType.ERROR));
+			return null;
+		}
+
+		FileConnection fc = null;
+
+		String folder = dir + o.num + " - " + o.title + "/";
+
+		DataInputStream di = null;
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+
+		try {
+			String n;
+			int j = i + 1;
+			if (j < 10) {
+				n = "00" + j;
+			} else if (j < 100) {
+				n = "0" + j;
+			} else {
+				n = "" + j;
+			}
+			fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
+			if (!fc.exists()) {
+				return null;
+			}
+			di = fc.openDataInputStream();
+
+			byte[] buf = new byte[1024 * 64];
+
+			int len = 1;
+			while ((len = di.read(buf)) != -1) {
+				b.write(buf, 0, len);
+			}
+			di.close();
+			fc.close();
+			return b;
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				if (di != null)
+					di.close();
+			} catch (IOException e1) {
+			}
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e1) {
+			}
+		}
+		return null;
+	}
+
 	public void run() {
 		Alert a = new Alert(o.title, "Looking for the folder", null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
@@ -39,13 +172,15 @@ public class MangaDownloader extends Thread implements CommandListener {
 		NJTAI.pause(1000);
 		if (stop)
 			return;
-		String dir = checkBasePath();
+		if (dir == null)
+			dir = checkBasePath();
 		if (dir == null) {
 			NJTAI.setScr(prev);
 			NJTAI.pause(100);
 			NJTAI.setScr(new Alert("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
 					null, AlertType.ERROR));
+			return;
 		}
 		g = new Gauge(null, false, 100, 0);
 		a.setIndicator(g);
@@ -72,7 +207,12 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		for (int i = 0; i < o.pages; i++) {
 			String url = o.loadUrl(i + 1);
-
+			if (url == null) {
+				NJTAI.setScr(prev);
+				NJTAI.pause(100);
+				NJTAI.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
+				return;
+			}
 			DataOutputStream ou = null;
 			HttpConnection httpCon = null;
 			InputStream ins = null;
@@ -163,16 +303,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 		try {
 			FileConnection fc = null;
 			try {
-				String dir = System.getProperty("fileconn.dir.photos");
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				fc.close();
-			}
-			try {
 				String dir = "file:///E:/Images/";
 				fc = (FileConnection) Connector.open(dir, Connector.READ);
 				if (!fc.exists())
@@ -180,17 +310,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 				fc.close();
 				return dir;
 			} catch (Throwable t) {
-				fc.close();
-			}
-			try {
-				String dir = "file:///C:/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				fc.close();
+				if (fc != null)
+					fc.close();
 			}
 			try {
 				String dir = "file:///E:/Data/Images/";
@@ -200,7 +321,52 @@ public class MangaDownloader extends Thread implements CommandListener {
 				fc.close();
 				return dir;
 			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///F:/Images/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
 				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///F:/Data/Images/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = System.getProperty("fileconn.dir.photos");
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///C:/Images/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
 			}
 			try {
 				String dir = "file:///C:/Data/Images/";
@@ -210,7 +376,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 				fc.close();
 				return dir;
 			} catch (Throwable t) {
-				fc.close();
+				if (fc != null)
+					fc.close();
 			}
 			try {
 				String dir = "file:///root/";
@@ -220,9 +387,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 				fc.close();
 				return dir;
 			} catch (Throwable t) {
-				fc.close();
+				if (fc != null)
+					fc.close();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 		return null;
 	}

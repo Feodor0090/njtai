@@ -102,6 +102,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	}
 
 	public synchronized String loadUrl(int pageN) {
+		if(imgs==null) imgs = new String[pages];
 		if (imgs[pageN - 1] != null)
 			return imgs[pageN - 1];
 		try {

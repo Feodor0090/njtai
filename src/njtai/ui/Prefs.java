@@ -50,17 +50,17 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.rus ? "Загружать обложку в списках" : "Load covers in lists", 4, ynr, null);
 	private final ChoiceGroup lists = new ChoiceGroup(
 			NJTAI.rus ? "Запоминать списки при открытии страницы" : "Keep lists when opening pages", 4, ynr, null);
-	private final ChoiceGroup bitmaps = new ChoiceGroup(
-			NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)" : "Decode JPEG only once (improves perfomance)", 4, ynr, null);
+	private final ChoiceGroup bitmaps = new ChoiceGroup(NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)"
+			: "Decode JPEG only once (improves perfomance)", 4, ynr, null);
 	private final ChoiceGroup urls = new ChoiceGroup(NJTAI.rus ? "Предзагружать URL страниц" : "Preload image urls", 4,
 			yn, null);
 	private final TextField proxy = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
-	
-	private final ChoiceGroup view = new ChoiceGroup("View type", 4,
-			new String[] { "Auto","SWR","HWA"},null);
-	
+
+	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
+	private final ChoiceGroup files = new ChoiceGroup("Cache to memory card", 4, yn, null);
+
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
 		this.menu = menu;
@@ -74,6 +74,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
+		files.setSelectedIndex(NJTAI.files?1:0, true);
 		view.setSelectedIndex(NJTAI.view, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
@@ -90,6 +91,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		append(proxy);
 		append(aboutProxy);
 		append(new StringItem("Beta features", "Better not to touch them."));
+		append(files);
 		append(view);
 	}
 
@@ -110,6 +112,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
 			NJTAI.view = view.getSelectedIndex();
+			NJTAI.files = files.getSelectedIndex()==1;
 			NJTAI.proxy = proxy.getString();
 			NJTAI.setScr(menu);
 			if (!NJTAI.savePrefs()) {

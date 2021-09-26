@@ -10,6 +10,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
+import njtai.MangaDownloader;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
@@ -29,6 +30,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected int page;
 
 	protected ByteArrayOutputStream[] cache;
+	protected MangaDownloader fs;
 
 	protected int zoom = 1;
 	protected int x = 0;
@@ -38,11 +40,18 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected Thread preloader;
 	protected boolean error;
 
+	int nokiaRam;
+
 	public ViewBase(ExtMangaObj emo, Displayable prev, int page) {
 		this.emo = emo;
 		this.prev = prev;
 		this.page = page;
+		nokiaRam = (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") == -1)
+				? (15 * 1024 * 1024)
+				: (40 * 1024 * 1024);
 		NJTAI.clearHP();
+		if (NJTAI.files)
+			fs = new MangaDownloader(emo, this);
 		reload();
 		setFullScreenMode(true);
 	}
@@ -55,24 +64,41 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * @throws InterruptedException
 	 */
 	protected ByteArrayOutputStream getImage(int n) throws InterruptedException {
-		if (cache == null)
-			cache = new ByteArrayOutputStream[emo.pages];
-
-		if (cache[n] != null)
-			return cache[n];
-
-		synchronized (cache) {
+		if (NJTAI.files) {
+			ByteArrayOutputStream a = fs.read(n);
+			if (a != null)
+				return a;
 			byte[] b = emo.getPage(n);
 			try {
-				ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+				a = new ByteArrayOutputStream(b.length);
 
-				s.write(b);
-
-				cache[n] = s;
-				return s;
+				a.write(b);
+				fs.cache(a, n);
+				return a;
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
+			}
+		} else {
+			if (cache == null)
+				cache = new ByteArrayOutputStream[emo.pages];
+
+			if (cache[n] != null)
+				return cache[n];
+
+			synchronized (cache) {
+				byte[] b = emo.getPage(n);
+				try {
+					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+
+					s.write(b);
+
+					cache[n] = s;
+					return s;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
+				}
 			}
 		}
 	}
@@ -81,6 +107,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * Releases some images to prevent OOM errors.
 	 */
 	protected synchronized void emergencyCacheClear() {
+		if(NJTAI.files) {
+			cache = null;
+			return;
+		}
 		for (int i = 0; i < page - 1; i++) {
 			cache[i] = null;
 		}
@@ -99,12 +129,14 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * @return Aproximatry count of pages that is safe to load.
 	 */
 	protected int canStorePages() {
+		if(NJTAI.files) {
+			return 999;
+		}
 		int f = (int) Runtime.getRuntime().freeMemory();
 		int free = 0;
 		try {
 			String nokiaMem = System.getProperty("com.nokia.memoryramfree");
-			free = (int) Math.min(Integer.parseInt(nokiaMem),
-					(15 * 1024 * 1024) - (Runtime.getRuntime().totalMemory() - f));
+			free = (int) Math.min(Integer.parseInt(nokiaMem), nokiaRam - (Runtime.getRuntime().totalMemory() - f));
 		} catch (Throwable t) {
 			free = f;
 		}
@@ -116,6 +148,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	}
 
 	protected synchronized void checkCacheAfterPageSwitch() {
+		if(NJTAI.files) {
+			cache = null;
+			return;
+		}
 		if (NJTAI.cachingPolicy == 0) {
 			for (int i = 0; i < cache.length; i++) {
 				if (i != page)
@@ -191,6 +227,25 @@ public abstract class ViewBase extends Canvas implements Runnable {
 
 	void preload() throws InterruptedException {
 		Thread.sleep(1000);
+		if(NJTAI.files) {
+			for (int i = 0; i < emo.pages; i++) {
+				try {
+					getImage(i);
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					preloadProgress = 103;
+					repaint();
+					return;
+				} catch (OutOfMemoryError e) {
+					preloadProgress = 104;
+					repaint();
+					return;
+				}
+			}
+			preloadProgress = 100;
+			return;
+		}
 		for (int i = page; i < emo.pages; i++) {
 			if (cache[i] != null)
 				continue;
@@ -293,6 +348,28 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				changePage(-1);
 			} else if (k == -4) {
 				changePage(1);
+			}
+		}
+
+		repaint();
+	}
+	
+	protected void keyRepeated(int k) {
+		if (!canDraw()) {
+			repaint();
+			return;
+		}
+		// zoom is active
+		if (zoom != 1) {
+			if (k == -1) {
+				// up
+				y += getHeight() / 4;
+			} else if (k == -2) {
+				y -= getHeight() / 4;
+			} else if (k == -3) {
+				x += getWidth() / 4;
+			} else if (k == -4) {
+				x -= getWidth() / 4;
 			}
 		}
 
