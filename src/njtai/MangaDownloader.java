@@ -53,7 +53,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		FileConnection fc = null;
 
-		String folder = dir + o.num + "/";
+		String folder = dir + o.num + " - " + o.title + "/";
 		// folder
 		try {
 			fc = (FileConnection) Connector.open(folder, 3);
@@ -78,8 +78,16 @@ public class MangaDownloader extends Thread implements CommandListener {
 			InputStream ins = null;
 
 			try {
-
-				fc = (FileConnection) Connector.open(folder + o.num + "_" + (i + 1) + ".jpg");
+				String n;
+				int j = i + 1;
+				if (j < 10) {
+					n = "00" + j;
+				} else if (j < 100) {
+					n = "0" + j;
+				} else {
+					n = "" + j;
+				}
+				fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
 				if (fc.exists()) {
 					fc.close();
 					filesExisted = true;
@@ -139,14 +147,14 @@ public class MangaDownloader extends Thread implements CommandListener {
 		NJTAI.pause(100);
 		try {
 			if (ioError) {
-				NJTAI.setScr(new Alert("NJTAI",
-						"IO error has occurped. Check, are all the files valid.", null,
+				NJTAI.setScr(new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
 						AlertType.ERROR));
-			} else if(filesExisted) {
-				NJTAI.setScr(new Alert("NJTAI", "Some files existed - they were not overwritten.", null,
-						AlertType.WARNING));
-			}else {
-				NJTAI.setScr(new Alert("NJTAI", "All pages were downloaded.", null, AlertType.CONFIRMATION));}
+			} else if (filesExisted) {
+				NJTAI.setScr(
+						new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING));
+			} else {
+				NJTAI.setScr(new Alert("NJTAI", "All pages were downloaded.", null, AlertType.CONFIRMATION));
+			}
 		} catch (Exception e) {
 		}
 	}
