@@ -105,7 +105,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	public void commandAction(Command c, Item i) {
 		if (c == open) {
 			if (i == page1) {
-				NJTAI.setScr(View.create(mo, this, 0));
+				NJTAI.setScr(ViewBase.create(mo, this, 0));
 			} else if (i == pageN) {
 				final TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
 				tb.addCommand(goTo);
@@ -123,7 +123,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 									n = 1;
 								if (n > mo.pages)
 									n = mo.pages;
-								NJTAI.setScr(View.create(mo, menu, n - 1));
+								NJTAI.setScr(ViewBase.create(mo, menu, n - 1));
 							} catch (Exception e) {
 								NJTAI.setScr(menu);
 								NJTAI.pause(100);
