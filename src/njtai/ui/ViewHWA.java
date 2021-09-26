@@ -1,6 +1,7 @@
 package njtai.ui;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Vector;
 
 import javax.microedition.lcdui.*;
 import javax.microedition.m3g.*;
@@ -13,29 +14,42 @@ public class ViewHWA extends View {
 		super(emo, prev, page);
 	}
 
-	protected void reset() {
-		// TODO Auto-generated method stub
+	PagePart[] p = null;
 
+	protected void reset() {
+		p = null;
 	}
 
 	protected void prepare(ByteArrayOutputStream data) throws InterruptedException {
-		// TODO Auto-generated method stub
-
+		reset();
+		byte[] d = data.toByteArray();
+		Image i = Image.createImage(d, 0, d.length);
+		Vector v = new Vector();
+		int s = 512;
+		for (int x = 0; x < i.getWidth() + s - 1; x++) {
+			for (int y = 0; y < i.getHeight() + s - 1; y++) {
+				v.addElement(new PagePart(i, x, y, (short) s));
+			}
+		}
+		PagePart[] tmp = new PagePart[v.size()];
+		v.copyInto(tmp);
+		v = null;
+		p = tmp;
 	}
 
 	protected void resize(int size) {
-		// TODO Auto-generated method stub
-
+		// do nothing for now
 	}
 
 	protected void reload() {
-		// TODO Auto-generated method stub
-
+		reset();
+		System.gc();
+		loader = new Thread(this);
+		loader.start();
 	}
 
 	public boolean canDraw() {
-		// TODO Auto-generated method stub
-		return false;
+		return p != null;
 	}
 
 	protected void paint(Graphics g) {
@@ -45,9 +59,9 @@ public class ViewHWA extends View {
 
 	protected void setupM3G(Graphics3D g3d) {
 		Camera cam = new Camera();
-		cam.setParallel(360, 16f / 9f, 0.1f, 900f);
+		cam.setParallel(getHeight(), getWidth()/(float)getHeight(), 0.1f, 900f);
 		Transform t = new Transform();
-		t.postTranslate(0, 360 / 2, 100);
+		t.postTranslate(x, y, 100);
 		Light l = new Light();
 		l.setColor(0xffffff); // white light
 		l.setIntensity(1f);
@@ -98,7 +112,7 @@ public class ViewHWA extends View {
 			part = null;
 
 			// appearance
-			Image2D image2D = new Image2D(Image2D.RGBA, spart);
+			Image2D image2D = new Image2D(Image2D.RGB, spart);
 			Texture2D tex = new Texture2D(image2D);
 			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
 			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
