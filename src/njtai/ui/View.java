@@ -89,7 +89,8 @@ public abstract class View extends Canvas implements Runnable {
 		int free = 0;
 		try {
 			String nokiaMem = System.getProperty("com.nokia.memoryramfree");
-			free = (int) Math.min(Integer.parseInt(nokiaMem), (15 * 1024 * 1024)-(Runtime.getRuntime().totalMemory()-f));
+			free = (int) Math.min(Integer.parseInt(nokiaMem),
+					(15 * 1024 * 1024) - (Runtime.getRuntime().totalMemory() - f));
 		} catch (Throwable t) {
 			free = f;
 		}
@@ -108,7 +109,7 @@ public abstract class View extends Canvas implements Runnable {
 			}
 		} else {
 			if (canStorePages() <= 2) {
-				for (int i = 0; i < page-1; i++) {
+				for (int i = 0; i < page - 1; i++) {
 					if (canStorePages() <= 2) {
 						cache[i] = null;
 					}
@@ -160,8 +161,13 @@ public abstract class View extends Canvas implements Runnable {
 			cache = null;
 			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
-					AlertType.ERROR));
+			String video = System.getProperty("com.nokia.gpu.memory.used");
+			if (video != null) {
+				video = " Video RAM used: " + video;
+			}
+			NJTAI.setScr(new Alert("Error",
+					"Not enough memory to continue viewing. Try to disable caching." + (video == null ? "" : video),
+					null, AlertType.ERROR));
 			return;
 		}
 	}
@@ -216,7 +222,7 @@ public abstract class View extends Canvas implements Runnable {
 		preloader = null;
 		repaint();
 	}
-	
+
 	protected void paintHUD(Graphics g, Font f) {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = "x" + zoom;
@@ -249,7 +255,7 @@ public abstract class View extends Canvas implements Runnable {
 			g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
 		// g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
 	}
-	
+
 	protected void drawTouchControls(Graphics g, Font f) {
 		int fh = f.getHeight();
 		// grads
@@ -275,7 +281,7 @@ public abstract class View extends Canvas implements Runnable {
 		g.drawLine(getWidth() / 3, getHeight() - 50, getWidth() / 3, getHeight());
 		g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
 	}
-	
+
 	protected abstract void limitOffset();
 
 	protected void paintNullImg(Graphics g, Font f) {
@@ -499,7 +505,7 @@ public abstract class View extends Canvas implements Runnable {
 	}
 
 	public static View create(ExtMangaObj mo, Displayable d, int i) {
-		if(System.getProperty("microedition.platform").indexOf("sw_platform_version=5.")!=-1) {
+		if (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1) {
 			return new ViewHWA(mo, d, i);
 		}
 		return new ViewSWR(mo, d, i);

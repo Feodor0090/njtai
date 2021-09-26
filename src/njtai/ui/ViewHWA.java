@@ -70,6 +70,8 @@ public class ViewHWA extends View {
 				g.setGrayScale(0);
 				g.fillRect(0, 0, getWidth(), getHeight());
 				paintNullImg(g, f);
+				g.setColor(255, 0, 0);
+				g.fillRect(0, 0, 4, 4);
 			} else {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
