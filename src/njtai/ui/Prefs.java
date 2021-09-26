@@ -57,7 +57,10 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 	private final TextField proxy = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
-
+	
+	private final ChoiceGroup view = new ChoiceGroup("View type", 4,
+			new String[] { "Auto","SWR","HWA"},null);
+	
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
 		this.menu = menu;
@@ -71,6 +74,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
+		view.setSelectedIndex(NJTAI.view, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
 
@@ -103,6 +107,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.loadCovers = covers.getSelectedIndex() == 1;
 			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
+			NJTAI.view = view.getSelectedIndex();
 			NJTAI.proxy = proxy.getString();
 			NJTAI.setScr(menu);
 			if (!NJTAI.savePrefs()) {

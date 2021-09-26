@@ -161,13 +161,8 @@ public abstract class View extends Canvas implements Runnable {
 			cache = null;
 			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			String video = System.getProperty("com.nokia.gpu.memory.used");
-			if (video != null) {
-				video = " Video RAM used: " + video;
-			}
-			NJTAI.setScr(new Alert("Error",
-					"Not enough memory to continue viewing. Try to disable caching." + (video == null ? "" : video),
-					null, AlertType.ERROR));
+			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
+					AlertType.ERROR));
 			return;
 		}
 	}
@@ -505,7 +500,9 @@ public abstract class View extends Canvas implements Runnable {
 	}
 
 	public static View create(ExtMangaObj mo, Displayable d, int i) {
-		if (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1) {
+		if (NJTAI.view == 1)
+			return new ViewSWR(mo, d, i);
+		if (NJTAI.view == 2 || System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1) {
 			return new ViewHWA(mo, d, i);
 		}
 		return new ViewSWR(mo, d, i);

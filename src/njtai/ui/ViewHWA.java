@@ -13,7 +13,29 @@ public class ViewHWA extends View {
 
 	public ViewHWA(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
+
+		// material
+		_material = new Material();
+		_material.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
+		_material.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
+		_material.setShininess(128f);
+		_material.setVertexColorTrackingEnable(true);
+
+		// compositing
+		_compositing = new CompositingMode();
+		_compositing.setAlphaThreshold(0.0f);
+		_compositing.setBlending(CompositingMode.ALPHA);
+
+		// pol mode
+		_polMode = new PolygonMode();
+		_polMode.setWinding(PolygonMode.WINDING_CW);
+		_polMode.setCulling(PolygonMode.CULL_NONE);
+		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
 	}
+
+	protected Material _material;
+	protected CompositingMode _compositing;
+	protected PolygonMode _polMode;
 
 	PagePart[] p = null;
 	int iw, ih;
@@ -26,6 +48,7 @@ public class ViewHWA extends View {
 		reset();
 		byte[] d = data.toByteArray();
 		Image i = Image.createImage(d, 0, d.length);
+		d = null;
 		ih = i.getHeight();
 		iw = i.getWidth();
 		Vector v = new Vector();
@@ -64,14 +87,14 @@ public class ViewHWA extends View {
 			g.setFont(f);
 
 			// bg fill
-			
 
 			if (p == null) {
 				g.setGrayScale(0);
 				g.fillRect(0, 0, getWidth(), getHeight());
 				paintNullImg(g, f);
-				g.setColor(255, 0, 0);
-				g.fillRect(0, 0, 4, 4);
+				g.setColor(0, 0, 255);
+				g.fillRect(0, 0, getWidth(), 4);
+				g.drawString(iw+"x"+ih, getWidth()/2, 4, Graphics.TOP|Graphics.HCENTER);
 			} else {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
@@ -128,35 +151,14 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	static class PagePart {
+	class PagePart {
 		int size;
 		Appearance ap;
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
 
-		protected Material _material = null;
-		protected CompositingMode _compositing = null;
-		protected PolygonMode _polMode = null;
-
 		public PagePart(Image page, int x, int y, short s) {
-			// material
-			_material = new Material();
-			_material.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
-			_material.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
-			_material.setShininess(128f);
-			_material.setVertexColorTrackingEnable(true);
-
-			// compositing
-			_compositing = new CompositingMode();
-			_compositing.setAlphaThreshold(0.0f);
-			_compositing.setBlending(CompositingMode.ALPHA);
-
-			// pol mode
-			_polMode = new PolygonMode();
-			_polMode.setWinding(PolygonMode.WINDING_CW);
-			_polMode.setCulling(PolygonMode.CULL_NONE);
-			_polMode.setShading(PolygonMode.SHADE_SMOOTH);
 
 			// cropping
 			Image part = Image.createImage(s, s);

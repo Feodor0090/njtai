@@ -51,7 +51,7 @@ public class NJTAI extends MIDlet {
 	 */
 	public static boolean preloadUrl = true;
 	public static boolean keepBitmap = true;
-	public static boolean flag8 = true;
+	public static int view = 0;
 
 	public static boolean isS60() {
 		return System.getProperty("microedition.platform").indexOf("S60") != -1;
@@ -76,7 +76,7 @@ public class NJTAI extends MIDlet {
 			s.append('`');
 			s.append(keepBitmap ? "1" : "0");
 			s.append('`');
-			s.append(flag8 ? "1" : "0");
+			s.append(String.valueOf(view));
 			s.append('`');
 			s.append(proxy);
 			byte[] d = s.toString().getBytes();
@@ -111,7 +111,7 @@ public class NJTAI extends MIDlet {
 			loadCovers = s[4].equals("1");
 			preloadUrl = s[5].equals("1");
 			keepBitmap = s[6].equals("1");
-			flag8 = s[7].equals("1");
+			view = Integer.parseInt(s[7]);
 			proxy = s[8];
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,6 +122,7 @@ public class NJTAI extends MIDlet {
 			keepBitmap = true;
 			preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			proxy = "http://nnproject.cc/proxy.php?";
+			view = 0;
 		}
 	}
 
