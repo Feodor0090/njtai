@@ -104,7 +104,7 @@ public class NJTAI extends MIDlet {
 			byte[] d = r.getRecord(1);
 			r.closeRecordStore();
 			String[] s = StringUtil.splitFull(new String(d), '`');
-			//preloadImg = s[0].equals("1"); // 0 is not used anymore
+			// preloadImg = s[0].equals("1"); // 0 is not used anymore
 			cachingPolicy = Integer.parseInt(s[1]);
 			loadCoverAtPage = s[2].equals("1");
 			keepLists = s[3].equals("1");
@@ -159,7 +159,7 @@ public class NJTAI extends MIDlet {
 
 	protected void startApp() throws MIDletStateChangeException {
 		String locale = System.getProperty("microedition.locale");
-		rus = (locale != null && locale.equals("ru_RU"));
+		rus = (locale != null && (locale.equals("ru_RU") || locale.equals("ru-RU")));
 		inst = this;
 		dsp = Display.getDisplay(inst);
 		if (!running) {
