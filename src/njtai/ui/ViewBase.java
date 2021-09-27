@@ -70,6 +70,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				return a;
 			byte[] b = emo.getPage(n);
 			try {
+				if (b == null) {
+					error = true;
+					repaint();
+					return null;
+				}
 				a = new ByteArrayOutputStream(b.length);
 
 				a.write(b);
@@ -89,6 +94,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			synchronized (cache) {
 				byte[] b = emo.getPage(n);
 				try {
+					if (b == null) {
+						error = true;
+						repaint();
+						return null;
+					}
 					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
 
 					s.write(b);
@@ -107,7 +117,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * Releases some images to prevent OOM errors.
 	 */
 	protected synchronized void emergencyCacheClear() {
-		if(NJTAI.files) {
+		if (NJTAI.files) {
 			cache = null;
 			return;
 		}
@@ -129,7 +139,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * @return Aproximatry count of pages that is safe to load.
 	 */
 	protected int canStorePages() {
-		if(NJTAI.files) {
+		if (NJTAI.files) {
 			return 999;
 		}
 		int f = (int) Runtime.getRuntime().freeMemory();
@@ -148,7 +158,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	}
 
 	protected synchronized void checkCacheAfterPageSwitch() {
-		if(NJTAI.files) {
+		if (NJTAI.files) {
 			cache = null;
 			return;
 		}
@@ -191,7 +201,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					repaint();
 					resize(1);
 					zoom = 1;
-				} catch (InterruptedException e) {
+				} catch (Exception e) {
 					error = true;
 					e.printStackTrace();
 				}
@@ -227,7 +237,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 
 	void preload() throws InterruptedException {
 		Thread.sleep(1000);
-		if(NJTAI.files) {
+		if (NJTAI.files) {
 			for (int i = 0; i < emo.pages; i++) {
 				try {
 					getImage(i);
@@ -241,6 +251,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					preloadProgress = 104;
 					repaint();
 					return;
+				} catch (Throwable e) {
+					error = true;
+					repaint();
 				}
 			}
 			preloadProgress = 100;
@@ -353,7 +366,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 
 		repaint();
 	}
-	
+
 	protected void keyRepeated(int k) {
 		if (!canDraw()) {
 			repaint();

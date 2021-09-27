@@ -47,7 +47,9 @@ public class ViewSWR extends View {
 			w = w * size;
 			toDraw = NJTAI.resize(origImg, w, h);
 		} catch (Throwable e) {
+			e.printStackTrace();
 			error = true;
+			return;
 		}
 	}
 

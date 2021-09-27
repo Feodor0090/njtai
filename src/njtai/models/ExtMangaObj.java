@@ -54,8 +54,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (imgs == null) {
 			imgs = new String[pages];
 		}
-		if (imgs[i] == null) {
-			loadUrl(i + 1);
+		String url;
+		try {
+			url = imgs[i];
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			url = loadUrl(i + 1);
+		}
+		if (url == null) {
+			url = loadUrl(i + 1);
 			if (NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
 				if (!prefetched) {
 					Thread.sleep(100);
@@ -69,7 +76,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				infoReady = 100;
 			}
 		}
-		return Imgs.getImg(imgs[i]);
+		return Imgs.getImg(url);
 	}
 
 	private void loadUrls() throws InterruptedException {
@@ -102,7 +109,8 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	}
 
 	public synchronized String loadUrl(int pageN) {
-		if(imgs==null) imgs = new String[pages];
+		if (imgs == null)
+			imgs = new String[pages];
 		if (imgs[pageN - 1] != null)
 			return imgs[pageN - 1];
 		try {
