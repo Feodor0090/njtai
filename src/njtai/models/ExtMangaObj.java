@@ -106,9 +106,13 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	}
 
 	public void cancelPrefetch() {
-		if (urlFetcher != null && urlFetcher.isAlive()) {
-			urlFetcher.interrupt();
-			urlFetcher = null;
+		try {
+			if (urlFetcher != null && urlFetcher.isAlive()) {
+				urlFetcher.interrupt();
+				urlFetcher = null;
+			}
+		} catch (RuntimeException e) {
+			e.printStackTrace();
 		}
 	}
 

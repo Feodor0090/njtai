@@ -85,30 +85,34 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				return null;
 			}
 		} else {
-			if (cache == null)
-				cache = new ByteArrayOutputStream[emo.pages];
+			try {
+				if (cache == null)
+					cache = new ByteArrayOutputStream[emo.pages];
 
-			if (cache[n] != null)
-				return cache[n];
+				if (cache[n] != null)
+					return cache[n];
 
-			synchronized (cache) {
-				byte[] b = emo.getPage(n);
-				try {
-					if (b == null) {
-						error = true;
-						repaint();
+				synchronized (cache) {
+					byte[] b = emo.getPage(n);
+					try {
+						if (b == null) {
+							error = true;
+							repaint();
+							return null;
+						}
+						ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+
+						s.write(b);
+
+						cache[n] = s;
+						return s;
+					} catch (IOException e) {
+						e.printStackTrace();
 						return null;
 					}
-					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
-
-					s.write(b);
-
-					cache[n] = s;
-					return s;
-				} catch (IOException e) {
-					e.printStackTrace();
-					return null;
 				}
+			} catch (RuntimeException e) {
+				return null;
 			}
 		}
 	}
@@ -121,6 +125,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			cache = null;
 			return;
 		}
+		if (cache == null)
+			return;
 		for (int i = 0; i < page - 1; i++) {
 			cache[i] = null;
 		}
@@ -162,6 +168,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			cache = null;
 			return;
 		}
+		if (cache == null)
+			return;
 		if (NJTAI.cachingPolicy == 0) {
 			for (int i = 0; i < cache.length; i++) {
 				if (i != page)
@@ -224,7 +232,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				public void run() {
 					try {
 						preload();
-					} catch (InterruptedException e) {
+					} catch (Throwable e) {
 						e.printStackTrace();
 					}
 				}
@@ -260,9 +268,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			return;
 		}
 		for (int i = page; i < emo.pages; i++) {
-			if (cache[i] != null)
-				continue;
+			if (cache == null)
+				return;
 			try {
+				if (cache[i] != null)
+					continue;
 				if (canStorePages() < 1) {
 					preloadProgress = 102;
 					preloader = null;
@@ -272,6 +282,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				if (preloadProgress != 100)
 					preloadProgress = i * 100 / emo.pages;
 				repaint();
+				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				preloadProgress = 103;
@@ -284,6 +295,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				preloader = null;
 				repaint();
 				return;
+			} catch (NullPointerException e) {
+				preloadProgress = 100;
+				preloader = null;
+				repaint();
 			}
 		}
 		preloadProgress = 100;
@@ -320,13 +335,22 @@ public abstract class ViewBase extends Canvas implements Runnable {
 
 	protected void keyPressed(int k) {
 		if (k == -7) {
-			cache = null;
 			emo.cancelPrefetch();
-			if (loader != null && loader.isAlive())
-				loader.interrupt();
-			if (preloader != null && preloader.isAlive())
-				preloader.interrupt();
-			NJTAI.setScr(prev);
+			try {
+				if (loader != null && loader.isAlive())
+					loader.interrupt();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (preloader != null && preloader.isAlive())
+					preloader.interrupt();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+			NJTAI.setScr(prev == null ? new MMenu() : prev);
+
+			cache = null;
 			return;
 		}
 		if (!canDraw()) {
