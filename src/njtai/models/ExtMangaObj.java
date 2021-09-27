@@ -76,6 +76,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				infoReady = 100;
 			}
 		}
+		if (infoReady == -1) {
+			infoReady = 100;
+		}
 		return Imgs.getImg(url);
 	}
 
@@ -89,6 +92,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				Thread.sleep(10);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			infoReady = -1;
 		}
 	}
