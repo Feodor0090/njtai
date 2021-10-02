@@ -38,27 +38,31 @@ final class MangaList extends Form implements Runnable, CommandListener {
 
 	public void run() {
 		try {
-			while (objs.hasMoreElements()) {
-				MangaObj o = (MangaObj) objs.nextElement();
-				ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
-				OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
-				h.attach(img);
-				this.append(img);
+			try {
+				while (objs.hasMoreElements()) {
+					MangaObj o = (MangaObj) objs.nextElement();
+					ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
+					OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
+					h.attach(img);
+					this.append(img);
+					setTitle(title);
+				}
+				objs = null;
+				loader = null;
 				setTitle(title);
+			} catch (OutOfMemoryError e) {
+				wasOom = true;
+				objs = null;
+				loader = null;
+				System.gc();
+				NJTAI.keepLists = false;
+				NJTAI.savePrefs();
+				append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
+						NJTAI.rus ? "Не хватило памяти для отображения полного списка"
+								: "Not enough memory to show full list"));
 			}
-			objs = null;
-			loader = null;
-			setTitle(title);
-		} catch (OutOfMemoryError e) {
-			wasOom = true;
-			objs = null;
-			loader = null;
-			System.gc();
-			NJTAI.keepLists = false;
-			NJTAI.savePrefs();
-			append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
-					NJTAI.rus ? "Не хватило памяти для отображения полного списка"
-							: "Not enough memory to show full list"));
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 

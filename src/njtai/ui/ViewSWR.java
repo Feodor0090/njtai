@@ -27,13 +27,21 @@ public class ViewSWR extends View {
 			System.gc();
 			repaint();
 			Image origImg;
-			if (NJTAI.keepBitmap) {
+			if (NJTAI.keepBitmap && orig != null) {
 				origImg = orig;
 			} else {
-				byte[] b = getImage(page).toByteArray();
-				origImg = Image.createImage(b, 0, b.length);
-				b = null;
-				System.gc();
+				try {
+					byte[] b = getImage(page).toByteArray();
+					origImg = Image.createImage(b, 0, b.length);
+					b = null;
+					System.gc();
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					origImg = Image.createImage(1, 1);
+					if (NJTAI.files && fs != null) {
+						fs.repair(this);
+					}
+				}
 			}
 			int h = getHeight();
 			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
@@ -90,8 +98,6 @@ public class ViewSWR extends View {
 		}
 	}
 
-	
-
 	protected void limitOffset() {
 		int hw = toDraw.getWidth() / 2;
 		int hh = toDraw.getHeight() / 2;
@@ -123,10 +129,17 @@ public class ViewSWR extends View {
 
 	protected void prepare(ByteArrayOutputStream d) throws InterruptedException {
 		if (NJTAI.keepBitmap) {
-			byte[] b = d.toByteArray();
-			orig = Image.createImage(b, 0, b.length);
-			b = null;
-			System.gc();
+			try {
+				byte[] b = d.toByteArray();
+				orig = Image.createImage(b, 0, b.length);
+				b = null;
+				System.gc();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				if (NJTAI.files && fs != null) {
+					fs.repair(this);
+				}
+			}
 		}
 	}
 }

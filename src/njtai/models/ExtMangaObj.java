@@ -101,7 +101,8 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		try {
 			loadUrls();
 			urlFetcher = null;
-		} catch (InterruptedException e) {
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 

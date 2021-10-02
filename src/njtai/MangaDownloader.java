@@ -17,6 +17,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 
 import njtai.models.ExtMangaObj;
+import njtai.ui.View;
 
 public class MangaDownloader extends Thread implements CommandListener {
 	private ExtMangaObj o;
@@ -291,7 +292,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} catch (IOException e1) {
 				}
 			}
-			g.setValue(i * 100 / o.pages);
+			int percs = i * 100 / o.pages;
+			a.setString("Downloading " + percs + "%");
+			g.setValue(percs);
 			if (stop)
 				return;
 		}
@@ -310,6 +313,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		} catch (Exception e) {
 		}
+	}
+
+	public void repair(View caller) {
+
 	}
 
 	public static String checkBasePath() {
