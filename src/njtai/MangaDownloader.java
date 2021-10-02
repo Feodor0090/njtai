@@ -33,6 +33,12 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	static String dir;
 
+	/**
+	 * When true, the program will check files and overwrite them if they are
+	 * broken.
+	 */
+	public boolean agressive = false;
+
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
 			dir = checkBasePath();
@@ -313,10 +319,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		} catch (Exception e) {
 		}
-	}
-
-	public void repair(View caller) {
-
 	}
 
 	public static String checkBasePath() {

@@ -38,8 +38,16 @@ public class ViewSWR extends View {
 				} catch (RuntimeException e) {
 					e.printStackTrace();
 					origImg = Image.createImage(1, 1);
-					if (NJTAI.files && fs != null) {
-						fs.repair(this);
+					if (NJTAI.files) {
+						showBrokenNotify();
+						try {
+							byte[] b = getImage(page, true).toByteArray();
+							origImg = Image.createImage(b, 0, b.length);
+							b = null;
+							System.gc();
+						} catch (RuntimeException e1) {
+							e1.printStackTrace();
+						}
 					}
 				}
 			}
@@ -136,8 +144,17 @@ public class ViewSWR extends View {
 				System.gc();
 			} catch (RuntimeException e) {
 				e.printStackTrace();
-				if (NJTAI.files && fs != null) {
-					fs.repair(this);
+				orig = null;
+				if (NJTAI.files) {
+					showBrokenNotify();
+					try {
+						byte[] b = getImage(page, true).toByteArray();
+						orig = Image.createImage(b, 0, b.length);
+						b = null;
+						System.gc();
+					} catch (RuntimeException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}

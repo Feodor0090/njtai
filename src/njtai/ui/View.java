@@ -1,5 +1,7 @@
 package njtai.ui;
 
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
@@ -103,6 +105,18 @@ public abstract class View extends ViewBase {
 			g.setGrayScale(255);
 			g.drawString(touchCaps[5], getWidth() * 5 / 6, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 
+		}
+	}
+
+	protected void showBrokenNotify() {
+		Alert a = new Alert("Image file is corrupted",
+				"It is recommended to run cache repairer from manga's page. The image will be downloaded again for now.",
+				null, AlertType.ERROR);
+		a.setTimeout(Alert.FOREVER);
+		try {
+			NJTAI.setScr(a);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

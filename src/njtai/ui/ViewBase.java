@@ -64,7 +64,18 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * @throws InterruptedException
 	 */
 	protected ByteArrayOutputStream getImage(int n) throws InterruptedException {
-		if (NJTAI.files) {
+		return getImage(n, false);
+	}
+
+	/**
+	 * Loads an image, optionally ignoring the cache.
+	 * 
+	 * @param n Number of image (not page!) [0; emo.pages)
+	 * @return Data of loaded image.
+	 * @throws InterruptedException
+	 */
+	protected ByteArrayOutputStream getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
+		if (NJTAI.files && !forceCacheIgnore) {
 			ByteArrayOutputStream a = fs.read(n);
 			if (a != null)
 				return a;
@@ -89,7 +100,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				if (cache == null)
 					cache = new ByteArrayOutputStream[emo.pages];
 
-				if (cache[n] != null)
+				if (forceCacheIgnore)
+					cache[n] = null;
+				else if (cache[n] != null)
 					return cache[n];
 
 				synchronized (cache) {
@@ -121,20 +134,24 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * Releases some images to prevent OOM errors.
 	 */
 	protected synchronized void emergencyCacheClear() {
-		if (NJTAI.files) {
-			cache = null;
-			return;
-		}
-		if (cache == null)
-			return;
-		for (int i = 0; i < page - 1; i++) {
-			cache[i] = null;
-		}
-		for (int i = emo.pages - 1; i > page; i--) {
-			if (cache[i] != null) {
-				cache[i] = null;
-				break;
+		try {
+			if (NJTAI.files) {
+				cache = null;
+				return;
 			}
+			if (cache == null)
+				return;
+			for (int i = 0; i < page - 1; i++) {
+				cache[i] = null;
+			}
+			for (int i = emo.pages - 1; i > page; i--) {
+				if (cache[i] != null) {
+					cache[i] = null;
+					break;
+				}
+			}
+		} catch (RuntimeException e) {
+			e.printStackTrace();
 		}
 	}
 
