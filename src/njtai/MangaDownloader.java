@@ -15,6 +15,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
+import javax.microedition.lcdui.Image;
 
 import njtai.models.ExtMangaObj;
 import njtai.ui.View;
@@ -37,7 +38,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 	 * When true, the program will check files and overwrite them if they are
 	 * broken.
 	 */
-	public boolean agressive = false;
+	public boolean repair = false;
+
+	public boolean check = true;
 
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
@@ -224,6 +227,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		boolean filesExisted = false;
 		boolean ioError = false;
+		boolean outOfMem = false;
 
 		for (int i = 0; i < o.pages; i++) {
 			String url = o.loadUrl(i + 1);
@@ -249,11 +253,46 @@ public class MangaDownloader extends Thread implements CommandListener {
 				}
 				fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
 				if (fc.exists()) {
-					fc.close();
-					filesExisted = true;
-					continue;
-				}
-				fc.create();
+					if (repair) {
+						if (fc.fileSize() == 0) {
+							// just overwrite
+						} else if (check) {
+							DataInputStream dis = null;
+							try {
+								dis = fc.openDataInputStream();
+								ByteArrayOutputStream b = new ByteArrayOutputStream();
+								int l = 0;
+								byte[] buf = new byte[1024 * 64];
+								while ((l = dis.read(buf)) != -1) {
+									b.write(buf, 0, l);
+								}
+								dis.close();
+								try {
+									Image.createImage(b.toByteArray(), 0, b.size());
+									// ok
+									fc.close();
+									continue;
+								} catch (Exception e) {
+									// failed
+									fc.truncate(0);
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							} finally {
+								if (dis != null)
+									dis.close();
+							}
+						} else {
+							fc.close();
+							continue;
+						}
+					} else {
+						fc.close();
+						filesExisted = true;
+						continue;
+					}
+				} else
+					fc.create();
 
 				if (url.startsWith("https://"))
 					url = url.substring(8);
@@ -262,7 +301,23 @@ public class MangaDownloader extends Thread implements CommandListener {
 				url = NJTAI.proxy + url;
 				httpCon = (HttpConnection) Connector.open(url);
 				httpCon.setRequestMethod("GET");
-
+				int code = httpCon.getResponseCode();
+				if (code / 100 != 2 || code / 100 != 3) {
+					fc.delete();
+					fc.close();
+					fc = null;
+					ioError = true;
+					continue;
+				}
+				long dataLen = httpCon.getLength();
+				if (dataLen > 0) {
+					if (fc.availableSize() < (dataLen * 4)) {
+						fc.delete();
+						fc.close();
+						outOfMem = true;
+						break;
+					}
+				}
 				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
 				byte[] buf = new byte[1024 * 64];
@@ -311,11 +366,18 @@ public class MangaDownloader extends Thread implements CommandListener {
 			if (ioError) {
 				NJTAI.setScr(new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
 						AlertType.ERROR));
-			} else if (filesExisted) {
+			} else if (outOfMem) {
+				NJTAI.setScr(new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
+						AlertType.WARNING));
+			} else if (filesExisted && !repair) {
 				NJTAI.setScr(
 						new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING));
 			} else {
-				NJTAI.setScr(new Alert("NJTAI", "All pages were downloaded.", null, AlertType.CONFIRMATION));
+				NJTAI.setScr(new Alert("NJTAI",
+						repair ? (check ? "All pages were checked and repaired."
+								: "Missed and empty pages were downloaded, but already existed were not checked.")
+								: "All pages were downloaded.",
+						null, AlertType.CONFIRMATION));
 			}
 		} catch (Exception e) {
 		}
