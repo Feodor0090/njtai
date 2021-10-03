@@ -91,6 +91,10 @@ public abstract class View extends ViewBase {
 		} else {
 			info = (NJTAI.rus ? "Подготовка..." : "Preparing...");
 		}
+		g.setGrayScale(0);
+		int w = g.getFont().stringWidth(info);
+		int h = g.getFont().getHeight();
+		g.fillRect(getWidth() / 2 - w / 2, getHeight() / 2, w, h);
 		g.setGrayScale(255);
 		g.drawString(info, getWidth() / 2, getHeight() / 2, Graphics.HCENTER | Graphics.TOP);
 		if (hasPointerEvents()) {
