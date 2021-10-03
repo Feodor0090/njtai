@@ -212,12 +212,14 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		FileConnection fc = null;
 
+		long freeSpace = Long.MAX_VALUE;
 		String folder = getFolderName();
 		// folder
 		try {
 			fc = (FileConnection) Connector.open(folder, 3);
 			if (!fc.exists())
 				fc.mkdir();
+			freeSpace = fc.availableSize();
 		} catch (Exception e) {
 		} finally {
 			try {
@@ -226,26 +228,17 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		}
 
+		if (freeSpace == -1)
+			freeSpace = Long.MAX_VALUE;
+
 		boolean filesExisted = false;
 		boolean ioError = false;
 		boolean outOfMem = false;
 
 		for (int i = 0; i < o.pages; i++) {
+			int percs = i * 100 / o.pages;
 			String url = null;
-			try {
-				url = o.loadUrl(i + 1);
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				NJTAI.setScr(prev);
-				return;
-			}
-			if (url == null) {
-				NJTAI.setScr(prev);
-				NJTAI.pause(100);
-				NJTAI.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
-				return;
-			}
+			
 			DataOutputStream ou = null;
 			HttpConnection httpCon = null;
 			InputStream ins = null;
@@ -260,15 +253,19 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} else {
 					n = "" + j;
 				}
+				a.setString("Checking " + percs + "%");
 				String fn = folder + o.num + "_" + n + ".jpg";
 				System.out.println("Writing a page to " + fn);
 				fc = (FileConnection) Connector.open(fn);
+
+				// If the file exists, we may want to check it or just skip
 				if (fc.exists()) {
 					if (repair) {
 						System.out.println("Attempt to repair");
 						if (fc.fileSize() == 0) {
 							// just overwrite
 						} else if (check) {
+							// attempt to decode
 							System.out.println("Attempt to check...");
 							DataInputStream dis = null;
 							try {
@@ -297,42 +294,66 @@ public class MangaDownloader extends Thread implements CommandListener {
 							}
 						} else {
 							fc.close();
-							int percs = i * 100 / o.pages;
-							a.setString("Downloading " + percs + "%");
 							g.setValue(percs);
 							continue;
 						}
 					} else {
+						// skipping
 						System.out.println("File exists, skipping...");
 						fc.close();
 						filesExisted = true;
-						int percs = i * 100 / o.pages;
-						a.setString("Downloading " + percs + "%");
 						g.setValue(percs);
 						continue;
 					}
 				} else {
+					// There is no file? Creating.
 					fc.create();
 				}
+				
+				a.setString("Fetching " + percs + "%");
+				try {
+					url = o.loadUrl(i + 1);
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					NJTAI.setScr(prev);
+					fc.close();
+					return;
+				}
+				if (url == null) {
+					fc.close();
+					NJTAI.setScr(prev);
+					NJTAI.pause(100);
+					NJTAI.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
+					return;
+				}
+				
+				a.setString("Downloading " + percs + "%");
+				
 				if (url.startsWith("https://"))
 					url = url.substring(8);
 				if (url.startsWith("http://"))
 					url = url.substring(7);
 				url = NJTAI.proxy + url;
 				System.out.println("Loading from " + url);
+				
 				httpCon = (HttpConnection) Connector.open(url);
 				httpCon.setRequestMethod("GET");
 				int code = httpCon.getResponseCode();
 				System.out.println("Code " + code);
+				
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
-					if (fc.availableSize() < (dataLen * 4)) {
+					if (freeSpace < (dataLen * 4)) {
 						fc.delete();
 						fc.close();
 						outOfMem = true;
 						break;
+					} else {
+						freeSpace -= dataLen;
 					}
 				}
+				
 				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
 				byte[] buf = new byte[1024 * 64];
@@ -368,8 +389,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} catch (IOException e1) {
 				}
 			}
-			int percs = i * 100 / o.pages;
-			a.setString("Downloading " + percs + "%");
 			g.setValue(percs);
 			if (stop)
 				return;

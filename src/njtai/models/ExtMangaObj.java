@@ -127,7 +127,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (attempt > 5)
 			return null;
 		if (attempt > 0)
-			Thread.sleep(attempt * 1500);
+			Thread.sleep((attempt+1) * 500);
 		if (imgs == null)
 			imgs = new String[pages];
 		if (imgs[pageN - 1] != null)
