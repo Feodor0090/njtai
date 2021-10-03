@@ -185,6 +185,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public void run() {
+		NJTAI.pause(500);
 		Alert a = new Alert(o.title, "Looking for the folder", null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
 		a.addCommand(stopCmd);
@@ -431,6 +432,28 @@ public class MangaDownloader extends Thread implements CommandListener {
 					fc.close();
 			}
 			try {
+				String dir = "file:///E:/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///F:/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
 				String dir = System.getProperty("fileconn.dir.photos");
 				fc = (FileConnection) Connector.open(dir, Connector.READ);
 				if (!fc.exists())
@@ -454,6 +477,17 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 			try {
 				String dir = "file:///C:/Data/Images/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///C:/";
 				fc = (FileConnection) Connector.open(dir, Connector.READ);
 				if (!fc.exists())
 					throw new RuntimeException();
