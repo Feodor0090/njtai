@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;

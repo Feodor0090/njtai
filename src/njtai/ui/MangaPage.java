@@ -18,8 +18,11 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Item pageN = new StringItem(null, NJTAI.rus ? "Ввести номер страницы" : "Enter page number",
 			StringItem.BUTTON);
 	private Item save = new StringItem(null, NJTAI.rus ? "Скачать" : "Download", StringItem.BUTTON);
+	private Item repair = new StringItem(null, NJTAI.rus ? "Восстановить кэш" : "Repair cache", StringItem.BUTTON);
 	public static Command open = new Command(NJTAI.rus ? "Выбрать" : "Select", Command.ITEM, 1);
 	private Command goTo = new Command("Go", Command.OK, 1);
+	private Command repairLite = new Command(NJTAI.rus ? "Докачать" : "Redownload", Command.SCREEN, 1);
+	private Command repairFull = new Command(NJTAI.rus ? "Полная проверка" : "Full repair", Command.SCREEN, 2);
 
 	boolean stop = false;
 
@@ -73,7 +76,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			return;
 
 		deleteAll();
-		append(new ImageItem(mo.img==null?(NJTAI.rus?"Загрузка обложки была отключена.":"Cover loading was disabled."):null, mo.img, 0, null));
+		append(new ImageItem(
+				mo.img == null ? (NJTAI.rus ? "Загрузка обложки была отключена." : "Cover loading was disabled.")
+						: null,
+				mo.img, 0, null));
 		setTitle(mo.title);
 
 		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));
@@ -89,6 +95,9 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		save.setItemCommandListener(this);
 		save.setDefaultCommand(open);
 		append(save);
+		repair.setItemCommandListener(this);
+		repair.setDefaultCommand(open);
+		append(repair);
 	}
 
 	private void status(String string) {
@@ -136,6 +145,35 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				NJTAI.setScr(tb);
 			} else if (i == save) {
 				(new MangaDownloader(mo, this)).start();
+			} else if (i == repair) {
+				Alert a = new Alert(NJTAI.rus ? "Восстановление кэша" : "Cache repairing", NJTAI.rus
+						? "Эта утилита найдёт пустые/утерянные изображения и докачает их (\"Докачать\"). Если какие-то файлы были повреждены, запустите полную проверку для их обнаружения и восстановления. Это не не будет работать на устройствах с <10 мб памяти."
+						: "This utility will find empty/missed images in local folder and download them (\"Redownload\"). If some files are broken, run \"Full repair\" to find and redownload them. Warning: this won't work on <10mb-ram devices.",
+						null, AlertType.WARNING);
+				a.setTimeout(Alert.FOREVER);
+				a.addCommand(repairFull);
+				a.addCommand(repairLite);
+				a.addCommand(back);
+				final Displayable menu = this;
+				a.setCommandListener(new CommandListener() {
+
+					public void commandAction(Command c, Displayable d) {
+						NJTAI.setScr(menu);
+
+						if (c == repairFull) {
+							MangaDownloader md = new MangaDownloader(mo, menu);
+							md.repair = true;
+							md.check = true;
+							md.start();
+						} else if (c == repairLite) {
+							MangaDownloader md = new MangaDownloader(mo, menu);
+							md.repair = true;
+							md.check = false;
+							md.start();
+						}
+					}
+				});
+				NJTAI.setScr(a);
 			}
 		}
 	}
