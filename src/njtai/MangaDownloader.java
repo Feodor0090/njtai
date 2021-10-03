@@ -385,8 +385,11 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public static String checkBasePath() {
-		if (System.getProperty("os.name").toLowerCase().indexOf("ndroid") != -1)
-			return "file:///C/";
+		// avoid folders lookups in J2MEL
+		String vendor = System.getProperty("java.vendor");
+		if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
+			return "file:///c:/";
+		}
 		try {
 			FileConnection fc = null;
 			try {
@@ -490,6 +493,17 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 			try {
 				String dir = "file:///C:/";
+				fc = (FileConnection) Connector.open(dir, Connector.READ);
+				if (!fc.exists())
+					throw new RuntimeException();
+				fc.close();
+				return dir;
+			} catch (Throwable t) {
+				if (fc != null)
+					fc.close();
+			}
+			try {
+				String dir = "file:///c:/";
 				fc = (FileConnection) Connector.open(dir, Connector.READ);
 				if (!fc.exists())
 					throw new RuntimeException();
