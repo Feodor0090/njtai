@@ -27,16 +27,25 @@ public class ViewSWR extends View {
 			System.gc();
 			repaint();
 			Image origImg;
-			if (NJTAI.keepBitmap && orig != null) {
+			if (NJTAI.keepBitmap && orig != null && orig.getHeight() != 1 && orig.getWidth() != 1) {
 				origImg = orig;
 			} else {
+				int l = -1;
 				try {
 					byte[] b = getImage(page).toByteArray();
+					l = b.length;
 					origImg = Image.createImage(b, 0, b.length);
 					b = null;
 					System.gc();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
+					String url = "null";
+					if (emo.imgs != null) {
+						url = emo.imgs[page];
+					}
+					if (url == null)
+						url = "null";
+					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes, url=" + url);
 					origImg = Image.createImage(1, 1);
 					if (NJTAI.files) {
 						showBrokenNotify();
@@ -73,14 +82,12 @@ public class ViewSWR extends View {
 		try {
 			Font f = Font.getFont(0, 0, 8);
 			g.setFont(f);
-
-			// bg fill
-			g.setGrayScale(0);
-			g.fillRect(0, 0, getWidth(), getHeight());
-
 			if (toDraw == null) {
 				paintNullImg(g, f);
 			} else {
+				// bg fill
+				g.setGrayScale(0);
+				g.fillRect(0, 0, getWidth(), getHeight());
 				limitOffset();
 				if (zoom != 1) {
 					g.drawImage(toDraw, x + getWidth() / 2, y + getHeight() / 2, Graphics.HCENTER | Graphics.VCENTER);
@@ -137,14 +144,23 @@ public class ViewSWR extends View {
 
 	protected void prepare(ByteArrayOutputStream d) throws InterruptedException {
 		if (NJTAI.keepBitmap) {
+			int l = -1;
 			try {
 				byte[] b = d.toByteArray();
+				l = b.length;
 				orig = Image.createImage(b, 0, b.length);
 				b = null;
 				System.gc();
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 				orig = null;
+				String url = "null";
+				if (emo.imgs != null) {
+					url = emo.imgs[page];
+				}
+				if (url == null)
+					url = "null";
+				System.out.println("Failed to decode an image in preparing. Size=" + l + "bytes, url=" + url);
 				if (NJTAI.files) {
 					showBrokenNotify();
 					try {
