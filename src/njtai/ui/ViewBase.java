@@ -75,6 +75,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * @throws InterruptedException
 	 */
 	protected ByteArrayOutputStream getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
+		if (forceCacheIgnore)
+			Thread.sleep(500);
 		if (NJTAI.files && !forceCacheIgnore) {
 			ByteArrayOutputStream a = fs.read(n);
 			if (a != null)
@@ -106,6 +108,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					return cache[n];
 
 				synchronized (cache) {
+					long ct = System.currentTimeMillis();
+					if (ct - lastTime < 350)
+						Thread.sleep(ct - lastTime);
+					lastTime = ct;
 					byte[] b = emo.getPage(n);
 					try {
 						if (b == null) {
@@ -213,6 +219,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 
 	}
 
+	long lastTime = System.currentTimeMillis();
+
 	public void run() {
 		try {
 			synchronized (this) {
@@ -266,7 +274,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			for (int i = 0; i < emo.pages; i++) {
 				try {
 					getImage(i);
-					Thread.sleep(100);
+					Thread.sleep(300);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 					preloadProgress = 103;
@@ -296,6 +304,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					return;
 				}
 				getImage(i);
+				Thread.sleep(400);
 				if (preloadProgress != 100)
 					preloadProgress = i * 100 / emo.pages;
 				repaint();

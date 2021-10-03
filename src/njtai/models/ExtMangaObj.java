@@ -85,11 +85,13 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	private void loadUrls() throws InterruptedException {
 		try {
 			for (int i = 1; i <= pages; i++) {
+				long t = System.currentTimeMillis();
 				loadUrl(i);
 				infoReady = i * 100 / pages;
 				if (NJTAI.getScr() instanceof Canvas)
 					((Canvas) NJTAI.getScr()).repaint();
-				Thread.sleep(10);
+				t = System.currentTimeMillis() - t;
+				Thread.sleep(t > 2000 ? 100 : 500);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,7 +119,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
-	public synchronized String loadUrl(int pageN) {
+	public String loadUrl(int pageN) throws InterruptedException {
+		return loadUrl(pageN, 0);
+	}
+
+	public synchronized String loadUrl(int pageN, int attempt) throws InterruptedException {
+		if (attempt > 5)
+			return null;
+		if (attempt > 0)
+			Thread.sleep(attempt * 1500);
 		if (imgs == null)
 			imgs = new String[pages];
 		if (imgs[pageN - 1] != null)
@@ -128,6 +138,11 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			html = null;
 			System.gc();
 			String url = StringUtil.range(span, "<img src=\"", "\"", false);
+			if (url.startsWith("<html>")) {
+				if (url.indexOf("429") != -1) {
+					return loadUrl(pageN, attempt + 1);
+				}
+			}
 			imgs[pageN - 1] = url;
 			return url;
 		} catch (OutOfMemoryError e) {

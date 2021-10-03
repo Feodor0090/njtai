@@ -93,6 +93,9 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		append(aboutProxy);
 		append(new StringItem("Beta features", "Better not to touch them."));
 		append(view);
+		ChoiceGroup c = new ChoiceGroup("Setting", 4, new String[] { "1", "2", "3" }, null);
+		c.setSelectedIndex(1, true);
+		append(c);
 	}
 
 	public final void commandAction(Command c, Displayable arg1) {

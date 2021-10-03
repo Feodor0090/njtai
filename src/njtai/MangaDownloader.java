@@ -231,7 +231,15 @@ public class MangaDownloader extends Thread implements CommandListener {
 		boolean outOfMem = false;
 
 		for (int i = 0; i < o.pages; i++) {
-			String url = o.loadUrl(i + 1);
+			String url = null;
+			try {
+				url = o.loadUrl(i + 1);
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				NJTAI.setScr(prev);
+				return;
+			}
 			if (url == null) {
 				NJTAI.setScr(prev);
 				NJTAI.pause(100);
@@ -252,12 +260,16 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} else {
 					n = "" + j;
 				}
-				fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
+				String fn = folder + o.num + "_" + n + ".jpg";
+				System.out.println("Writing a page to " + fn);
+				fc = (FileConnection) Connector.open(fn);
 				if (fc.exists()) {
 					if (repair) {
+						System.out.println("Attempt to repair");
 						if (fc.fileSize() == 0) {
 							// just overwrite
 						} else if (check) {
+							System.out.println("Attempt to check...");
 							DataInputStream dis = null;
 							try {
 								dis = fc.openDataInputStream();
@@ -288,28 +300,24 @@ public class MangaDownloader extends Thread implements CommandListener {
 							continue;
 						}
 					} else {
+						System.out.println("File exists, skipping...");
 						fc.close();
 						filesExisted = true;
 						continue;
 					}
-				} else
+				} else {
 					fc.create();
-
+				}
 				if (url.startsWith("https://"))
 					url = url.substring(8);
 				if (url.startsWith("http://"))
 					url = url.substring(7);
 				url = NJTAI.proxy + url;
+				System.out.println("Loading from " + url);
 				httpCon = (HttpConnection) Connector.open(url);
 				httpCon.setRequestMethod("GET");
 				int code = httpCon.getResponseCode();
-				if (code / 100 != 2 || code / 100 != 3) {
-					fc.delete();
-					fc.close();
-					fc = null;
-					ioError = true;
-					continue;
-				}
+				System.out.println("Code " + code);
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
 					if (fc.availableSize() < (dataLen * 4)) {
