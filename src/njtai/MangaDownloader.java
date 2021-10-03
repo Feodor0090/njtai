@@ -385,6 +385,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public static String checkBasePath() {
+		if (System.getProperty("os.name").toLowerCase().indexOf("ndroid") != -1)
+			return "file:///C/";
 		try {
 			FileConnection fc = null;
 			try {
