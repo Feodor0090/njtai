@@ -297,12 +297,18 @@ public class MangaDownloader extends Thread implements CommandListener {
 							}
 						} else {
 							fc.close();
+							int percs = i * 100 / o.pages;
+							a.setString("Downloading " + percs + "%");
+							g.setValue(percs);
 							continue;
 						}
 					} else {
 						System.out.println("File exists, skipping...");
 						fc.close();
 						filesExisted = true;
+						int percs = i * 100 / o.pages;
+						a.setString("Downloading " + percs + "%");
+						g.setValue(percs);
 						continue;
 					}
 				} else {
