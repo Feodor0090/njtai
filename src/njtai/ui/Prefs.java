@@ -23,7 +23,8 @@ import njtai.NJTAI;
 final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
-	private final Command bkC = new Command(NJTAI.rus ? "Назад" : "Back", 2, 2);
+	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", 2, 2);
+	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.SCREEN, 2);
 	private final Command prC = new Command("Proxy setup", 8, 1);
 
 	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
@@ -59,7 +60,8 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
 	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
-	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus?"Кэшировать на карту памяти":"Cache to memory card", 4, yn, null);
+	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
+			4, yn, null);
 
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
@@ -67,6 +69,14 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 		setCommandListener(this);
 		addCommand(bkC);
+		addCommand(cnclC);
+
+		String vendor = System.getProperty("java.vendor");
+		if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
+			append(new StringItem("J2MEL-specific bugs",
+					"On j2me loader 1.7.4 and lower switches on this screen won't reflect actual settings states due "
+							+ "to emulator's bug. Don't forget to set them all as you need before returning!"));
+		}
 
 		cache.setSelectedIndex(NJTAI.cachingPolicy, true);
 		pageCover.setSelectedIndex(NJTAI.loadCoverAtPage ? 1 : 0, true);
@@ -74,7 +84,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
-		files.setSelectedIndex(NJTAI.files?1:0, true);
+		files.setSelectedIndex(NJTAI.files ? 1 : 0, true);
 		view.setSelectedIndex(NJTAI.view, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
@@ -95,7 +105,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		append(view);
 		ChoiceGroup c = new ChoiceGroup("Setting", 4, new String[] { "1", "2", "3" }, null);
 		c.setSelectedIndex(1, true);
-		append(c);
+		// append(c);
 	}
 
 	public final void commandAction(Command c, Displayable arg1) {
@@ -115,7 +125,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
 			NJTAI.view = view.getSelectedIndex();
-			NJTAI.files = files.getSelectedIndex()==1;
+			NJTAI.files = files.getSelectedIndex() == 1;
 			NJTAI.proxy = proxy.getString();
 			NJTAI.setScr(menu);
 			if (!NJTAI.savePrefs()) {
@@ -127,9 +137,12 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		} else if (c == prC) {
 			Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
 					+ "To setup your own server, just create a PHP script that will take URL from query params, "
-					+ "request it via CURL and return content.", null, AlertType.INFO);
+					+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
+					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
+		} else if (c == cnclC) {
+			NJTAI.setScr(menu);
 		}
 	}
 
