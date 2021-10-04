@@ -153,7 +153,7 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 5:
 			Alert a = new Alert(NJTAI.rus ? "Управление" : "Controls",
-					NJTAI.rus ? "OK - масштабирование;\nD-PAD - перемещение/переключение страницы;\nПСК - назад."
+					NJTAI.rus ? "OK - масштаб;\nD-PAD - перемещение/переключение страницы;\nПСК - назад."
 							: "OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.",
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
