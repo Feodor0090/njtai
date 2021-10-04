@@ -88,8 +88,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				long t = System.currentTimeMillis();
 				loadUrl(i);
 				infoReady = i * 100 / pages;
-				if (NJTAI.getScr() instanceof Canvas)
-					((Canvas) NJTAI.getScr()).repaint();
+				Displayable s = NJTAI.getScr();
+				if (s instanceof Canvas)
+					((Canvas) s).repaint();
 				t = System.currentTimeMillis() - t;
 				Thread.sleep(t > 2000 ? 100 : 500);
 			}
