@@ -1,4 +1,4 @@
-package njtai.ui;
+package njtai.ui.lcdui;
 
 import java.io.IOException;
 

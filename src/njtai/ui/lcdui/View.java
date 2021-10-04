@@ -1,4 +1,4 @@
-package njtai.ui;
+package njtai.ui.lcdui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;

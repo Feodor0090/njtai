@@ -13,7 +13,7 @@ import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 import javax.microedition.rms.RecordStore;
 
-import njtai.ui.MMenu;
+import njtai.ui.lcdui.MMenu;
 
 /**
  * Midlet class of the application.
