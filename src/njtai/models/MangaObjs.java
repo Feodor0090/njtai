@@ -6,11 +6,19 @@ import java.util.Vector;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
+/**
+ * List of {@link MangaObj}ects. Parses form page blocks and intended to be
+ * passed into {@link njtai.ui.MangaList} constructor.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class MangaObjs implements Enumeration {
+
 	/**
 	 * Parses this object from html fragment.
 	 * 
-	 * @param html
+	 * @param html HTML content of container with a few gallery blocks.
 	 */
 	public MangaObjs(String html) {
 		String[] items = StringUtil.split(html, "<div class=\"gallery\"");

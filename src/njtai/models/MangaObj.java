@@ -6,17 +6,35 @@ import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
+/**
+ * Compact object, representing basic data about manga/dojisini.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class MangaObj {
 
+	/**
+	 * ID of this title.
+	 */
 	public int num;
+	/**
+	 * Cover URL.
+	 */
 	public String imgUrl;
+	/**
+	 * Title.
+	 */
 	public String title;
+	/**
+	 * Cover image.
+	 */
 	public Image img;
 
 	/**
 	 * Parses this object from html fragment.
 	 * 
-	 * @param html
+	 * @param html HTML content of "gallery" block from main/search/similar page.
 	 */
 	public MangaObj(String html) {
 		num = Integer.parseInt(StringUtil.range(html, "<a href=\"/g/", "/\"", false));
@@ -27,6 +45,9 @@ public class MangaObj {
 	public MangaObj() {
 	}
 
+	/**
+	 * Loads {@link #img} from {@link #imgUrl} using {@link Imgs#getImg(String)}.
+	 */
 	public void loadCover() {
 		try {
 			byte[] d = Imgs.getImg(imgUrl);

@@ -1,20 +1,39 @@
 package njtai.models;
 
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Displayable;
 
 import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
+/**
+ * Extension for {@link MangaObj}. Contains data to show pages.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class ExtMangaObj extends MangaObj implements Runnable {
 
+	/**
+	 * List of tags.
+	 */
 	public String tags;
+	/**
+	 * Count of pages.
+	 */
 	public int pages;
+	/**
+	 * Preloaded list of images' urls.
+	 */
 	public String[] imgs;
 
 	private Thread urlFetcher = null;
 
 	public int infoReady = -2;
+	/**
+	 * Are URLs already prefetched?
+	 */
 	private boolean prefetched = false;
 
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
@@ -45,9 +64,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	}
 
 	/**
+	 * Gets encoded page's image.
 	 * 
 	 * @param i Number of image (not page!), [0, pages-1].
-	 * @return Loaded page image.
+	 * @return Loaded page's image.
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public byte[] getPage(int i) throws InterruptedException {
@@ -82,6 +102,13 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		return Imgs.getImg(url);
 	}
 
+	/**
+	 * Loads all pages URLs into {@link #imgs}.
+	 * 
+	 * @throws InterruptedException If the operation was cancelled via
+	 *                              {@link #cancelPrefetch()}.
+	 * @see {@link #run()}
+	 */
 	private void loadUrls() throws InterruptedException {
 		try {
 			for (int i = 1; i <= pages; i++) {
@@ -100,6 +127,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
+	/**
+	 * Runs {@link #loadUrls() the prefetcher}.
+	 */
 	public void run() {
 		try {
 			loadUrls();
@@ -120,19 +150,29 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
+	/**
+	 * Gets page's url.
+	 * 
+	 * @param pageN Number of the page (not index!), [1, {@link #pages}].
+	 * @return Page's image's URL.
+	 * @throws InterruptedException
+	 */
 	public String loadUrl(int pageN) throws InterruptedException {
 		return loadUrl(pageN, 0);
 	}
 
-	public synchronized String loadUrl(int pageN, int attempt) throws InterruptedException {
+	protected synchronized String loadUrl(int pageN, int attempt) throws InterruptedException {
+		// pauses in 429 case
 		if (attempt > 5)
 			return null;
 		if (attempt > 0)
 			Thread.sleep((attempt + 1) * 500);
+
 		if (imgs == null)
 			imgs = new String[pages];
 		if (imgs[pageN - 1] != null)
 			return imgs[pageN - 1];
+
 		try {
 			String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
 			String body = html.substring(html.indexOf("<bo"));
@@ -140,6 +180,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			if (body.length() < 200 && body.indexOf("429") != -1) {
 				return loadUrl(pageN, attempt + 1);
 			}
+			// looking for URL
 			String span = StringUtil.range(body, "<section id=\"image-container", "</sect", false);
 			body = null;
 			System.gc();
@@ -154,6 +195,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
+	/**
+	 * Joins tags list with commas.
+	 * 
+	 * @param list Array of tags.
+	 * @return String like "tag1, tag2, tag3".
+	 */
 	public static String listTags(String[] list) {
 		if (list == null)
 			return "Error while getting tags.";

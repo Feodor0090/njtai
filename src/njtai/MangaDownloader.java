@@ -18,7 +18,6 @@ import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
 
 import njtai.models.ExtMangaObj;
-import njtai.ui.View;
 
 public class MangaDownloader extends Thread implements CommandListener {
 	private ExtMangaObj o;
