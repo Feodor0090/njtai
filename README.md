@@ -28,7 +28,7 @@ Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 
 ## Setting your own proxy up
 You need an http server. Create a script that will take URL from request params, query it via curl or something else and return it's content.
 
-Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`):
+Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`) (CURL is requered):
 ```
 <?php
 $url = urldecode($_SERVER['QUERY_STRING']);
@@ -38,7 +38,6 @@ if(isset($_SERVER['HTTP_USER_AGENT']))
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 $res = curl_exec($ch);
 curl_close($ch);
-echo $res;
 ?>
 ```
 
@@ -46,7 +45,7 @@ Make sure it's accessible via pure http without cloudflare/etc. checks!
 
 ## Building
 Use Eclipse IDE with MTJ and S40v5 sdk or NetBeans with j2me sdk 3.0. 
-To build from command line, you need to compile all files with 1.3 java compability, preverify them using `preverify.exe` from SDK and pack in JAR.
+To build from command line, you need to compile all files with 1.3 java compability using 1.8 jdk, preverify them using `preverify.exe` from SDK and pack in JAR.
 
 ## Settings explaining (rus)
 ### Поведение кэширования
