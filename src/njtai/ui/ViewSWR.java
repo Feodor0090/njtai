@@ -46,7 +46,7 @@ public class ViewSWR extends View {
 					if (url == null)
 						url = "null";
 					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes, url=" + url);
-					origImg = Image.createImage(1, 1);
+					origImg = null;
 					if (NJTAI.files) {
 						showBrokenNotify();
 						try {
@@ -59,6 +59,11 @@ public class ViewSWR extends View {
 						}
 					}
 				}
+			}
+			if (origImg == null) {
+				error = true;
+				toDraw = null;
+				return;
 			}
 			int h = getHeight();
 			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
@@ -74,6 +79,7 @@ public class ViewSWR extends View {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			error = true;
+			toDraw = null;
 			return;
 		}
 	}

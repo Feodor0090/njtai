@@ -274,6 +274,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			for (int i = 0; i < emo.pages; i++) {
 				try {
 					getImage(i);
+					if (preloadProgress != 100)
+						preloadProgress = i * 100 / emo.pages;
+					repaint();
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -304,7 +307,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					return;
 				}
 				getImage(i);
-				Thread.sleep(400);
+				Thread.sleep(300);
 				if (preloadProgress != 100)
 					preloadProgress = i * 100 / emo.pages;
 				repaint();

@@ -26,7 +26,12 @@ public abstract class View extends ViewBase {
 		String zoomN = "x" + zoom;
 		String prefetch = null;
 		// if (preloadProgress == 101) {
-		prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
+		if (NJTAI.cachingPolicy == 2) {
+			prefetch = (preloadProgress > 0 && preloadProgress < 100)
+					? ((NJTAI.files ? "downloading " : "caching ") + preloadProgress + "%")
+					: null;
+		} else
+			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
 		/*
 		 * } else { if (preloadProgress < 100) prefetch = "preloading " +
 		 * preloadProgress + "%"; else if (preloadProgress == 104) { prefetch = "OOM"; }
@@ -86,7 +91,7 @@ public abstract class View extends ViewBase {
 			info = "Failed to load image.";
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
-		} else if (emo.infoReady == -2) {
+		} else if (emo.infoReady == -2 && NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
 			info = NJTAI.rus ? "Ожидание загрузчика..." : "Waiting loader...";
 		} else {
 			info = (NJTAI.rus ? "Подготовка..." : "Preparing...");
