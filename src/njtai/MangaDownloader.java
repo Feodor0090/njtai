@@ -253,8 +253,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} else {
 					n = "" + j;
 				}
+				
 				a.setString("Checking " + percs + "%");
 				String fn = folder + o.num + "_" + n + ".jpg";
+				
 				System.out.println("Writing a page to " + fn);
 				fc = (FileConnection) Connector.open(fn);
 
