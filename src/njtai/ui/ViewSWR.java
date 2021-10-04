@@ -12,6 +12,12 @@ import javax.microedition.lcdui.Image;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
+/**
+ * Default {@link View} implementation, that scales images using tube42 lib.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class ViewSWR extends View {
 
 	public ViewSWR(ExtMangaObj emo, Displayable prev, int page) {

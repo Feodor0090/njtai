@@ -9,6 +9,12 @@ import javax.microedition.m3g.*;
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
+/**
+ * {@link View} implementation, that uses M3G for realtime scaling.
+ * 
+ * @author Feodor0090
+ * @deprecated It's broken. Will be investigated later.
+ */
 public class ViewHWA extends View {
 
 	public ViewHWA(ExtMangaObj emo, Displayable prev, int page) {
@@ -94,7 +100,7 @@ public class ViewHWA extends View {
 				paintNullImg(g, f);
 				g.setColor(0, 0, 255);
 				g.fillRect(0, 0, getWidth(), 4);
-				g.drawString(iw+"x"+ih, getWidth()/2, 4, Graphics.TOP|Graphics.HCENTER);
+				g.drawString(iw + "x" + ih, getWidth() / 2, 4, Graphics.TOP | Graphics.HCENTER);
 			} else {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();

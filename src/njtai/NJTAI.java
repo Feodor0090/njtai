@@ -16,12 +16,24 @@ import javax.microedition.rms.RecordStore;
 
 import njtai.ui.MMenu;
 
+/**
+ * Midlet class of the application.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class NJTAI extends MIDlet {
 
 	public NJTAI() {
 		inst = this;
 	}
 
+	/**
+	 * Currently used URL prefix. Check {@link #getHP() home page downloading
+	 * method} to see how it works.
+	 * 
+	 * @see {@link #loadPrefs()}, {@link njtai.ui.Prefs#proxy}
+	 */
 	public static String proxy;
 	public static String baseUrl = "nhentai.net";
 
@@ -54,7 +66,7 @@ public class NJTAI extends MIDlet {
 	public static boolean keepBitmap = true;
 	public static int view = 0;
 	public static boolean files;
-	
+
 	public static boolean isS60() {
 		return System.getProperty("microedition.platform").indexOf("S60") != -1;
 	}
@@ -64,7 +76,7 @@ public class NJTAI extends MIDlet {
 	public static boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append(files?"1":"0");
+			s.append(files ? "1" : "0");
 			s.append('`');
 			s.append(String.valueOf(cachingPolicy));
 			s.append('`');
@@ -116,7 +128,7 @@ public class NJTAI extends MIDlet {
 			view = Integer.parseInt(s[7]);
 			proxy = s[8];
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("There is no saved settings or they are broken.");
 			files = false;
 			cachingPolicy = 1;
 			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
@@ -137,18 +149,22 @@ public class NJTAI extends MIDlet {
 	 * Gets home page.
 	 * 
 	 * @return Content of the page.
-	 * @throws IOException
+	 * @throws IOException            If nothing was loaded.
+	 * @throws IllegalAccessException If empty string was loaded.
 	 */
-	public synchronized static String getHP() throws IOException {
+	public synchronized static String getHP() throws IOException, IllegalAccessException {
 		String s = hp;
 		if (s == null) {
 			s = httpUtf(proxy + baseUrl);
+			if (s == null)
+				throw new IOException();
+			if (s.length() < 2)
+				throw new IllegalAccessException();
+
 			if ((Runtime.getRuntime().totalMemory() != 2048 * 1024)) {
 				hp = s;
 			}
 		}
-		if (s == null)
-			throw new IOException();
 		return s;
 	}
 

@@ -55,7 +55,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			: "Decode JPEG only once (improves perfomance)", 4, ynr, null);
 	private final ChoiceGroup urls = new ChoiceGroup(NJTAI.rus ? "Предзагружать URL страниц" : "Preload image urls", 4,
 			yn, null);
-	private final TextField proxy = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
+	protected final TextField proxy = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 

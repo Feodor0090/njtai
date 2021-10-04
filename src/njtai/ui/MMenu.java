@@ -28,10 +28,10 @@ public final class MMenu extends List implements CommandListener {
 		this.setCommandListener(this);
 	}
 
-	private Command exitCmd = new Command(NJTAI.rus?"Выход":"Exit", Command.EXIT, 2);
-	private Command backCmd = new Command(NJTAI.rus?"Назад":"Back", Command.BACK, 2);
-	private Command openCmd = new Command(NJTAI.rus?"Открыть":"Go", Command.OK, 1);
-	private Command searchCmd = new Command(NJTAI.rus?"Поиск":"Search", Command.OK, 1);
+	private Command exitCmd = new Command(NJTAI.rus ? "Выход" : "Exit", Command.EXIT, 2);
+	private Command backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
+	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
+	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
 
 	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
 	static final String NEW_DIV = "<div class=\"container index-container\">";
@@ -39,6 +39,9 @@ public final class MMenu extends List implements CommandListener {
 
 	static final String SEARCH_Q = "/search/?q=";
 
+	/**
+	 * Main commands processor. For menu actions, see {@link #mainMenuLinks()}.
+	 */
 	public void commandAction(Command c, Displayable d) {
 		try {
 			if (c == backCmd) {
@@ -47,112 +50,34 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == searchCmd) {
 				try {
+					// getting text
 					String st = ((TextBox) d).getString();
-					st = st.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' ');
-					StringBuffer sb = new StringBuffer();
-					for (int i = 0; i < st.length(); i++) {
-						switch (st.charAt(i)) {
-						case '!':
-							sb.append("%21");
-							break;
-						case '#':
-							sb.append("%23");
-							break;
-						case '$':
-							sb.append("%24");
-							break;
-						case '%':
-							sb.append("%25");
-							break;
-						case '&':
-							sb.append("%26");
-							break;
-						case '\'':
-							sb.append("%27");
-							break;
-						case '(':
-							sb.append("%28");
-							break;
-						case ')':
-							sb.append("%29");
-							break;
-						case '*':
-							sb.append("%2A");
-							break;
-						case '+':
-							sb.append("%2B");
-							break;
-						case ',':
-							sb.append("%2C");
-							break;
-						case '/':
-							sb.append("%2F");
-							break;
-						case ':':
-							sb.append("%3A");
-							break;
-						case ';':
-							sb.append("%3B");
-							break;
-						case '=':
-							sb.append("%3D");
-							break;
-						case '?':
-							sb.append("%3F");
-							break;
-						case '@':
-							sb.append("%40");
-							break;
-						case '[':
-							sb.append("%5B");
-							break;
-						case ']':
-							sb.append("%5D");
-							break;
-						case '{':
-							sb.append("%7B");
-							break;
-						case '|':
-							sb.append("%7C");
-							break;
-						case '}':
-							sb.append("%7D");
-							break;
-						case '\\':
-							sb.append("%5C");
-							break;
-						case '~':
-							sb.append("%7E");
-							break;
-						case '-':
-							sb.append("%2D");
-							break;
-						case '_':
-							sb.append("%5F");
-							break;
-						case '"':
-							sb.append("%22");
-							break;
-						case '.':
-							sb.append("%2E");
-							break;
-						case ' ':
-							sb.append("%20");
-							break;
-						default:
-							sb.append(st.charAt(i));
-							break;
-						}
-					}
-					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + sb.toString();
+					// Isn't it empty?
+					if (st.length() == 0)
+						throw new NullPointerException();
+					// http
+					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + processSearchQuery(st);
 					String data = NJTAI.httpUtf(q);
+					// check fail
+					if (data == null) {
+						NJTAI.setScr(this);
+						NJTAI.pause(100);
+						NJTAI.setScr(new Alert("Network error", "Check proxy and connection.", null, AlertType.ERROR));
+						return;
+					}
+					// processing data
 					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
 					NJTAI.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
+				} catch (NullPointerException e) {
+					NJTAI.setScr(this);
+					NJTAI.pause(100);
+					NJTAI.setScr(new Alert("Incorrect query", "Did you entered nothing?", null, AlertType.WARNING));
 				} catch (Exception e) {
 					e.printStackTrace();
 					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Failed to open", "Have you entered something URL-breaking?", null,
+					NJTAI.setScr(new Alert("Failed to open",
+							"Have you entered something URL-breaking? Is your proxy and network alive?", null,
 							AlertType.ERROR));
 				}
 				return;
@@ -182,19 +107,27 @@ public final class MMenu extends List implements CommandListener {
 			if (t instanceof OutOfMemoryError) {
 				info = "Not enough memory!";
 			} else if (t instanceof IOException) {
-				info = "Failed to connect.";
+				info = "Failed to connect. Check connection and proxy.";
+			} else if (t instanceof IllegalAccessException) {
+				info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
 			} else {
 				info = t.toString();
 			}
-			NJTAI.setScr(new Alert("Error", info, null, AlertType.ERROR));
+			NJTAI.setScr(new Alert("App error", info, null, AlertType.ERROR));
 		}
 	}
 
-	private void mainMenuLinks() throws IOException {
+	/**
+	 * Method that handle list selection.
+	 * 
+	 * @throws IOException           Failed to connect.
+	 * @throws IllegalStateException Proxy returned empty string.
+	 */
+	private void mainMenuLinks() throws IOException, IllegalAccessException {
 		switch (getSelectedIndex()) {
 		case 0:
 			// number;
-			final TextBox tb = new TextBox(NJTAI.rus?"Введите номер:":"Enter ID:", "", 7, 2);
+			final TextBox tb = new TextBox(NJTAI.rus ? "Введите номер:" : "Enter ID:", "", 7, 2);
 			tb.addCommand(openCmd);
 			tb.addCommand(backCmd);
 			tb.setCommandListener(this);
@@ -207,33 +140,139 @@ public final class MMenu extends List implements CommandListener {
 		case 1:
 			// popular
 			String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
-			NJTAI.setScr(new MangaList(NJTAI.rus?"Популярные":"Popular", this, new MangaObjs(section)));
+			NJTAI.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, new MangaObjs(section)));
 			return;
 		case 2:
 			// new
 			String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
-			NJTAI.setScr(new MangaList(NJTAI.rus?"Новые":"Recently added", this, new MangaObjs(section1)));
+			NJTAI.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, new MangaObjs(section1)));
 			return;
 		case 3:
 			// search
 			search();
 			return;
 		case 5:
-			Alert a = new Alert(NJTAI.rus?"Управление":"Controls", NJTAI.rus?"OK - масштабирование;\nD-PAD - перемещение/переключение страницы;\nПСК - назад.":"OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.", null,
-					AlertType.INFO);
+			Alert a = new Alert(NJTAI.rus ? "Управление" : "Controls",
+					NJTAI.rus ? "OK - масштабирование;\nD-PAD - перемещение/переключение страницы;\nПСК - назад."
+							: "OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.",
+					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a);
 			return;
 		case 6:
-			Alert a1 = new Alert(NJTAI.rus?"О программе":"About", "NJTAI v" + NJTAI.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null, AlertType.INFO);
+			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
+					"NJTAI v" + NJTAI.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null,
+					AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
 			NJTAI.setScr(a1);
 			return;
 		}
 	}
 
+	private String processSearchQuery(String data) {
+		if (data == null)
+			throw new NullPointerException();
+		data = data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' ');
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < data.length(); i++) {
+			switch (data.charAt(i)) {
+			case '!':
+				sb.append("%21");
+				break;
+			case '#':
+				sb.append("%23");
+				break;
+			case '$':
+				sb.append("%24");
+				break;
+			case '%':
+				sb.append("%25");
+				break;
+			case '&':
+				sb.append("%26");
+				break;
+			case '\'':
+				sb.append("%27");
+				break;
+			case '(':
+				sb.append("%28");
+				break;
+			case ')':
+				sb.append("%29");
+				break;
+			case '*':
+				sb.append("%2A");
+				break;
+			case '+':
+				sb.append("%2B");
+				break;
+			case ',':
+				sb.append("%2C");
+				break;
+			case '/':
+				sb.append("%2F");
+				break;
+			case ':':
+				sb.append("%3A");
+				break;
+			case ';':
+				sb.append("%3B");
+				break;
+			case '=':
+				sb.append("%3D");
+				break;
+			case '?':
+				sb.append("%3F");
+				break;
+			case '@':
+				sb.append("%40");
+				break;
+			case '[':
+				sb.append("%5B");
+				break;
+			case ']':
+				sb.append("%5D");
+				break;
+			case '{':
+				sb.append("%7B");
+				break;
+			case '|':
+				sb.append("%7C");
+				break;
+			case '}':
+				sb.append("%7D");
+				break;
+			case '\\':
+				sb.append("%5C");
+				break;
+			case '~':
+				sb.append("%7E");
+				break;
+			case '-':
+				sb.append("%2D");
+				break;
+			case '_':
+				sb.append("%5F");
+				break;
+			case '"':
+				sb.append("%22");
+				break;
+			case '.':
+				sb.append("%2E");
+				break;
+			case ' ':
+				sb.append("%20");
+				break;
+			default:
+				sb.append(data.charAt(i));
+				break;
+			}
+		}
+		return sb.toString();
+	}
+
 	private void search() {
-		final TextBox tb = new TextBox(NJTAI.rus?"Введите запрос:":"Enter query:", "", 80, 0);
+		final TextBox tb = new TextBox(NJTAI.rus ? "Введите запрос:" : "Enter query:", "", 80, 0);
 		tb.addCommand(searchCmd);
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
