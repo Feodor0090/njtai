@@ -127,9 +127,21 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.view = view.getSelectedIndex();
 			NJTAI.files = files.getSelectedIndex() == 1;
 			NJTAI.proxy = proxy.getString();
-			NJTAI.setScr(menu);
-			if (!NJTAI.savePrefs()) {
-				Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
+			if (NJTAI.proxy.length() == 0) {
+				NJTAI.proxy = "https://";
+			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
+					&& NJTAI.proxy.indexOf('.') != 0) {
+
+				NJTAI.setScr(menu);
+				if (!NJTAI.savePrefs()) {
+					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
+							AlertType.ERROR);
+					a.setTimeout(Alert.FOREVER);
+					NJTAI.setScr(a);
+				}
+			} else {
+				Alert a = new Alert("Settings",
+						"Incorrect proxy URL. Leave the field empty if you don't want to use it.", null,
 						AlertType.ERROR);
 				a.setTimeout(Alert.FOREVER);
 				NJTAI.setScr(a);
