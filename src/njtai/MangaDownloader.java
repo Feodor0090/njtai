@@ -173,15 +173,15 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public String getFolderName() {
 		StringBuffer t = new StringBuffer();
-		for (int i = 0; (i < o.title.length() && i < 32); i++) {
+		for (int i = 0; (i < o.title.length() && i < 24); i++) {
 			char c = o.title.charAt(i);
-			if (c == 32 || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-'
+			if (c == ' ' || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-'
 					|| c == '_' || c == '!') {
 				t.append(c);
 			}
 		}
 
-		return dir + o.num + " - " + t.toString() + "/";
+		return dir + o.num + " - " + t.toString().trim() + "/";
 	}
 
 	public void run() {
