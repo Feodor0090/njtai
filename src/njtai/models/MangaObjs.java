@@ -14,6 +14,10 @@ public class MangaObjs implements Enumeration {
 	 */
 	public MangaObjs(String html) {
 		String[] items = StringUtil.split(html, "<div class=\"gallery\"");
+		if (items.length == 1 && items[0].length() < 3) {
+			list = new MangaObj[0];
+			return;
+		}
 		Vector v = new Vector();
 		for (int i = 0; i < items.length; i++) {
 			try {
@@ -39,7 +43,8 @@ public class MangaObjs implements Enumeration {
 	}
 
 	public Object nextElement() {
-		if(NJTAI.loadCovers) list[next].loadCover();
+		if (NJTAI.loadCovers)
+			list[next].loadCover();
 		next++;
 		return list[next - 1];
 	}
