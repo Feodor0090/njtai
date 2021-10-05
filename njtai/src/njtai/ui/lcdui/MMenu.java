@@ -11,10 +11,8 @@ import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
-import njtai.StringUtil;
 import njtai.mobile.NJTAIM;
 import njtai.models.MangaObjs;
-import njtai.models.WebAPIA;
 
 public final class MMenu extends List implements CommandListener {
 
@@ -35,12 +33,6 @@ public final class MMenu extends List implements CommandListener {
 	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
 
-	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
-	static final String NEW_DIV = "<div class=\"container index-container\">";
-	static final String PAGIN_SEC = "<section class=\"pagination\">";
-
-	static final String SEARCH_Q = "/search/?q=";
-
 	/**
 	 * Main commands processor. For menu actions, see {@link #mainMenuLinks()}.
 	 */
@@ -57,19 +49,12 @@ public final class MMenu extends List implements CommandListener {
 					// Isn't it empty?
 					if (st.length() == 0)
 						throw new NullPointerException();
-					// http
-					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + processSearchQuery(st);
-					String data = WebAPIA.inst.getUtf(q);
-					// check fail
-					if (data == null) {
-						NJTAIM.setScr(this);
-						NJTAI.pause(100);
-						NJTAIM.setScr(new Alert("Network error", "Check proxy and connection.", null, AlertType.ERROR));
+					
+					MangaObjs r = MangaObjs.getSearchList(processSearchQuery(st), this);
+					if (r == null) {
 						return;
 					}
-					// processing data
-					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
-					NJTAIM.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
+					NJTAIM.setScr(new MangaList("Search results", this, r));
 				} catch (NullPointerException e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
@@ -141,13 +126,11 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 1:
 			// popular
-			String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
-			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, new MangaObjs(section)));
+			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, MangaObjs.getPopularList()));
 			return;
 		case 2:
 			// new
-			String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
-			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, new MangaObjs(section1)));
+			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, MangaObjs.getNewList()));
 			return;
 		case 3:
 			// search
