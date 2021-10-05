@@ -11,7 +11,7 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 - Both touchscreen/keys support
 - Working via bultin proxy (for blocks bypassing and avoiding HTTPS use) (configurable)
 
-## System requirments
+## System requirements
 Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
 ### Memory
 - At least 2048 kb of heap to download titles (with disabled covers loading)
@@ -28,7 +28,7 @@ Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 
 ## Setting your own proxy up
 You need an http server. Create a script that will take URL from request params, query it via curl or something else and return it's content.
 
-Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`) (CURL is requered):
+Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`) (CURL is required):
 ```
 <?php
 $url = urldecode($_SERVER['QUERY_STRING']);
