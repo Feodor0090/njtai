@@ -1,0 +1,13 @@
+# acrhives
+*.jar
+*.jar0
+*.zip
+
+# eclipse
+.settings
+
+# compiled
+bin
+
+# other
+*.log

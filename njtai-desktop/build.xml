@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project njtai_pc">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.project" value="${dir.buildfile}"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.project}/njtai_universal.jar" filesetmanifest="mergewithoutmain">
+            <fileset dir="${dir.project}/bin"/>
+            <fileset dir="${dir.workspace}/njtai/bin"/>
+            <zipfileset includes="META-INF/*.SF" src="${dir.workspace}/njtai/deployed/"/>
+        </jar>
+    </target>
+</project>
