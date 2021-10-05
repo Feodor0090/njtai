@@ -1,23 +1,28 @@
 package njtai.mobile;
 
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Image;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 import javax.microedition.rms.RecordStore;
 
+import njtai.IPlatform;
 import njtai.NJTAI;
 import njtai.StringUtil;
 import njtai.models.WebAPIA;
 import njtai.ui.lcdui.MMenu;
 
-public class NJTAIM extends MIDlet {
+public class NJTAIM extends MIDlet implements IPlatform {
 
 	public NJTAIM() {
-		new NJTAI();
-		NJTAI.midlet = this;
 		inst = this;
-		WebAPIA.inst = new MIDPWebAPIA();
+		initAPIAs();
+		new NJTAI();
+		NJTAI.pl = this;
 	}
 
 	private static Display dsp;
@@ -53,7 +58,7 @@ public class NJTAIM extends MIDlet {
 		return getScr().getHeight();
 	}
 
-	public static void close() {
+	public void exit() {
 		inst.notifyDestroyed();
 	}
 
@@ -65,7 +70,7 @@ public class NJTAIM extends MIDlet {
 		dsp.setCurrent(d);
 	}
 
-	public static boolean savePrefs() {
+	public boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
 			s.append(NJTAI.files ? "1" : "0");
@@ -99,7 +104,7 @@ public class NJTAIM extends MIDlet {
 		}
 	}
 
-	public static void loadPrefs() {
+	public void loadPrefs() {
 		try {
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
 
@@ -131,6 +136,55 @@ public class NJTAIM extends MIDlet {
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 1;
 		}
+	}
+
+	public void initAPIAs() {
+		WebAPIA.inst = new MIDPWebAPIA();
+	}
+
+	public void showNotification(String title, String text, int type, Object prev) {
+		AlertType at = null;
+		switch (type) {
+		case 0:
+			at = AlertType.INFO;
+			break;
+		case 1:
+			at = AlertType.CONFIRMATION;
+			break;
+		case 2:
+			at = AlertType.WARNING;
+			break;
+		case 3:
+			at = AlertType.ERROR;
+			break;
+		default:
+			return;
+		}
+
+		if (prev != null && prev instanceof Displayable) {
+			NJTAIM.setScr((Displayable) prev);
+			NJTAI.pause(100);
+		}
+		NJTAIM.setScr(new Alert(title, text, null, at));
+	}
+
+	public void repaint() {
+		Displayable s = NJTAIM.getScr();
+		if (s instanceof Canvas)
+			((Canvas) s).repaint();
+	}
+
+	public Object decodeImage(byte[] data) {
+		return Image.createImage(data, 0, data.length);
+	}
+
+	public Object prescaleCover(Object original) {
+		if (!(original instanceof Image))
+			return original;
+		Image i = (Image) original;
+		int h = getHeight() * 2 / 3;
+		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
+		return NJTAI.resize(i, w, h);
 	}
 
 }
