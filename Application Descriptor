@@ -1,9 +1,9 @@
-MIDlet-1: NJTAI,/nhentai.png,njtai.NJTAI
+MIDlet-1: NJTAI,/njtai.png,njtai.NJTAI
 MIDlet-Jar-URL: njtai.jar
-MIDlet-Icon: /nhentai.png
+MIDlet-Icon: /njtai.png
 Nokia-MIDlet-Category: Internet
 MicroEdition-Configuration: CLDC-1.1
-Nokia-Scalable-Icon-MIDlet-1: /njtai_opt.svg
+Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
 MIDlet-Version: 1.1.39
 MIDlet-Vendor: Feodor0090
 MIDlet-Name: NJTAI
