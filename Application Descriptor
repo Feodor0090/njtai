@@ -13,3 +13,5 @@ MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.C
 MicroEdition-Profile: MIDP-2.0
 Background: False
 Nokia-MIDlet-On-Screen-Keypad: no
+Main-Class: njtai.desktop.Main
+Class-Path: .
