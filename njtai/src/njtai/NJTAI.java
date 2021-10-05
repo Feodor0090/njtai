@@ -28,7 +28,7 @@ public class NJTAI {
 	public static String baseUrl = "nhentai.net";
 
 	private static NJTAI inst;
-	public static Object midlet;
+	public static IPlatform pl;
 	
 
 	/**
