@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -11,7 +11,7 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import njtai.NJTAI;
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 

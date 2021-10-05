@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -13,7 +13,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 
 /**
  * Njtai preferences screen.

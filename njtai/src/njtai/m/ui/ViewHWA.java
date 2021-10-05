@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Vector;
@@ -6,7 +6,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.m3g.*;
 
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**

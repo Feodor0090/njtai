@@ -1,4 +1,4 @@
-package njtai.mobile;
+package njtai.m;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -13,8 +13,8 @@ import javax.microedition.rms.RecordStore;
 import njtai.IPlatform;
 import njtai.NJTAI;
 import njtai.StringUtil;
+import njtai.m.ui.MMenu;
 import njtai.models.WebAPIA;
-import njtai.ui.lcdui.MMenu;
 
 public class NJTAIM extends MIDlet implements IPlatform {
 

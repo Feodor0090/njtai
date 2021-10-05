@@ -17,7 +17,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
 
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 public class MangaDownloader extends Thread implements CommandListener {
@@ -115,11 +115,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (dir == null)
 			dir = checkBasePath();
 		if (dir == null) {
-			NJTAIM.setScr(prev);
-			NJTAI.pause(100);
-			NJTAIM.setScr(new Alert("Downloader error",
+			NJTAI.pl.showNotification("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
-					null, AlertType.ERROR));
+					3, prev);
 			return null;
 		}
 
@@ -238,7 +236,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 		for (int i = 0; i < o.pages; i++) {
 			int percs = i * 100 / o.pages;
 			String url = null;
-			
+
 			DataOutputStream ou = null;
 			HttpConnection httpCon = null;
 			InputStream ins = null;
@@ -253,10 +251,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} else {
 					n = "" + j;
 				}
-				
+
 				a.setString("Checking " + percs + "%");
 				String fn = folder + o.num + "_" + n + ".jpg";
-				
+
 				System.out.println("Writing a page to " + fn);
 				fc = (FileConnection) Connector.open(fn);
 
@@ -311,7 +309,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 					// There is no file? Creating.
 					fc.create();
 				}
-				
+
 				a.setString("Fetching " + percs + "%");
 				try {
 					url = o.loadUrl(i + 1);
@@ -329,21 +327,21 @@ public class MangaDownloader extends Thread implements CommandListener {
 					NJTAIM.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
 					return;
 				}
-				
+
 				a.setString("Downloading " + percs + "%");
-				
+
 				if (url.startsWith("https://"))
 					url = url.substring(8);
 				if (url.startsWith("http://"))
 					url = url.substring(7);
 				url = NJTAI.proxy + url;
 				System.out.println("Loading from " + url);
-				
+
 				httpCon = (HttpConnection) Connector.open(url);
 				httpCon.setRequestMethod("GET");
 				int code = httpCon.getResponseCode();
 				System.out.println("Code " + code);
-				
+
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
 					if (freeSpace < (dataLen * 4)) {
@@ -355,7 +353,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 						freeSpace -= dataLen;
 					}
 				}
-				
+
 				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
 				byte[] buf = new byte[1024 * 64];

@@ -1,10 +1,10 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import javax.microedition.lcdui.*;
 
 import njtai.MangaDownloader;
 import njtai.NJTAI;
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 import njtai.models.WebAPIA;
 

@@ -1,4 +1,4 @@
-package njtai.mobile;
+package njtai.m;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

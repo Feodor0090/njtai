@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.MangaObjs;
 
 public final class MMenu extends List implements CommandListener {

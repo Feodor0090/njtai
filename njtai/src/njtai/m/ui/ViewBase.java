@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import javax.microedition.lcdui.Graphics;
 
 import njtai.MangaDownloader;
 import njtai.NJTAI;
-import njtai.mobile.NJTAIM;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
