@@ -134,7 +134,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 					&& NJTAI.proxy.indexOf('.') != 0) {
 
 				NJTAIM.setScr(menu);
-				if (!NJTAIM.savePrefs()) {
+				if (!NJTAI.pl.savePrefs()) {
 					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);

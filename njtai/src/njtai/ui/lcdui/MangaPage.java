@@ -81,7 +81,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		append(new ImageItem(
 				mo.img == null ? (NJTAI.rus ? "Загрузка обложки была отключена." : "Cover loading was disabled.")
 						: null,
-				mo.img, 0, null));
+				(Image) mo.img, 0, null));
 		setTitle(mo.title);
 
 		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));

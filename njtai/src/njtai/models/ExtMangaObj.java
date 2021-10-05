@@ -1,11 +1,7 @@
 package njtai.models;
 
-import javax.microedition.lcdui.Canvas;
-import javax.microedition.lcdui.Displayable;
-
 import njtai.NJTAI;
 import njtai.StringUtil;
-import njtai.mobile.NJTAIM;
 
 /**
  * Extension for {@link MangaObj}. Contains data to show pages.
@@ -115,9 +111,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				long t = System.currentTimeMillis();
 				loadUrl(i);
 				infoReady = i * 100 / pages;
-				Displayable s = NJTAIM.getScr();
-				if (s instanceof Canvas)
-					((Canvas) s).repaint();
+				NJTAI.pl.repaint();
 				t = System.currentTimeMillis() - t;
 				Thread.sleep(t > 2000 ? 100 : 500);
 			}

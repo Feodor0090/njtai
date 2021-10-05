@@ -95,7 +95,7 @@ public final class MMenu extends List implements CommandListener {
 				}
 			}
 			if (c == exitCmd) {
-				NJTAIM.close();
+				NJTAI.pl.exit();
 			}
 			if (c == List.SELECT_COMMAND) {
 				mainMenuLinks();

@@ -4,6 +4,7 @@ import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
@@ -42,7 +43,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			try {
 				while (objs.hasMoreElements()) {
 					MangaObj o = (MangaObj) objs.nextElement();
-					ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
+					ImageItem img = new ImageItem(o.title, (Image)o.img, 3, null, Item.HYPERLINK);
 					OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
 					h.attach(img);
 					this.append(img);
@@ -57,7 +58,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 				loader = null;
 				System.gc();
 				NJTAI.keepLists = false;
-				NJTAIM.savePrefs();
+				NJTAI.pl.savePrefs();
 				append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
 						NJTAI.rus ? "Не хватило памяти для отображения полного списка"
 								: "Not enough memory to show full list"));
