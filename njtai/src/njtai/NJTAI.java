@@ -1,27 +1,18 @@
 package njtai;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Image;
-import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
-import javax.microedition.rms.RecordStore;
 
-import njtai.ui.lcdui.MMenu;
+import njtai.models.WebAPIA;
 
 /**
- * Midlet class of the application.
+ * Main class of the application. Contains basic data and settings.
  * 
  * @author Feodor0090
  *
  */
-public class NJTAI extends MIDlet {
+public class NJTAI {
 
 	public NJTAI() {
 		inst = this;
@@ -37,14 +28,15 @@ public class NJTAI extends MIDlet {
 	public static String baseUrl = "nhentai.net";
 
 	private static NJTAI inst;
-	private static Display dsp;
+	public static Object midlet;
+	
 
 	/**
 	 * Home page content
 	 */
 	private static String hp = null;
 
-	private boolean running = false;
+	public static boolean running = false;
 
 	/**
 	 * Should images be kept or preloaded?
@@ -66,83 +58,9 @@ public class NJTAI extends MIDlet {
 	public static int view = 0;
 	public static boolean files;
 
-	public static boolean isS60() {
-		return System.getProperty("microedition.platform").indexOf("S60") != -1;
-	}
 
 	public static boolean rus = false;
 
-	public static boolean savePrefs() {
-		try {
-			StringBuffer s = new StringBuffer();
-			s.append(files ? "1" : "0");
-			s.append('`');
-			s.append(String.valueOf(cachingPolicy));
-			s.append('`');
-			s.append(loadCoverAtPage ? "1" : "0");
-			s.append('`');
-			s.append(keepLists ? "1" : "0");
-			s.append('`');
-			s.append(loadCovers ? "1" : "0");
-			s.append('`');
-			s.append(preloadUrl ? "1" : "0");
-			s.append('`');
-			s.append(keepBitmap ? "1" : "0");
-			s.append('`');
-			s.append(String.valueOf(view));
-			s.append('`');
-			s.append(proxy);
-			byte[] d = s.toString().getBytes();
-			RecordStore r = RecordStore.openRecordStore("njtai", true);
-
-			if (r.getNumRecords() == 0) {
-				r.addRecord(new byte[1], 0, 1);
-			}
-			r.setRecord(1, d, 0, d.length);
-			r.closeRecordStore();
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public static void loadPrefs() {
-		try {
-			RecordStore r = RecordStore.openRecordStore("njtai", true);
-
-			if (r.getNumRecords() < 1) {
-				r.closeRecordStore();
-				throw new RuntimeException();
-			}
-			byte[] d = r.getRecord(1);
-			r.closeRecordStore();
-			String[] s = StringUtil.splitFull(new String(d), '`');
-			files = s[0].equals("1");
-			cachingPolicy = Integer.parseInt(s[1]);
-			loadCoverAtPage = s[2].equals("1");
-			keepLists = s[3].equals("1");
-			loadCovers = s[4].equals("1");
-			preloadUrl = s[5].equals("1");
-			keepBitmap = s[6].equals("1");
-			view = Integer.parseInt(s[7]);
-			proxy = s[8];
-		} catch (Exception e) {
-			System.out.println("There is no saved settings or they are broken.");
-			files = false;
-			cachingPolicy = 1;
-			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
-			keepLists = true;
-			loadCovers = true;
-			keepBitmap = true;
-			preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
-			proxy = "http://nnproject.cc/proxy.php?";
-			view = 1;
-		}
-	}
-
-	public static String ver() {
-		return inst.getAppProperty("MIDlet-Version");
-	}
 
 	/**
 	 * Gets home page.
@@ -154,7 +72,7 @@ public class NJTAI extends MIDlet {
 	public synchronized static String getHP() throws IOException, IllegalAccessException {
 		String s = hp;
 		if (s == null) {
-			s = httpUtf(proxy + baseUrl);
+			s = WebAPIA.inst.getUtf(proxy + baseUrl);
 			if (s == null)
 				throw new IOException();
 			if (s.length() < 2)
@@ -171,34 +89,21 @@ public class NJTAI extends MIDlet {
 		hp = null;
 	}
 
-	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
-	}
+	/**
+	 * Converts, for example, https://ya.ru to http://proxy.com/proxy.php?ya.ru.
+	 * @param url Original URL.
+	 * @return URL, ready to be loaded.
+	 */
+	public static String proxyUrl(String url) {
+		if (url == null)
+			return null;
 
-	protected void pauseApp() {
-	}
-
-	protected void startApp() throws MIDletStateChangeException {
-		String locale = System.getProperty("microedition.locale");
-		rus = (locale != null && (locale.equals("ru_RU") || locale.equals("ru-RU")));
-		inst = this;
-		dsp = Display.getDisplay(inst);
-		if (!running) {
-			running = true;
-			loadPrefs();
-			setScr(new MMenu());
-		}
-	}
-
-	public static void close() {
-		inst.notifyDestroyed();
-	}
-
-	public static Displayable getScr() {
-		return dsp.getCurrent();
-	}
-
-	public static void setScr(Displayable d) {
-		dsp.setCurrent(d);
+		// url proc
+		if (url.startsWith("https://"))
+			url = url.substring(8);
+		if (url.startsWith("http://"))
+			url = url.substring(7);
+		return NJTAI.proxy + url;
 	}
 
 	public static void pause(int ms) {
@@ -206,68 +111,6 @@ public class NJTAI extends MIDlet {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
-	}
-
-	public static int getHeight() {
-		return getScr().getHeight();
-	}
-
-	// Net util
-
-	public static byte[] http(String url) {
-		ByteArrayOutputStream o = null;
-		HttpConnection hc = null;
-		InputStream i = null;
-		try {
-			o = new ByteArrayOutputStream();
-			hc = (HttpConnection) Connector.open(url);
-			hc.setRequestMethod("GET");
-
-			i = hc.openInputStream();
-			byte[] b = new byte[16384];
-
-			int c;
-			while ((c = i.read(b)) != -1) {
-				// var10 += (long) var7;
-				o.write(b, 0, c);
-				o.flush();
-			}
-
-			return o.toByteArray();
-		} catch (NullPointerException e) {
-			return null;
-		} catch (IOException e) {
-			return null;
-		} finally {
-			try {
-				if (i != null)
-					i.close();
-			} catch (IOException e) {
-			}
-			try {
-				if (hc != null)
-					hc.close();
-			} catch (IOException e) {
-			}
-			try {
-				if (o != null)
-					o.close();
-			} catch (IOException e) {
-			}
-		}
-	}
-
-	public static Image httpImg(String url) {
-		byte[] b = http(url);
-		return Image.createImage(b, 0, b.length);
-	}
-
-	public static String httpUtf(String url) {
-		try {
-			return new String(http(url), "UTF-8");
-		} catch (Exception e) {
-			return null;
 		}
 	}
 

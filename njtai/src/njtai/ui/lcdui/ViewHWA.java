@@ -6,7 +6,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.*;
 import javax.microedition.m3g.*;
 
-import njtai.NJTAI;
+import njtai.mobile.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -124,7 +124,7 @@ public class ViewHWA extends View {
 			e.printStackTrace();
 
 			try {
-				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+				NJTAIM.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

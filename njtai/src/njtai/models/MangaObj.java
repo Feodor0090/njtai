@@ -2,9 +2,9 @@ package njtai.models;
 
 import javax.microedition.lcdui.Image;
 
-import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.StringUtil;
+import njtai.mobile.NJTAIM;
 
 /**
  * Compact object, representing basic data about manga/dojisini.
@@ -50,17 +50,16 @@ public class MangaObj {
 	 */
 	public void loadCover() {
 		try {
-			byte[] d = Imgs.getImg(imgUrl);
+			byte[] d = WebAPIA.inst.get(NJTAI.proxyUrl(imgUrl));
 			Image i = Image.createImage(d, 0, d.length);
 			d = null;
 			System.gc();
-			int h = NJTAI.getHeight() * 2 / 3;
+			int h = NJTAIM.getHeight() * 2 / 3;
 			int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 			img = NJTAI.resize(i, w, h);
 		} catch (Exception e) {
 			e.printStackTrace();
-			img = Image.createImage(1, 1);
-
+			img = null;
 		}
 	}
 }

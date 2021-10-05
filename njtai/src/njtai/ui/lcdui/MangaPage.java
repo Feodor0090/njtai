@@ -4,7 +4,9 @@ import javax.microedition.lcdui.*;
 
 import njtai.MangaDownloader;
 import njtai.NJTAI;
+import njtai.mobile.NJTAIM;
 import njtai.models.ExtMangaObj;
+import njtai.models.WebAPIA;
 
 final class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
 
@@ -56,7 +58,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private void loadPage() {
 		status(NJTAI.rus ? "Загрузка страницы (1/3)" : "Fetching page (1/3)");
-		String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id);
+		String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id);
 		if (html == null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;
@@ -107,14 +109,14 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			stop = true;
-			NJTAI.setScr(p == null ? new MMenu() : p);
+			NJTAIM.setScr(p == null ? new MMenu() : p);
 		}
 	}
 
 	public void commandAction(Command c, Item i) {
 		if (c == open) {
 			if (i == page1) {
-				NJTAI.setScr(ViewBase.create(mo, this, 0));
+				NJTAIM.setScr(ViewBase.create(mo, this, 0));
 			} else if (i == pageN) {
 				final TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
 				tb.addCommand(goTo);
@@ -124,7 +126,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 					public void commandAction(Command c, Displayable d) {
 						if (c == back) {
-							NJTAI.setScr(menu);
+							NJTAIM.setScr(menu);
 						} else if (c == goTo) {
 							try {
 								int n = Integer.parseInt(tb.getString());
@@ -132,17 +134,17 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 									n = 1;
 								if (n > mo.pages)
 									n = mo.pages;
-								NJTAI.setScr(ViewBase.create(mo, menu, n - 1));
+								NJTAIM.setScr(ViewBase.create(mo, menu, n - 1));
 							} catch (Exception e) {
-								NJTAI.setScr(menu);
+								NJTAIM.setScr(menu);
 								NJTAI.pause(100);
-								NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
-										AlertType.ERROR));
+								NJTAIM.setScr(new Alert("Failed to go to page", "Have you entered correct number?",
+										null, AlertType.ERROR));
 							}
 						}
 					}
 				});
-				NJTAI.setScr(tb);
+				NJTAIM.setScr(tb);
 			} else if (i == save) {
 				(new MangaDownloader(mo, this)).start();
 			} else if (i == repair) {
@@ -158,7 +160,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				a.setCommandListener(new CommandListener() {
 
 					public void commandAction(Command c, Displayable d) {
-						NJTAI.setScr(menu);
+						NJTAIM.setScr(menu);
 
 						if (c == repairFull) {
 							MangaDownloader md = new MangaDownloader(mo, menu);
@@ -173,7 +175,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 						}
 					}
 				});
-				NJTAI.setScr(a);
+				NJTAIM.setScr(a);
 			}
 		}
 	}

@@ -12,7 +12,9 @@ import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
 import njtai.StringUtil;
+import njtai.mobile.NJTAIM;
 import njtai.models.MangaObjs;
+import njtai.models.WebAPIA;
 
 public final class MMenu extends List implements CommandListener {
 
@@ -45,7 +47,7 @@ public final class MMenu extends List implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		try {
 			if (c == backCmd) {
-				NJTAI.setScr(this);
+				NJTAIM.setScr(this);
 				return;
 			}
 			if (c == searchCmd) {
@@ -57,26 +59,26 @@ public final class MMenu extends List implements CommandListener {
 						throw new NullPointerException();
 					// http
 					String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + processSearchQuery(st);
-					String data = NJTAI.httpUtf(q);
+					String data = WebAPIA.inst.getUtf(q);
 					// check fail
 					if (data == null) {
-						NJTAI.setScr(this);
+						NJTAIM.setScr(this);
 						NJTAI.pause(100);
-						NJTAI.setScr(new Alert("Network error", "Check proxy and connection.", null, AlertType.ERROR));
+						NJTAIM.setScr(new Alert("Network error", "Check proxy and connection.", null, AlertType.ERROR));
 						return;
 					}
 					// processing data
 					String section1 = StringUtil.range(data, NEW_DIV, PAGIN_SEC, false);
-					NJTAI.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
+					NJTAIM.setScr(new MangaList("Search results", this, new MangaObjs(section1)));
 				} catch (NullPointerException e) {
-					NJTAI.setScr(this);
+					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Incorrect query", "Did you entered nothing?", null, AlertType.WARNING));
+					NJTAIM.setScr(new Alert("Incorrect query", "Did you entered nothing?", null, AlertType.WARNING));
 				} catch (Exception e) {
 					e.printStackTrace();
-					NJTAI.setScr(this);
+					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Failed to open",
+					NJTAIM.setScr(new Alert("Failed to open",
 							"Have you entered something URL-breaking? Is your proxy and network alive?", null,
 							AlertType.ERROR));
 				}
@@ -84,16 +86,16 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == openCmd) {
 				try {
-					NJTAI.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this));
+					NJTAIM.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this));
 				} catch (Exception e) {
-					NJTAI.setScr(this);
+					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
+					NJTAIM.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
 							AlertType.ERROR));
 				}
 			}
 			if (c == exitCmd) {
-				NJTAI.close();
+				NJTAIM.close();
 			}
 			if (c == List.SELECT_COMMAND) {
 				mainMenuLinks();
@@ -101,7 +103,7 @@ public final class MMenu extends List implements CommandListener {
 		} catch (Throwable t) {
 			System.gc();
 			t.printStackTrace();
-			NJTAI.setScr(this);
+			NJTAIM.setScr(this);
 			NJTAI.pause(100);
 			String info;
 			if (t instanceof OutOfMemoryError) {
@@ -113,7 +115,7 @@ public final class MMenu extends List implements CommandListener {
 			} else {
 				info = t.toString();
 			}
-			NJTAI.setScr(new Alert("App error", info, null, AlertType.ERROR));
+			NJTAIM.setScr(new Alert("App error", info, null, AlertType.ERROR));
 		}
 	}
 
@@ -131,21 +133,21 @@ public final class MMenu extends List implements CommandListener {
 			tb.addCommand(openCmd);
 			tb.addCommand(backCmd);
 			tb.setCommandListener(this);
-			NJTAI.setScr(tb);
+			NJTAIM.setScr(tb);
 			return;
 		case 4:
 			// sets
-			NJTAI.setScr(new Prefs(this));
+			NJTAIM.setScr(new Prefs(this));
 			return;
 		case 1:
 			// popular
 			String section = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
-			NJTAI.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, new MangaObjs(section)));
+			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, new MangaObjs(section)));
 			return;
 		case 2:
 			// new
 			String section1 = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
-			NJTAI.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, new MangaObjs(section1)));
+			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, new MangaObjs(section1)));
 			return;
 		case 3:
 			// search
@@ -157,14 +159,14 @@ public final class MMenu extends List implements CommandListener {
 							: "OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.",
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
-			NJTAI.setScr(a);
+			NJTAIM.setScr(a);
 			return;
 		case 6:
 			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
-					"NJTAI v" + NJTAI.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null,
+					"NJTAI v" + NJTAIM.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null,
 					AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
-			NJTAI.setScr(a1);
+			NJTAIM.setScr(a1);
 			return;
 		}
 	}
@@ -276,7 +278,7 @@ public final class MMenu extends List implements CommandListener {
 		tb.addCommand(searchCmd);
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
-		NJTAI.setScr(tb);
+		NJTAIM.setScr(tb);
 	}
 
 }

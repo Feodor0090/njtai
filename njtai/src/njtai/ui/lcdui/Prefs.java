@@ -13,6 +13,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
+import njtai.mobile.NJTAIM;
 
 /**
  * Njtai preferences screen.
@@ -132,19 +133,19 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
 					&& NJTAI.proxy.indexOf('.') != 0) {
 
-				NJTAI.setScr(menu);
-				if (!NJTAI.savePrefs()) {
+				NJTAIM.setScr(menu);
+				if (!NJTAIM.savePrefs()) {
 					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);
-					NJTAI.setScr(a);
+					NJTAIM.setScr(a);
 				}
 			} else {
 				Alert a = new Alert("Settings",
 						"Incorrect proxy URL. Leave the field empty if you don't want to use it.", null,
 						AlertType.ERROR);
 				a.setTimeout(Alert.FOREVER);
-				NJTAI.setScr(a);
+				NJTAIM.setScr(a);
 			}
 		} else if (c == prC) {
 			Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
@@ -152,9 +153,9 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 					+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
-			NJTAI.setScr(a);
+			NJTAIM.setScr(a);
 		} else if (c == cnclC) {
-			NJTAI.setScr(menu);
+			NJTAIM.setScr(menu);
 		}
 	}
 

@@ -11,6 +11,7 @@ import javax.microedition.lcdui.Graphics;
 
 import njtai.MangaDownloader;
 import njtai.NJTAI;
+import njtai.mobile.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -242,9 +243,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			}
 		} catch (OutOfMemoryError e) {
 			cache = null;
-			NJTAI.setScr(prev);
+			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
+			NJTAIM.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
 					AlertType.ERROR));
 			return;
 		}
@@ -376,7 +377,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
-			NJTAI.setScr(prev == null ? new MMenu() : prev);
+			NJTAIM.setScr(prev == null ? new MMenu() : prev);
 
 			cache = null;
 			return;
