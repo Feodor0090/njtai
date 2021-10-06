@@ -9,8 +9,8 @@ import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Graphics;
 
-import njtai.MangaDownloader;
 import njtai.NJTAI;
+import njtai.m.MangaDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 

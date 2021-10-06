@@ -1,4 +1,4 @@
-package njtai;
+package njtai.m;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -17,7 +17,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
 
-import njtai.m.NJTAIM;
+import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
 public class MangaDownloader extends Thread implements CommandListener {
