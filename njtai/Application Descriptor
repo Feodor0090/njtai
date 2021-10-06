@@ -1,3 +1,4 @@
+Main-Class: njtai.d.Main
 MIDlet-1: NJTAI,/njtai.png,njtai.NJTAI
 MIDlet-Jar-URL: njtai.jar
 MIDlet-Icon: /njtai.png
@@ -11,7 +12,6 @@ MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
 MIDlet-Info-URL: https://github.com/Feodor0090/njtai
 MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.Connector.https
 MicroEdition-Profile: MIDP-2.0
+Class-Path: .
 Background: False
 Nokia-MIDlet-On-Screen-Keypad: no
-Main-Class: njtai.desktop.Main
-Class-Path: .
