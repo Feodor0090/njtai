@@ -1,8 +1,5 @@
 package njtai.models;
 
-import javax.microedition.lcdui.Image;
-
-import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -27,9 +24,9 @@ public class MangaObj {
 	 */
 	public String title;
 	/**
-	 * Cover image.
+	 * Cover image in platform's format.
 	 */
-	public Image img;
+	public Object img;
 
 	/**
 	 * Parses this object from html fragment.
@@ -50,17 +47,14 @@ public class MangaObj {
 	 */
 	public void loadCover() {
 		try {
-			byte[] d = Imgs.getImg(imgUrl);
-			Image i = Image.createImage(d, 0, d.length);
+			byte[] d = WebAPIA.inst.get(NJTAI.proxyUrl(imgUrl));
+			Object i = NJTAI.pl.decodeImage(d);
 			d = null;
 			System.gc();
-			int h = NJTAI.getHeight() * 2 / 3;
-			int w = (int) (((float) h / i.getHeight()) * i.getWidth());
-			img = NJTAI.resize(i, w, h);
+			img = NJTAI.pl.prescaleCover(i);
 		} catch (Exception e) {
 			e.printStackTrace();
-			img = Image.createImage(1, 1);
-
+			img = null;
 		}
 	}
 }

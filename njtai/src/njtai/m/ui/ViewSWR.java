@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import java.io.ByteArrayOutputStream;
 
@@ -10,6 +10,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import njtai.NJTAI;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -118,7 +119,7 @@ public class ViewSWR extends View {
 			e.printStackTrace();
 
 			try {
-				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+				NJTAIM.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

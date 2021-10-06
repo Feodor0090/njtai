@@ -1,9 +1,5 @@
 package njtai.models;
 
-import javax.microedition.lcdui.Canvas;
-import javax.microedition.lcdui.Displayable;
-
-import njtai.Imgs;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -99,7 +95,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (infoReady == -1) {
 			infoReady = 100;
 		}
-		return Imgs.getImg(url);
+		return WebAPIA.inst.get(NJTAI.proxyUrl(url));
 	}
 
 	/**
@@ -115,9 +111,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				long t = System.currentTimeMillis();
 				loadUrl(i);
 				infoReady = i * 100 / pages;
-				Displayable s = NJTAI.getScr();
-				if (s instanceof Canvas)
-					((Canvas) s).repaint();
+				NJTAI.pl.repaint();
 				t = System.currentTimeMillis() - t;
 				Thread.sleep(t > 2000 ? 100 : 500);
 			}
@@ -174,7 +168,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			return imgs[pageN - 1];
 
 		try {
-			String html = NJTAI.httpUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
+			String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
 			String body = html.substring(html.indexOf("<bo"));
 			html = null;
 			if (body.length() < 200 && body.indexOf("429") != -1) {

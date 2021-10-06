@@ -1,15 +1,17 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.ImageItem;
 import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import njtai.NJTAI;
+import njtai.m.NJTAIM;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 
@@ -41,7 +43,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			try {
 				while (objs.hasMoreElements()) {
 					MangaObj o = (MangaObj) objs.nextElement();
-					ImageItem img = new ImageItem(o.title, o.img, 3, null, Item.HYPERLINK);
+					ImageItem img = new ImageItem(o.title, (Image)o.img, 3, null, Item.HYPERLINK);
 					OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
 					h.attach(img);
 					this.append(img);
@@ -56,7 +58,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 				loader = null;
 				System.gc();
 				NJTAI.keepLists = false;
-				NJTAI.savePrefs();
+				NJTAI.pl.savePrefs();
 				append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
 						NJTAI.rus ? "Не хватило памяти для отображения полного списка"
 								: "Not enough memory to show full list"));
@@ -68,7 +70,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back)
-			NJTAI.setScr(prev);
+			NJTAIM.setScr(prev);
 	}
 
 	public static class OMBHdlr implements ItemCommandListener {
@@ -91,14 +93,14 @@ final class MangaList extends Form implements Runnable, CommandListener {
 
 		public void commandAction(Command c, Item i) {
 			if (wasOom) {
-				if (NJTAI.getScr() instanceof Form) {
-					((Form) NJTAI.getScr()).deleteAll();
+				if (NJTAIM.getScr() instanceof Form) {
+					((Form) NJTAIM.getScr()).deleteAll();
 				}
-				NJTAI.setScr(new Form(NJTAI.rus ? "Загрузка..." : "Loading..."));
+				NJTAIM.setScr(new Form(NJTAI.rus ? "Загрузка..." : "Loading..."));
 				System.gc();
 				Thread.yield();
 			}
-			NJTAI.setScr(new MangaPage(n, wasOom ? null : p));
+			NJTAIM.setScr(new MangaPage(n, wasOom ? null : p));
 		}
 	}
 

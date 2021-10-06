@@ -1,4 +1,4 @@
-package njtai.ui.lcdui;
+package njtai.m.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 
 import njtai.NJTAI;
+import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -123,7 +124,7 @@ public abstract class View extends ViewBase {
 				null, AlertType.ERROR);
 		a.setTimeout(Alert.FOREVER);
 		try {
-			NJTAI.setScr(a);
+			NJTAIM.setScr(a);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

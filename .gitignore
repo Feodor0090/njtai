@@ -1,4 +1,3 @@
-/bin/
-/.mtj.tmp/
-/deployed/
-*.jar0
+# eclipse workspace
+.metadata
+.recommenders

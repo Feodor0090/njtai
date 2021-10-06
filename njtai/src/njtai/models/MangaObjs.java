@@ -1,5 +1,6 @@
 package njtai.models;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -55,5 +56,31 @@ public class MangaObjs implements Enumeration {
 			list[next].loadCover();
 		next++;
 		return list[next - 1];
+	}
+
+	static final String POPULAR_DIV = "<div class=\"container index-container index-popular\">";
+	static final String NEW_DIV = "<div class=\"container index-container\">";
+	static final String PAGIN_SEC = "<section class=\"pagination\">";
+	static final String SEARCH_Q = "/search/?q=";
+
+	public static MangaObjs getPopularList() throws IOException, IllegalAccessException {
+		String sec = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
+		return new MangaObjs(sec);
+	}
+
+	public static MangaObjs getNewList() throws IOException, IllegalAccessException {
+		String sec = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
+		return new MangaObjs(sec);
+	}
+	
+	public static MangaObjs getSearchList(String query, Object caller) throws IOException, IllegalAccessException {
+		String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + query;
+		String r = WebAPIA.inst.getUtf(q);
+		if (r == null) {
+			NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
+			return null;
+		}
+		String sec = StringUtil.range(r, NEW_DIV, PAGIN_SEC, false);
+		return new MangaObjs(sec);
 	}
 }

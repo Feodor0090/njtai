@@ -1,4 +1,4 @@
-package njtai;
+package njtai.m;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -17,6 +17,7 @@ import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
 
+import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 
 public class MangaDownloader extends Thread implements CommandListener {
@@ -45,9 +46,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (dir == null)
 			dir = checkBasePath();
 		if (dir == null) {
-			NJTAI.setScr(prev);
+			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Downloader error",
+			NJTAIM.setScr(new Alert("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
 					null, AlertType.ERROR));
 			return;
@@ -114,11 +115,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (dir == null)
 			dir = checkBasePath();
 		if (dir == null) {
-			NJTAI.setScr(prev);
-			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Downloader error",
+			NJTAI.pl.showNotification("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
-					null, AlertType.ERROR));
+					3, prev);
 			return null;
 		}
 
@@ -191,16 +190,16 @@ public class MangaDownloader extends Thread implements CommandListener {
 		Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
 		a.setIndicator(g);
 		a.setCommandListener(this);
-		NJTAI.setScr(a);
+		NJTAIM.setScr(a);
 		NJTAI.pause(1000);
 		if (stop)
 			return;
 		if (dir == null)
 			dir = checkBasePath();
 		if (dir == null) {
-			NJTAI.setScr(prev);
+			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(new Alert("Downloader error",
+			NJTAIM.setScr(new Alert("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
 					null, AlertType.ERROR));
 			return;
@@ -237,7 +236,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 		for (int i = 0; i < o.pages; i++) {
 			int percs = i * 100 / o.pages;
 			String url = null;
-			
+
 			DataOutputStream ou = null;
 			HttpConnection httpCon = null;
 			InputStream ins = null;
@@ -252,10 +251,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 				} else {
 					n = "" + j;
 				}
-				
+
 				a.setString("Checking " + percs + "%");
 				String fn = folder + o.num + "_" + n + ".jpg";
-				
+
 				System.out.println("Writing a page to " + fn);
 				fc = (FileConnection) Connector.open(fn);
 
@@ -310,39 +309,39 @@ public class MangaDownloader extends Thread implements CommandListener {
 					// There is no file? Creating.
 					fc.create();
 				}
-				
+
 				a.setString("Fetching " + percs + "%");
 				try {
 					url = o.loadUrl(i + 1);
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					NJTAI.setScr(prev);
+					NJTAIM.setScr(prev);
 					fc.close();
 					return;
 				}
 				if (url == null) {
 					fc.close();
-					NJTAI.setScr(prev);
+					NJTAIM.setScr(prev);
 					NJTAI.pause(100);
-					NJTAI.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
+					NJTAIM.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
 					return;
 				}
-				
+
 				a.setString("Downloading " + percs + "%");
-				
+
 				if (url.startsWith("https://"))
 					url = url.substring(8);
 				if (url.startsWith("http://"))
 					url = url.substring(7);
 				url = NJTAI.proxy + url;
 				System.out.println("Loading from " + url);
-				
+
 				httpCon = (HttpConnection) Connector.open(url);
 				httpCon.setRequestMethod("GET");
 				int code = httpCon.getResponseCode();
 				System.out.println("Code " + code);
-				
+
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
 					if (freeSpace < (dataLen * 4)) {
@@ -354,7 +353,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 						freeSpace -= dataLen;
 					}
 				}
-				
+
 				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
 				byte[] buf = new byte[1024 * 64];
@@ -395,20 +394,20 @@ public class MangaDownloader extends Thread implements CommandListener {
 				return;
 		}
 
-		NJTAI.setScr(prev);
+		NJTAIM.setScr(prev);
 		NJTAI.pause(100);
 		try {
 			if (ioError) {
-				NJTAI.setScr(new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
+				NJTAIM.setScr(new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
 						AlertType.ERROR));
 			} else if (outOfMem) {
-				NJTAI.setScr(new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
+				NJTAIM.setScr(new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
 						AlertType.WARNING));
 			} else if (filesExisted && !repair) {
-				NJTAI.setScr(
+				NJTAIM.setScr(
 						new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING));
 			} else {
-				NJTAI.setScr(new Alert("NJTAI",
+				NJTAIM.setScr(new Alert("NJTAI",
 						repair ? (check ? "All pages were checked and repaired."
 								: "Missed and empty pages were downloaded, but already existed were not checked.")
 								: "All pages were downloaded.",
@@ -567,10 +566,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (c == stopCmd) {
 			stop = true;
 
-			NJTAI.setScr(prev);
+			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
 			try {
-				NJTAI.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
+				NJTAIM.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
 			} catch (Exception e) {
 			}
 		}
