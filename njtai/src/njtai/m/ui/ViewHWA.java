@@ -171,9 +171,10 @@ public class ViewHWA extends View {
 			Graphics pg = part.getGraphics();
 			pg.setColor(0);
 			pg.fillRect(0, 0, s, s);
-			pg.drawImage(page, -x, -y, 0);
+			pg.drawRegion(page, 0, 0, s, s, 0, 0, 0, 0);
 			Image spart = Image.createImage(part);
 			part = null;
+			System.gc();
 
 			// appearance
 			Image2D image2D = new Image2D(Image2D.RGB, spart);
