@@ -42,6 +42,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public boolean check = true;
 
+	private boolean done = false;
+
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
 			dir = checkBasePath();
@@ -183,6 +185,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public void run() {
+		done = false;
 		NJTAI.pause(500);
 		Alert a = new Alert(o.title, "Looking for the folder", null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
@@ -198,10 +201,10 @@ public class MangaDownloader extends Thread implements CommandListener {
 			dir = checkBasePath();
 		if (dir == null) {
 			NJTAIM.setScr(prev);
-			NJTAI.pause(100);
+			NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
 			NJTAIM.setScr(new Alert("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
-					null, AlertType.ERROR));
+					null, AlertType.ERROR), prev);
 			return;
 		}
 		g = new Gauge(null, false, 100, 0);
@@ -323,8 +326,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 				if (url == null) {
 					fc.close();
 					NJTAIM.setScr(prev);
-					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR));
+					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
+					NJTAIM.setScr(new Alert("Downloader error", "Failed to get image's url.", null, AlertType.ERROR),
+							prev);
 					return;
 				}
 
@@ -394,33 +398,50 @@ public class MangaDownloader extends Thread implements CommandListener {
 				return;
 		}
 
-		NJTAIM.setScr(prev);
-		NJTAI.pause(100);
-		try {
+		if (NJTAIM.isJ2MEL()) {
+			g.setValue(100);
+			done = true;
 			if (ioError) {
-				NJTAIM.setScr(new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
-						AlertType.ERROR));
+				a.setString("IO error has occurped. Check, are all the files valid.");
 			} else if (outOfMem) {
-				NJTAIM.setScr(new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
-						AlertType.WARNING));
+				a.setString("Downloading was not finished - not enough space on the disk.");
 			} else if (filesExisted && !repair) {
-				NJTAIM.setScr(
-						new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING));
+				a.setString("Some files existed - they were not overwritten.");
 			} else {
-				NJTAIM.setScr(new Alert("NJTAI",
-						repair ? (check ? "All pages were checked and repaired."
+				a.setString(repair
+						? (check ? "All pages were checked and repaired."
 								: "Missed and empty pages were downloaded, but already existed were not checked.")
-								: "All pages were downloaded.",
-						null, AlertType.CONFIRMATION));
+						: "All pages were downloaded.");
 			}
-		} catch (Exception e) {
+		} else {
+			NJTAIM.setScr(prev);
+			NJTAI.pause(100);
+			try {
+				Alert b;
+				if (ioError) {
+					b = new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
+							AlertType.ERROR);
+				} else if (outOfMem) {
+					b = new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
+							AlertType.WARNING);
+				} else if (filesExisted && !repair) {
+					b = new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING);
+				} else {
+					b = new Alert("NJTAI",
+							repair ? (check ? "All pages were checked and repaired."
+									: "Missed and empty pages were downloaded, but already existed were not checked.")
+									: "All pages were downloaded.",
+							null, AlertType.CONFIRMATION);
+				}
+				NJTAIM.setScr(b, prev);
+			} catch (Exception e) {
+			}
 		}
 	}
 
 	public static String checkBasePath() {
 		// avoid folders lookups in J2MEL
-		String vendor = System.getProperty("java.vendor");
-		if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
+		if (NJTAIM.isJ2MEL()) {
 			return "file:///c:/";
 		}
 		try {
@@ -567,10 +588,12 @@ public class MangaDownloader extends Thread implements CommandListener {
 			stop = true;
 
 			NJTAIM.setScr(prev);
-			NJTAI.pause(100);
-			try {
-				NJTAIM.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
-			} catch (Exception e) {
+			if (!done) {
+				NJTAI.pause(100);
+				try {
+					NJTAIM.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
+				} catch (Exception e) {
+				}
 			}
 		}
 	}

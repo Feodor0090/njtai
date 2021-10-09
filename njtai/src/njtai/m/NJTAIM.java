@@ -32,6 +32,11 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		return System.getProperty("microedition.platform").indexOf("S60") != -1;
 	}
 
+	public static boolean isJ2MEL() {
+		String vendor = System.getProperty("java.vendor");
+		return (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1);
+	}
+
 	public static String ver() {
 		return inst.getAppProperty("MIDlet-Version");
 	}
@@ -68,6 +73,10 @@ public class NJTAIM extends MIDlet implements IPlatform {
 
 	public static void setScr(Displayable d) {
 		dsp.setCurrent(d);
+	}
+
+	public static void setScr(Alert a, Displayable prev) {
+		dsp.setCurrent(a, prev);
 	}
 
 	public boolean savePrefs() {
