@@ -189,7 +189,7 @@ public class ViewSWR extends View {
 		}
 	}
 
-	protected int invertY() {
+	protected int invert() {
 		return 1;
 	}
 

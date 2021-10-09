@@ -429,13 +429,13 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (zoom != 1) {
 			if (k == -1) {
 				// up
-				y += getHeight() * invertY() / 4;
+				y += getHeight() * invert() / 4;
 			} else if (k == -2) {
-				y -= getHeight() * invertY() / 4;
+				y -= getHeight() * invert() / 4;
 			} else if (k == -3) {
-				x += getWidth() / 4;
+				x += getWidth() * invert() / 4;
 			} else if (k == -4) {
-				x -= getWidth() / 4;
+				x -= getWidth() * invert() / 4;
 			}
 		}
 
@@ -474,25 +474,25 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	int lx, ly;
 	int sx, sy;
 
-	protected void pointerPressed(int x, int y) {
-		if (!canDraw() && y > getHeight() - 50 && x > getWidth() * 2 / 3) {
+	protected void pointerPressed(int tx, int y) {
+		if (!canDraw() && y > getHeight() - 50 && tx > getWidth() * 2 / 3) {
 			keyPressed(-7);
 			return;
 		}
 		touchHoldPos = 0;
-		lx = (sx = x);
+		lx = (sx = tx);
 		ly = (sy = y);
 		if (!touchCtrlShown)
 			return;
 		if (y < 50 && useSmoothZoom()) {
-			setSmoothZoom(x, getWidth());
+			setSmoothZoom(tx, getWidth());
 			touchHoldPos = 7;
 		} else if (y < 50 || y > getHeight() - 50) {
 			int add = y < 50 ? 1 : 4;
 			int b;
-			if (x < getWidth() / 3) {
+			if (tx < getWidth() / 3) {
 				b = 0;
-			} else if (x < getWidth() * 2 / 3) {
+			} else if (tx < getWidth() * 2 / 3) {
 				b = 1;
 			} else {
 				b = 2;
@@ -502,27 +502,33 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		repaint();
 	}
 
-	protected void setSmoothZoom(int x, int w) {
-		zoom = Math.max(1, Math.min(5f, 1 + ((x - 25) * 4 / (w - 50))));
+	protected void setSmoothZoom(int dx, int w) {
+		dx -= 25;
+		w -= 50;
+		zoom = 1 + 4f * ((float) dx / w);
+		if (zoom < 1.01f)
+			zoom = 1;
+		if (zoom > 4.99f)
+			zoom = 5;
 	}
 
 	protected abstract boolean useSmoothZoom();
 
 	/**
-	 * @return -1 if Y drag must be inverted, 1 overwise.
+	 * @return -1 if drag must be inverted, 1 overwise.
 	 */
-	protected abstract int invertY();
+	protected abstract int invert();
 
 	protected void pointerDragged(int tx, int ty) {
 		if (touchHoldPos == 7) {
-			setSmoothZoom(x, getWidth());
+			setSmoothZoom(tx, getWidth());
 			repaint();
 			return;
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx);
-		y += (ty - ly) * invertY();
+		x += (tx - lx) * invert();
+		y += (ty - ly) * invert();
 		lx = tx;
 		ly = ty;
 		repaint();

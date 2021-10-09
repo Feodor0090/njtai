@@ -156,6 +156,7 @@ public class ViewHWA extends View {
 		Transform t = new Transform();
 		t.postTranslate(x, y, 100);
 		t.postRotate(180, 0, 0, -1);
+		t.postScale(-1, 1, 1);
 		Light l = new Light();
 		l.setColor(0xffffff); // white light
 		l.setIntensity(1f);
@@ -172,18 +173,18 @@ public class ViewHWA extends View {
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
-	
 
 		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
 
 			size = s;
-			
+
 			// cropping
 			Image part = Image.createImage(s, s);
 			Graphics pg = part.getGraphics();
 			pg.setColor(0);
 			pg.fillRect(0, 0, s, s);
-			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0, 0, 0);
+			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0,
+					0, 0);
 			System.gc();
 
 			// appearance
@@ -226,7 +227,7 @@ public class ViewHWA extends View {
 		}
 	}
 
-	protected int invertY() {
+	protected int invert() {
 		return -1;
 	}
 
