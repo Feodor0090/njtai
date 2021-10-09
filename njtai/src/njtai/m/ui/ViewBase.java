@@ -429,9 +429,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (zoom != 1) {
 			if (k == -1) {
 				// up
-				y += getHeight() / 4;
+				y += getHeight() * invertY() / 4;
 			} else if (k == -2) {
-				y -= getHeight() / 4;
+				y -= getHeight() * invertY() / 4;
 			} else if (k == -3) {
 				x += getWidth() / 4;
 			} else if (k == -4) {
@@ -498,11 +498,16 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		repaint();
 	}
 
+	/**
+	 * @return -1 if Y drag must be inverted, 1 overwise.
+	 */
+	protected abstract int invertY();
+
 	protected void pointerDragged(int tx, int ty) {
 		if (touchHoldPos != 0)
 			return;
 		x += (tx - lx);
-		y += (ty - ly);
+		y += (ty - ly) * invertY();
 		lx = tx;
 		ly = ty;
 		repaint();

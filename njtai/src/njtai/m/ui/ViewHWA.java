@@ -226,4 +226,8 @@ public class ViewHWA extends View {
 		}
 	}
 
+	protected int invertY() {
+		return -1;
+	}
+
 }
