@@ -1,4 +1,4 @@
-Main-Class: njtai.d.Main
+Main-Class: njtai.d.NJTAID
 MIDlet-1: NJTAI,/njtai.png,njtai.NJTAI
 MIDlet-Jar-URL: njtai.jar
 MIDlet-Icon: /njtai.png
