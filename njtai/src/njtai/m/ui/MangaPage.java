@@ -87,6 +87,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));
 		append(new StringItem("ID", "#" + id));
 		append(new StringItem(NJTAI.rus ? "Страницы" : "Pages", "" + mo.pages));
+		if (mo.lang != null)
+			append(new StringItem(NJTAI.rus ? "Язык" : "Language", mo.lang));
+		if (mo.parody != null)
+			append(new StringItem(NJTAI.rus ? "Источник" : "Parody", mo.parody));
 		append(new StringItem(NJTAI.rus ? "Тэги" : "Tags", mo.tags));
 		page1.setItemCommandListener(this);
 		page1.setDefaultCommand(open);
