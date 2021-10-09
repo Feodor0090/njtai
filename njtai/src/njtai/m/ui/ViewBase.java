@@ -497,6 +497,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		repaint();
 	}
+	
+	protected abstract boolean useSmoothZoom();
 
 	/**
 	 * @return -1 if Y drag must be inverted, 1 overwise.

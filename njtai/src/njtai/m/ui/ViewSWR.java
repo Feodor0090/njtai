@@ -114,7 +114,7 @@ public class ViewSWR extends View {
 					drawTouchControls(g, f);
 				}
 			}
-			paintHUD(g, f);
+			paintHUD(g, f, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -191,5 +191,9 @@ public class ViewSWR extends View {
 
 	protected int invertY() {
 		return 1;
+	}
+
+	protected boolean useSmoothZoom() {
+		return false;
 	}
 }
