@@ -59,8 +59,8 @@ public class ViewHWA extends View {
 		iw = i.getWidth();
 		Vector v = new Vector();
 		int s = 512;
-		for (int x = 0; x < i.getWidth() + s - 1; x++) {
-			for (int y = 0; y < i.getHeight() + s - 1; y++) {
+		for (int x = 0; x < i.getWidth() + s - 1; x += s) {
+			for (int y = 0; y < i.getHeight() + s - 1; y += s) {
 				v.addElement(new PagePart(i, x, y, (short) s));
 			}
 		}
@@ -105,13 +105,17 @@ public class ViewHWA extends View {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
 				g3.bindTarget(g);
-				Background b = new Background();
-				b.setColorClearEnable(true);
-				b.setDepthClearEnable(true);
-				g3.clear(b);
-				setupM3G(g3);
-				for (int i = 0; i < p.length; i++) {
-					p[i].paint(g3);
+				try {
+					Background b = new Background();
+					b.setColorClearEnable(true);
+					b.setDepthClearEnable(true);
+					g3.clear(b);
+					setupM3G(g3);
+					for (int i = 0; i < p.length; i++) {
+						p[i].paint(g3);
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
 				}
 				g3.releaseTarget();
 				// touch captions
@@ -172,12 +176,10 @@ public class ViewHWA extends View {
 			pg.setColor(0);
 			pg.fillRect(0, 0, s, s);
 			pg.drawRegion(page, 0, 0, s, s, 0, 0, 0, 0);
-			Image spart = Image.createImage(part);
-			part = null;
 			System.gc();
 
 			// appearance
-			Image2D image2D = new Image2D(Image2D.RGB, spart);
+			Image2D image2D = new Image2D(Image2D.RGB, part);
 			Texture2D tex = new Texture2D(image2D);
 			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
 			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
@@ -203,7 +205,7 @@ public class ViewHWA extends View {
 			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
 			texArray.set(0, uv.length / 2, uv);
 
-			VertexBuffer vb = new VertexBuffer();
+			vb = new VertexBuffer();
 			vb.setPositions(vertArray, 1.0f, null);
 			vb.setTexCoords(0, texArray, 1.0f, null);
 			vb.setDefaultColor(-1);
