@@ -395,26 +395,44 @@ public class MangaDownloader extends Thread implements CommandListener {
 				return;
 		}
 
-		NJTAIM.setScr(prev);
-		NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-		try {
-			Alert b;
+		if (NJTAIM.isJ2MEL()) {
+			g.setValue(100);
+			a.removeCommand(stopCmd);
 			if (ioError) {
-				b = new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null, AlertType.ERROR);
+				a.setString("IO error has occurped. Check, are all the files valid.");
 			} else if (outOfMem) {
-				b = new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
-						AlertType.WARNING);
+				a.setString("Downloading was not finished - not enough space on the disk.");
 			} else if (filesExisted && !repair) {
-				b = new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING);
+				a.setString("Some files existed - they were not overwritten.");
 			} else {
-				b = new Alert("NJTAI",
-						repair ? (check ? "All pages were checked and repaired."
+				a.setString(repair
+						? (check ? "All pages were checked and repaired."
 								: "Missed and empty pages were downloaded, but already existed were not checked.")
-								: "All pages were downloaded.",
-						null, AlertType.CONFIRMATION);
+						: "All pages were downloaded.");
 			}
-			NJTAIM.setScr(b, prev);
-		} catch (Exception e) {
+		} else {
+			NJTAIM.setScr(prev);
+			NJTAI.pause(100);
+			try {
+				Alert b;
+				if (ioError) {
+					b = new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
+							AlertType.ERROR);
+				} else if (outOfMem) {
+					b = new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
+							AlertType.WARNING);
+				} else if (filesExisted && !repair) {
+					b = new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING);
+				} else {
+					b = new Alert("NJTAI",
+							repair ? (check ? "All pages were checked and repaired."
+									: "Missed and empty pages were downloaded, but already existed were not checked.")
+									: "All pages were downloaded.",
+							null, AlertType.CONFIRMATION);
+				}
+				NJTAIM.setScr(b, prev);
+			} catch (Exception e) {
+			}
 		}
 	}
 
