@@ -24,7 +24,10 @@ public abstract class View extends ViewBase {
 
 	protected void paintHUD(Graphics g, Font f, boolean drawZoom) {
 		String pageNum = (page + 1) + "/" + emo.pages;
-		String zoomN = "x" + zoom;
+		String zoomN = useSmoothZoom() ? String.valueOf(zoom) : String.valueOf((int) zoom);
+		if (zoomN.length() > 3)
+			zoomN = zoomN.substring(0, 3);
+		zoomN = "x" + zoomN;
 		String prefetch = null;
 		// if (preloadProgress == 101) {
 		if (NJTAI.cachingPolicy == 2) {
@@ -114,14 +117,14 @@ public abstract class View extends ViewBase {
 			g.fillArc(x - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
 		}
 		g.setGrayScale(255);
-		
-		g.drawArc(x-16, 9, 30, 30, 0, 360);
+
+		g.drawArc(x - 16, 9, 30, 30, 0, 360);
 
 		String ft = String.valueOf(fzoom);
 		if (ft.length() > 3) {
 			ft = ft.substring(0, 3);
 		}
-		
+
 		g.drawString(ft, x, 25 - f.getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
 	}
 
