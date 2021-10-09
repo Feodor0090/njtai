@@ -42,6 +42,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public boolean check = true;
 
+	private boolean done = false;
+
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
 			dir = checkBasePath();
@@ -183,6 +185,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public void run() {
+		done = false;
 		NJTAI.pause(500);
 		Alert a = new Alert(o.title, "Looking for the folder", null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
@@ -397,7 +400,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 		if (NJTAIM.isJ2MEL()) {
 			g.setValue(100);
-			a.removeCommand(stopCmd);
+			done = true;
 			if (ioError) {
 				a.setString("IO error has occurped. Check, are all the files valid.");
 			} else if (outOfMem) {
@@ -585,10 +588,12 @@ public class MangaDownloader extends Thread implements CommandListener {
 			stop = true;
 
 			NJTAIM.setScr(prev);
-			NJTAI.pause(100);
-			try {
-				NJTAIM.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
-			} catch (Exception e) {
+			if (!done) {
+				NJTAI.pause(100);
+				try {
+					NJTAIM.setScr(new Alert("Downloader error", "Downloading was canceled.", null, AlertType.ERROR));
+				} catch (Exception e) {
+				}
 			}
 		}
 	}
