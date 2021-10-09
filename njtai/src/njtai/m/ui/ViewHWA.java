@@ -13,7 +13,6 @@ import njtai.models.ExtMangaObj;
  * {@link View} implementation, that uses M3G for realtime scaling.
  * 
  * @author Feodor0090
- * @deprecated It's broken. Will be investigated later.
  */
 public class ViewHWA extends View {
 
