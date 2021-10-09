@@ -445,13 +445,13 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (zoom != 1) {
 			if (k == -1 || k == KEY_NUM2) {
 				// up
-				y += getHeight() * invert() / 4;
+				y += getHeight() * panDeltaMul() / 4;
 			} else if (k == -2 || k == KEY_NUM8) {
-				y -= getHeight() * invert() / 4;
+				y -= getHeight() * panDeltaMul() / 4;
 			} else if (k == -3 || k == KEY_NUM4) {
-				x += getWidth() * invert() / 4;
+				x += getWidth() * panDeltaMul() / 4;
 			} else if (k == -4 || k == KEY_NUM6) {
-				x -= getWidth() * invert() / 4;
+				x -= getWidth() * panDeltaMul() / 4;
 			}
 		}
 
@@ -533,7 +533,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	/**
 	 * @return -1 if drag must be inverted, 1 overwise.
 	 */
-	protected abstract int invert();
+	protected abstract int panDeltaMul();
 
 	protected void pointerDragged(int tx, int ty) {
 		if (touchHoldPos == 7) {
@@ -543,8 +543,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx) * invert();
-		y += (ty - ly) * invert();
+		x += (tx - lx) * panDeltaMul();
+		y += (ty - ly) * panDeltaMul();
 		lx = tx;
 		ly = ty;
 		repaint();

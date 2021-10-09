@@ -189,7 +189,7 @@ public class ViewSWR extends View {
 		}
 	}
 
-	protected int invert() {
+	protected int panDeltaMul() {
 		return 1;
 	}
 
