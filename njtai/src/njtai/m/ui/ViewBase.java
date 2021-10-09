@@ -33,8 +33,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected MangaDownloader fs;
 
 	protected float zoom = 1;
-	protected int x = 0;
-	protected int y = 0;
+	protected float x = 0;
+	protected float y = 0;
 
 	protected Thread loader;
 	protected Thread preloader;
@@ -386,13 +386,13 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			repaint();
 			return;
 		}
-		
+
 		if (k == KEY_NUM1) {
 			changePage(-1);
 		} else if (k == KEY_NUM3) {
 			changePage(1);
 		}
-		
+
 		// zooming via *0#
 		if (k == KEY_STAR)
 			zoom = 1;
@@ -400,7 +400,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			zoom = 2;
 		if (k == KEY_POUND)
 			zoom = 3;
-		
+
 		// zoom is active
 		if (zoom != 1) {
 			if (k == -5) {
@@ -543,8 +543,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx) * panDeltaMul();
-		y += (ty - ly) * panDeltaMul();
+		x += (tx - lx) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
+		y += (ty - ly) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
 		lx = tx;
 		ly = ty;
 		repaint();
