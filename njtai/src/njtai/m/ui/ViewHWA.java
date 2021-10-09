@@ -37,11 +37,15 @@ public class ViewHWA extends View {
 		_polMode.setWinding(PolygonMode.WINDING_CW);
 		_polMode.setCulling(PolygonMode.CULL_NONE);
 		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
+		
+		// strip
+		_ind =  new TriangleStripArray(0, new int[] {4});
 	}
 
 	protected Material _material;
 	protected CompositingMode _compositing;
 	protected PolygonMode _polMode;
+	protected TriangleStripArray _ind;
 
 	PagePart[] p = null;
 	int iw, ih;
@@ -61,7 +65,7 @@ public class ViewHWA extends View {
 		int s = 512;
 		for (int x = 0; x < i.getWidth() + s - 1; x += s) {
 			for (int y = 0; y < i.getHeight() + s - 1; y += s) {
-				v.addElement(new PagePart(i, x, y, (short) s));
+				v.addElement(new PagePart(this, i, x, y, (short) s));
 			}
 		}
 		PagePart[] tmp = new PagePart[v.size()];
@@ -161,14 +165,14 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	class PagePart {
+	static class PagePart {
 		int size;
 		Appearance ap;
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
 
-		public PagePart(Image page, int x, int y, short s) {
+		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
 
 			// cropping
 			Image part = Image.createImage(s, s);
@@ -186,9 +190,9 @@ public class ViewHWA extends View {
 			tex.setBlending(Texture2D.FUNC_MODULATE);
 			ap = new Appearance();
 			ap.setTexture(0, tex);
-			ap.setMaterial(_material);
-			ap.setCompositingMode(_compositing);
-			ap.setPolygonMode(_polMode);
+			ap.setMaterial(base._material);
+			ap.setCompositingMode(base._compositing);
+			ap.setPolygonMode(base._polMode);
 
 			// transform
 			t = new Transform();
@@ -204,6 +208,8 @@ public class ViewHWA extends View {
 
 			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
 			texArray.set(0, uv.length / 2, uv);
+			
+			ind = base._ind;
 
 			vb = new VertexBuffer();
 			vb.setPositions(vertArray, 1.0f, null);
