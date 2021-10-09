@@ -1,5 +1,5 @@
 Main-Class: njtai.d.NJTAID
-MIDlet-1: NJTAI,/njtai.png,njtai.NJTAI
+MIDlet-1: NJTAI,/njtai.png,njtai.NJTAIM
 MIDlet-Jar-URL: njtai.jar
 MIDlet-Icon: /njtai.png
 Nokia-MIDlet-Category: Internet
