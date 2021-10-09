@@ -32,7 +32,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected ByteArrayOutputStream[] cache;
 	protected MangaDownloader fs;
 
-	protected int zoom = 1;
+	protected float zoom = 1;
 	protected int x = 0;
 	protected int y = 0;
 
@@ -393,7 +393,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				if (zoom > 3)
 					zoom = 1;
 
-				resize(zoom);
+				resize((int) zoom);
 			} else if (k == -1) {
 				// up
 				y += getHeight() / 4;
@@ -409,7 +409,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				zoom = 2;
 				x = 0;
 				y = 0;
-				resize(zoom);
+				resize((int) zoom);
 			} else if (k == -3) {
 				changePage(-1);
 			} else if (k == -4) {
@@ -467,6 +467,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * <li>4 - prev
 	 * <li>5 - next
 	 * <li>6 - return
+	 * <li>7 - zoom slider
 	 * </ul>
 	 */
 	int touchHoldPos = 0;
@@ -483,7 +484,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		ly = (sy = y);
 		if (!touchCtrlShown)
 			return;
-		if (y < 50 || y > getHeight() - 50) {
+		if (y < 50 && useSmoothZoom()) {
+			setSmoothZoom(x, getWidth());
+			touchHoldPos = 7;
+		} else if (y < 50 || y > getHeight() - 50) {
 			int add = y < 50 ? 1 : 4;
 			int b;
 			if (x < getWidth() / 3) {
@@ -497,7 +501,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		repaint();
 	}
-	
+
+	protected void setSmoothZoom(int x, int w) {
+		zoom = Math.max(1, Math.min(5f, 1 + ((x - 25) * 4 / (w - 50))));
+	}
+
 	protected abstract boolean useSmoothZoom();
 
 	/**
@@ -506,6 +514,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected abstract int invertY();
 
 	protected void pointerDragged(int tx, int ty) {
+		if (touchHoldPos == 7) {
+			setSmoothZoom(x, getWidth());
+			repaint();
+			return;
+		}
 		if (touchHoldPos != 0)
 			return;
 		x += (tx - lx);
@@ -520,6 +533,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			if (Math.abs(sx - x) < 10 && Math.abs(sy - y) < 10) {
 				touchCtrlShown = !touchCtrlShown;
 			}
+		}
+		if (touchHoldPos == 7) {
+			touchHoldPos = 0;
+			repaint();
+			return;
 		}
 		int zone = 0;
 		if (y < 50 || y > getHeight() - 50) {
@@ -537,7 +555,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (zone == touchHoldPos) {
 			if (zone >= 1 && zone <= 3) {
 				zoom = zone;
-				resize(zoom);
+				resize(zone);
 			} else if (zone == 4) {
 				changePage(-1);
 			} else if (zone == 5) {
