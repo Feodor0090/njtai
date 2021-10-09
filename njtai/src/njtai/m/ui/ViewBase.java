@@ -386,6 +386,21 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			repaint();
 			return;
 		}
+		
+		if (k == KEY_NUM1) {
+			changePage(-1);
+		} else if (k == KEY_NUM3) {
+			changePage(1);
+		}
+		
+		// zooming via *0#
+		if (k == KEY_STAR)
+			zoom = 1;
+		if (k == KEY_NUM0)
+			zoom = 2;
+		if (k == KEY_POUND)
+			zoom = 3;
+		
 		// zoom is active
 		if (zoom != 1) {
 			if (k == -5) {
@@ -394,17 +409,18 @@ public abstract class ViewBase extends Canvas implements Runnable {
 					zoom = 1;
 
 				resize((int) zoom);
-			} else if (k == -1) {
+			} else if (k == -1 || k == KEY_NUM2) {
 				// up
 				y += getHeight() / 4;
-			} else if (k == -2) {
+			} else if (k == -2 || k == KEY_NUM8) {
 				y -= getHeight() / 4;
-			} else if (k == -3) {
+			} else if (k == -3 || k == KEY_NUM4) {
 				x += getWidth() / 4;
-			} else if (k == -4) {
+			} else if (k == -4 || k == KEY_NUM6) {
 				x -= getWidth() / 4;
 			}
 		} else {
+			// zoom inactive
 			if (k == -5) {
 				zoom = 2;
 				x = 0;
@@ -427,14 +443,14 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		// zoom is active
 		if (zoom != 1) {
-			if (k == -1) {
+			if (k == -1 || k == KEY_NUM2) {
 				// up
 				y += getHeight() * invert() / 4;
-			} else if (k == -2) {
+			} else if (k == -2 || k == KEY_NUM8) {
 				y -= getHeight() * invert() / 4;
-			} else if (k == -3) {
+			} else if (k == -3 || k == KEY_NUM4) {
 				x += getWidth() * invert() / 4;
-			} else if (k == -4) {
+			} else if (k == -4 || k == KEY_NUM6) {
 				x -= getWidth() * invert() / 4;
 			}
 		}
