@@ -21,21 +21,34 @@ public class MIDPWebAPIA extends WebAPIA {
 			o = new ByteArrayOutputStream();
 			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
-
+			int r = hc.getResponseCode();
+			if(r == 301) {
+				String redir = hc.getHeaderField("Location");
+				if(redir.startsWith("/")) {
+					String s2 = url.substring(url.indexOf("//") + 2);
+					String host = url.substring(0, url.indexOf("//")) + "//" + s2.substring(0, s2.indexOf("/"));
+					System.out.println("redir: " + redir + " | " + url + " | " + host + " | " + s2) ;
+					redir = host + redir;
+				}
+				hc.close();
+				hc = (HttpConnection) Connector.open(redir);
+				hc.setRequestMethod("GET");
+			}
 			i = hc.openInputStream();
 			byte[] b = new byte[16384];
 
 			int c;
 			while ((c = i.read(b)) != -1) {
-				// var10 += (long) var7;
 				o.write(b, 0, c);
 				o.flush();
 			}
 
 			return o.toByteArray();
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 			return null;
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		} finally {
 			try {

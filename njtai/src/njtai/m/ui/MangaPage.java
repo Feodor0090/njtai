@@ -58,7 +58,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private void loadPage() {
 		status(NJTAI.rus ? "Загрузка страницы (1/3)" : "Fetching page (1/3)");
-		String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id);
+		String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
 		if (html == null) {
 			status("Network error! Check connection, return to previous screen and try again.");
 			return;
