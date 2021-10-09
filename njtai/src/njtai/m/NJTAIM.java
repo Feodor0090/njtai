@@ -69,6 +69,10 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	public static void setScr(Displayable d) {
 		dsp.setCurrent(d);
 	}
+	
+	public static void setScr(Alert a, Displayable prev) {
+		dsp.setCurrent(a, prev);
+	}
 
 	public boolean savePrefs() {
 		try {
