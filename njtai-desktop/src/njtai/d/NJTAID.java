@@ -1,6 +1,6 @@
 package njtai.d;
 
-public class NJTAID implements Runnable {
+public class NJTAID {
 
 	//TODO implement IPlatform
 	
@@ -8,7 +8,7 @@ public class NJTAID implements Runnable {
 		//TODO register in main class
 	}
 	
-	public void run() {
+	public static void main(String[] args) {
 		//TODO desktop UI launching
 	}
 
