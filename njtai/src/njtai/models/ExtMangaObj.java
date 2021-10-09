@@ -16,6 +16,14 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 */
 	public String tags;
 	/**
+	 * Language
+	 */
+	public String lang;
+	/**
+	 * Parody section
+	 */
+	public String parody;
+	/**
 	 * Count of pages.
 	 */
 	public int pages;
@@ -35,8 +43,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
 
-		// pages
-		String pagesStr = StringUtil.range(StringUtil.range(html, "Pages:", "</div", false), "<span class=\"name\">",
+		String meta = StringUtil.range(html, "<section id=\"tags\">", "</sect");
+
+		// pages count
+		String pagesStr = StringUtil.range(StringUtil.range(meta, "Pages:", "</div", false), "<span class=\"name\">",
 				"</span", false);
 		System.out.println(pagesStr);
 		// this fails on 404
@@ -49,12 +59,26 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		title = StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
 				"<span class=\"pretty\">", "</span", false);
 
-		// tags
+		// metadata
 		try {
-			tags = listTags(StringUtil.splitRanges(StringUtil.range(html, "Tags:", "</div", true),
+			tags = listTags(StringUtil.splitRanges(StringUtil.range(meta, "Tags:", "</div", true),
 					"<span class=\"name\">", "</span", false));
 		} catch (Exception e) {
 			tags = "(error)";
+		}
+		lang = meta.indexOf("Languages:") == -1 ? null
+				: StringUtil.range(StringUtil.range(meta, "Languages:", "</div", false), "<span class=\"name\">",
+						"</span", false);
+		parody = meta.indexOf("Parodies:") == -1 ? null
+				: StringUtil.range(StringUtil.range(meta, "Parodies:", "</div", false), "<span class=\"name\">",
+						"</span", false);
+		if (NJTAI.rus && lang != null) {
+			if (lang.equals("japanese"))
+				lang = "японский";
+			else if (lang.equals("english"))
+				lang = "английский";
+			else if (lang.equals("chinese"))
+				lang = "китайский";
 		}
 		System.gc();
 	}
