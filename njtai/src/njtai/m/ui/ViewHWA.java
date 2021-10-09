@@ -37,9 +37,9 @@ public class ViewHWA extends View {
 		_polMode.setWinding(PolygonMode.WINDING_CW);
 		_polMode.setCulling(PolygonMode.CULL_NONE);
 		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
-		
+
 		// strip
-		_ind =  new TriangleStripArray(0, new int[] {4});
+		_ind = new TriangleStripArray(0, new int[] { 4 });
 	}
 
 	protected Material _material;
@@ -155,6 +155,7 @@ public class ViewHWA extends View {
 		cam.setParallel(ih / zoom, getWidth() / (float) getHeight(), 0.1f, 900f);
 		Transform t = new Transform();
 		t.postTranslate(x, y, 100);
+		t.postRotate(180, 0, 0, -1);
 		Light l = new Light();
 		l.setColor(0xffffff); // white light
 		l.setIntensity(1f);
@@ -171,15 +172,18 @@ public class ViewHWA extends View {
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
+	
 
 		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
 
+			size = s;
+			
 			// cropping
 			Image part = Image.createImage(s, s);
 			Graphics pg = part.getGraphics();
 			pg.setColor(0);
 			pg.fillRect(0, 0, s, s);
-			pg.drawRegion(page, 0, 0, s, s, 0, 0, 0, 0);
+			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0, 0, 0);
 			System.gc();
 
 			// appearance
@@ -208,7 +212,7 @@ public class ViewHWA extends View {
 
 			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
 			texArray.set(0, uv.length / 2, uv);
-			
+
 			ind = base._ind;
 
 			vb = new VertexBuffer();
