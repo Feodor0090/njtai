@@ -1,16 +1,21 @@
 package njtai.m.ui;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
+import njtai.StringUtil;
 import njtai.m.NJTAIM;
 import njtai.models.MangaObjs;
 
@@ -49,7 +54,7 @@ public final class MMenu extends List implements CommandListener {
 					// Isn't it empty?
 					if (st.length() == 0)
 						throw new NullPointerException();
-					
+
 					MangaObjs r = MangaObjs.getSearchList(processSearchQuery(st), this);
 					if (r == null) {
 						return;
@@ -137,12 +142,13 @@ public final class MMenu extends List implements CommandListener {
 			search();
 			return;
 		case 5:
-			Alert a = new Alert(NJTAI.rus ? "Управление" : "Controls",
-					NJTAI.rus ? "OK - масштаб;\nD-PAD - перемещение/переключение страницы;\nПСК - назад."
-							: "OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.",
-					null, AlertType.INFO);
-			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a);
+			try {
+
+				NJTAIM.setScr(generateControlsTipsScreen(this));
+			} catch (RuntimeException e) {
+				NJTAIM.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
+						AlertType.ERROR));
+			}
 			return;
 		case 6:
 			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
@@ -262,6 +268,36 @@ public final class MMenu extends List implements CommandListener {
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
 		NJTAIM.setScr(tb);
+	}
+
+	public static Form generateControlsTipsScreen(MMenu m) {
+		try {
+			String locale = System.getProperty("microedition.locale");
+			locale = locale.toLowerCase().substring(0, 2);
+			InputStream s = NJTAIM.class.getResourceAsStream("/text/tips_" + locale + ".txt");
+			if (s == null)
+				s = NJTAIM.class.getResourceAsStream("/text/tips_en.txt");
+
+			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
+			f.setCommandListener(m);
+			f.addCommand(m.backCmd);
+			String[] items;
+			{
+				char[] buf = new char[32 * 1024];
+				InputStreamReader isr = new InputStreamReader(s, "UTF-8");
+				int l = isr.read(buf);
+				isr.close();
+				String r = new String(buf, 0, l).replace('\r', ' ');
+				items = StringUtil.splitFull(r, '\n');
+			}
+			for (int i = 0; i < items.length / 2; i++) {
+				f.append(new StringItem(items[i * 2], items[i * 2 + 1]));
+			}
+			return f;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 	}
 
 }
