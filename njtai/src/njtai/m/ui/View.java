@@ -102,31 +102,30 @@ public abstract class View extends ViewBase {
 	}
 
 	private void drawZoomSlider(Graphics g, Font f) {
+
+		int x = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
+
 		// slider's body
 		for (int i = 0; i < 10; i++) {
-			g.setColor(NJTAI.blend(0x444444, 0xffffff, i * 255 / 9));
+			g.setColor(NJTAI.blend(touchHoldPos == 7 ? 0x357EDE : 0x444444, 0xffffff, i * 255 / 9));
 			g.drawRoundRect(25 - i, 25 - i, getWidth() - 50 + (i * 2), i * 2, i, i);
 		}
 
 		// slider's pin
 
-		float fzoom = zoom;
-
-		int x = (int) (25 + ((getWidth() - 50) * (fzoom - 1) / 4));
-
 		for (int i = 0; i < 15; i++) {
-			g.setColor(NJTAI.blend(0x444444, 0, i * 255 / 14));
+			g.setColor(NJTAI.blend(touchHoldPos == 7 ? 0x357EDE : 0x444444, 0, i * 255 / 14));
 			g.fillArc(x - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
 		}
-		g.setGrayScale(255);
+		g.setColor(touchHoldPos == 7 ? 0x357EDE : -1);
 
 		g.drawArc(x - 16, 9, 30, 30, 0, 360);
 
-		String ft = String.valueOf(fzoom);
+		String ft = String.valueOf(zoom);
 		if (ft.length() > 3) {
 			ft = ft.substring(0, 3);
 		}
-
+		g.setColor(-1);
 		g.drawString(ft, x, 25 - f.getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
 	}
 
