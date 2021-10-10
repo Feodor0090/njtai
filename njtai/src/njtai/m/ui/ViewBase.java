@@ -354,7 +354,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 */
 	protected abstract void resize(int size);
 
-	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", NJTAI.rus ? "закрыть" : "close" };
+	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "goto", "->", NJTAI.rus ? "закрыть" : "close" };
 
 	boolean touchCtrlShown = true;
 
@@ -481,9 +481,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * <li>2 - zoom x2
 	 * <li>3 - zoom x3
 	 * <li>4 - prev
-	 * <li>5 - next
-	 * <li>6 - return
-	 * <li>7 - zoom slider
+	 * <li>5 - goto
+	 * <li>6 - next
+	 * <li>7 - return
+	 * <li>8 - zoom slider
 	 * </ul>
 	 */
 	int touchHoldPos = 0;
@@ -502,7 +503,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			return;
 		if (y < 50 && useSmoothZoom()) {
 			setSmoothZoom(tx, getWidth());
-			touchHoldPos = 7;
+			touchHoldPos = 8;
 		} else if (y < 50 || y > getHeight() - 50) {
 			int add = y < 50 ? 1 : 4;
 			int b;
@@ -538,7 +539,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	}
 
 	protected void pointerDragged(int tx, int ty) {
-		if (touchHoldPos == 7) {
+		if (touchHoldPos == 8) {
 			setSmoothZoom(tx, getWidth());
 			repaint();
 			return;
@@ -558,7 +559,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				touchCtrlShown = !touchCtrlShown;
 			}
 		}
-		if (touchHoldPos == 7) {
+		if (touchHoldPos == 8) {
 			touchHoldPos = 0;
 			repaint();
 			return;
