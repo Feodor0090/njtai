@@ -15,7 +15,6 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
-import njtai.StringUtil;
 import njtai.m.NJTAIM;
 import njtai.models.MangaObjs;
 
