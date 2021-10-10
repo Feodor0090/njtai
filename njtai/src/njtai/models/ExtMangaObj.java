@@ -69,19 +69,31 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		try {
 			if (meta.indexOf("Languages:") == -1)
 				lang = null;
-			else
-				lang = listLangs(StringUtil.splitRanges(StringUtil.range(meta, "Languages:", "</div", false),
-						"<span class=\"name\">", "</span", false));
+			else {
+				String lr = StringUtil.range(meta, "Languages:", "</div", false);
+				if (lr.indexOf("class=\"name\">") == -1)
+					lang = null;
+				else
+					lang = listLangs(StringUtil.splitRanges(lr, "<span class=\"name\">", "</span", false));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			lang = null;
 		}
-		parody = meta.indexOf("Parodies:") == -1 ? null
-				: StringUtil.range(StringUtil.range(meta, "Parodies:", "</div", false), "<span class=\"name\">",
-						"</span", false);
+		if (meta.indexOf("Parodies:") == -1) {
+			parody = null;
+		} else {
+			String pr = StringUtil.range(meta, "Parodies:", "</div", false);
+			// System.out.println("Parody span: " + pr);
+			if (pr.indexOf("class=\"name\">") == -1)
+				parody = null;
+			else
+				parody = StringUtil.range(pr, "<span class=\"name\">", "</span", false);
+		}
 
 		System.gc();
+
 	}
 
 	/**
