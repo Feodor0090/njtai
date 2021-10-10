@@ -22,7 +22,7 @@ public abstract class View extends ViewBase {
 		super(emo, prev, page);
 	}
 
-	protected void paintHUD(Graphics g, Font f, boolean drawZoom) {
+	protected void paintHUD(Graphics g, Font f, boolean drawZoom, boolean drawPages) {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = useSmoothZoom() ? String.valueOf(zoom) : String.valueOf((int) zoom);
 		if (zoomN.length() > 3)
@@ -48,7 +48,8 @@ public abstract class View extends ViewBase {
 		 * used + "K"; } else { ram = (used / 1024) + "M"; } }
 		 */
 		g.setGrayScale(0);
-		g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
+		if (drawPages)
+			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 		if (drawZoom)
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 		if (prefetch != null)
@@ -57,7 +58,8 @@ public abstract class View extends ViewBase {
 		// f.stringWidth(ram), f.getHeight());
 
 		g.setGrayScale(255);
-		g.drawString(pageNum, 0, 0, 0);
+		if (drawPages)
+			g.drawString(pageNum, 0, 0, 0);
 		if (drawZoom)
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
 		if (prefetch != null)
@@ -69,19 +71,20 @@ public abstract class View extends ViewBase {
 		int fh = f.getHeight();
 
 		// captions
-		for (int i = 3; i < 6; i++) {
-			fillGrad(g, getWidth() * (i - 3) / 3, getHeight() - 50, getWidth() / 3, 51, 0,
+		for (int i = 3; i < 7; i++) {
+			fillGrad(g, getWidth() * (i - 3) / 4, getHeight() - 50, getWidth() / 4, 51, 0,
 					touchHoldPos == (i + 1) ? 0x357EDE : 0x222222);
 			g.setGrayScale(255);
-			g.drawString(touchCaps[i], getWidth() * (1 + (i - 3) * 2) / 6, getHeight() - 25 - fh / 2,
-					Graphics.TOP | Graphics.HCENTER);
+			g.drawString(i == 4 ? ((page + 1) + "/" + emo.pages) : touchCaps[i], getWidth() * (1 + (i - 3) * 2) / 8,
+					getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 		}
 		// hor lines
 		g.setGrayScale(255);
 		g.drawLine(0, getHeight() - 50, getWidth(), getHeight() - 50);
 		// vert lines between btns
-		g.drawLine(getWidth() / 3, getHeight() - 50, getWidth() / 3, getHeight());
-		g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
+		g.drawLine(getWidth() / 4, getHeight() - 50, getWidth() / 4, getHeight());
+		g.drawLine(getWidth() * 2 / 4, getHeight() - 50, getWidth() * 2 / 4, getHeight());
+		g.drawLine(getWidth() * 3 / 4, getHeight() - 50, getWidth() * 3 / 4, getHeight());
 
 		if (useSmoothZoom()) {
 			drawZoomSlider(g, f);
@@ -107,17 +110,17 @@ public abstract class View extends ViewBase {
 
 		// slider's body
 		for (int i = 0; i < 10; i++) {
-			g.setColor(NJTAI.blend(touchHoldPos == 7 ? 0x357EDE : 0x444444, 0xffffff, i * 255 / 9));
+			g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0xffffff, i * 255 / 9));
 			g.drawRoundRect(25 - i, 25 - i, getWidth() - 50 + (i * 2), i * 2, i, i);
 		}
 
 		// slider's pin
 
 		for (int i = 0; i < 15; i++) {
-			g.setColor(NJTAI.blend(touchHoldPos == 7 ? 0x357EDE : 0x444444, 0, i * 255 / 14));
+			g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0, i * 255 / 14));
 			g.fillArc(x - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
 		}
-		g.setColor(touchHoldPos == 7 ? 0x357EDE : -1);
+		g.setColor(touchHoldPos == 8 ? 0x357EDE : -1);
 
 		g.drawArc(x - 16, 9, 30, 30, 0, 360);
 
@@ -156,7 +159,7 @@ public abstract class View extends ViewBase {
 			g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
 			// captions
 			g.setGrayScale(255);
-			g.drawString(touchCaps[5], getWidth() * 5 / 6, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(touchCaps[6], getWidth() * 5 / 6, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 
 		}
 	}

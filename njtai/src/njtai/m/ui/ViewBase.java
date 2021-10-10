@@ -6,8 +6,11 @@ import java.io.IOException;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
 import njtai.m.MangaDownloader;
@@ -20,7 +23,7 @@ import njtai.models.ExtMangaObj;
  * @author Feodor0090
  *
  */
-public abstract class ViewBase extends Canvas implements Runnable {
+public abstract class ViewBase extends Canvas implements Runnable, CommandListener {
 
 	protected ExtMangaObj emo;
 	protected Displayable prev;
@@ -354,7 +357,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 */
 	protected abstract void resize(int size);
 
-	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "->", NJTAI.rus ? "закрыть" : "close" };
+	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "goto", "->", NJTAI.rus ? "закрыть" : "close" };
 
 	boolean touchCtrlShown = true;
 
@@ -363,7 +366,8 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	public abstract boolean canDraw();
 
 	protected void keyPressed(int k) {
-		if (k == -7) {
+		k = qwertyToNum(k);
+		if (k == -7 || k == KEY_NUM9) {
 			emo.cancelPrefetch();
 			try {
 				if (loader != null && loader.isAlive())
@@ -385,6 +389,14 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (!canDraw()) {
 			repaint();
 			return;
+		}
+
+		if (k == KEY_NUM7 || k == -10) {
+			TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
+			tb.addCommand(goTo);
+			tb.addCommand(back);
+			tb.setCommandListener(this);
+			NJTAIM.setScr(tb);
 		}
 
 		if (k == KEY_NUM1) {
@@ -437,6 +449,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	}
 
 	protected void keyRepeated(int k) {
+		k = qwertyToNum(k);
 		if (!canDraw()) {
 			repaint();
 			return;
@@ -481,9 +494,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * <li>2 - zoom x2
 	 * <li>3 - zoom x3
 	 * <li>4 - prev
-	 * <li>5 - next
-	 * <li>6 - return
-	 * <li>7 - zoom slider
+	 * <li>5 - goto
+	 * <li>6 - next
+	 * <li>7 - return
+	 * <li>8 - zoom slider
 	 * </ul>
 	 */
 	int touchHoldPos = 0;
@@ -502,18 +516,29 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			return;
 		if (y < 50 && useSmoothZoom()) {
 			setSmoothZoom(tx, getWidth());
-			touchHoldPos = 7;
-		} else if (y < 50 || y > getHeight() - 50) {
-			int add = y < 50 ? 1 : 4;
+			touchHoldPos = 8;
+		} else if (y < 50) {
 			int b;
 			if (tx < getWidth() / 3) {
-				b = 0;
-			} else if (tx < getWidth() * 2 / 3) {
 				b = 1;
-			} else {
+			} else if (tx < getWidth() * 2 / 3) {
 				b = 2;
+			} else {
+				b = 3;
 			}
-			touchHoldPos = b + add;
+			touchHoldPos = b;
+		} else if (y > getHeight() - 50) {
+			int b;
+			if (tx < getWidth() / 4) {
+				b = 4;
+			} else if (tx < getWidth() * 2 / 4) {
+				b = 5;
+			} else if (tx < getWidth() * 3 / 4) {
+				b = 6;
+			} else {
+				b = 7;
+			}
+			touchHoldPos = b;
 		}
 		repaint();
 	}
@@ -538,7 +563,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	}
 
 	protected void pointerDragged(int tx, int ty) {
-		if (touchHoldPos == 7) {
+		if (touchHoldPos == 8) {
 			setSmoothZoom(tx, getWidth());
 			repaint();
 			return;
@@ -558,23 +583,34 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				touchCtrlShown = !touchCtrlShown;
 			}
 		}
-		if (touchHoldPos == 7) {
+		if (touchHoldPos == 8) {
 			touchHoldPos = 0;
 			repaint();
 			return;
 		}
 		int zone = 0;
-		if (y < 50 || y > getHeight() - 50) {
-			int add = y < 50 ? 1 : 4;
+		if (y < 50) {
 			int b;
 			if (x < getWidth() / 3) {
-				b = 0;
-			} else if (x < getWidth() * 2 / 3) {
 				b = 1;
-			} else {
+			} else if (x < getWidth() * 2 / 3) {
 				b = 2;
+			} else {
+				b = 3;
 			}
-			zone = b + add;
+			zone = b;
+		} else if (y > getHeight() - 50) {
+			int b;
+			if (x < getWidth() / 4) {
+				b = 4;
+			} else if (x < getWidth() * 2 / 4) {
+				b = 5;
+			} else if (x < getWidth() * 3 / 4) {
+				b = 6;
+			} else {
+				b = 7;
+			}
+			zone = b;
 		}
 		if (zone == touchHoldPos) {
 			if (zone >= 1 && zone <= 3) {
@@ -583,12 +619,45 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			} else if (zone == 4) {
 				changePage(-1);
 			} else if (zone == 5) {
-				changePage(1);
+				keyPressed(KEY_NUM7);
 			} else if (zone == 6) {
+				changePage(1);
+			} else if (zone == 7) {
 				keyPressed(-7);
 			}
 		}
 		touchHoldPos = 0;
+		repaint();
+	}
+
+	private Command goTo = new Command("Go", Command.OK, 1);
+	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
+
+	/**
+	 * Listener for textbox.
+	 * 
+	 * @param c
+	 * @param d
+	 */
+	public void commandAction(Command c, Displayable d) {
+		TextBox tb = (TextBox) d;
+		NJTAIM.setScr(this);
+		if (c == goTo) {
+			try {
+				int n = Integer.parseInt(tb.getString());
+				if (n < 1)
+					n = 1;
+				if (n > emo.pages)
+					n = emo.pages;
+				page = n - 1;
+				checkCacheAfterPageSwitch();
+				reload();
+			} catch (Exception e) {
+				NJTAI.pause(100);
+				NJTAIM.setScr(
+						new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
+			}
+		}
 		repaint();
 	}
 
@@ -607,6 +676,64 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		for (int i = 0; i < h; i++) {
 			g.setColor(NJTAI.blend(c2, c1, i * 255 / h));
 			g.drawLine(x, y + i, x + w, y + i);
+		}
+	}
+
+	public static int qwertyToNum(int k) {
+		char c = (char) k;
+		switch (c) {
+		case 'r':
+		case 'R':
+		case 'к':
+			return Canvas.KEY_NUM1;
+
+		case 't':
+		case 'T':
+		case 'е':
+			return Canvas.KEY_NUM2;
+
+		case 'y':
+		case 'Y':
+		case 'н':
+			return Canvas.KEY_NUM3;
+
+		case 'f':
+		case 'F':
+		case 'а':
+			return Canvas.KEY_NUM4;
+
+		case 'g':
+		case 'G':
+		case 'п':
+			return Canvas.KEY_NUM5;
+
+		case 'h':
+		case 'H':
+		case 'р':
+			return Canvas.KEY_NUM6;
+
+		case 'v':
+		case 'V':
+		case 'м':
+			return Canvas.KEY_NUM7;
+
+		case 'b':
+		case 'B':
+		case 'и':
+			return Canvas.KEY_NUM8;
+
+		case 'n':
+		case 'N':
+		case 'т':
+			return Canvas.KEY_NUM9;
+
+		case 'm':
+		case 'M':
+		case 'ь':
+			return Canvas.KEY_NUM0;
+
+		default:
+			return k;
 		}
 	}
 

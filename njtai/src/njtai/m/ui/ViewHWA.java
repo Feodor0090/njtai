@@ -126,7 +126,7 @@ public class ViewHWA extends View {
 					drawTouchControls(g, f);
 				}
 			}
-			paintHUD(g, f, false);
+			paintHUD(g, f, false, !touchCtrlShown || !hasPointerEvents());
 		} catch (Exception e) {
 			e.printStackTrace();
 
