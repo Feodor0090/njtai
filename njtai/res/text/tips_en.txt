@@ -12,5 +12,7 @@ Set zoom to x1.
 Set zoom to x2.
 #
 Set zoom to x3.
-RSK
+RSK/9
 Close the view.
+CALL/7
+Go to any page.
