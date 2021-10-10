@@ -14,27 +14,43 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private ExtMangaObj mo;
 	private Thread l;
 	private Displayable p;
-	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
-	private Item page1 = new StringItem(null, NJTAI.rus ? "Открыть первую страницу" : "Open first page",
-			StringItem.BUTTON);
-	private Item pageN = new StringItem(null, NJTAI.rus ? "Ввести номер страницы" : "Enter page number",
-			StringItem.BUTTON);
-	private Item save = new StringItem(null, NJTAI.rus ? "Скачать" : "Download", StringItem.BUTTON);
-	private Item repair = new StringItem(null, NJTAI.rus ? "Восстановить кэш" : "Repair cache", StringItem.BUTTON);
-	public static Command open = new Command(NJTAI.rus ? "Выбрать" : "Select", Command.ITEM, 1);
-	private Command goTo = new Command("Go", Command.OK, 1);
-	private Command repairLite = new Command(NJTAI.rus ? "Докачать" : "Redownload", Command.SCREEN, 1);
-	private Command repairFull = new Command(NJTAI.rus ? "Полная проверка" : "Full repair", Command.SCREEN, 2);
+	private Command back;
+	private Item page1;
+	private Item pageN;
+	private Item save;
+	private Item repair;
+	public static Command open;
+	private Command goTo;
+	private Command repairLite ;
+	private Command repairFull ;
 
 	boolean stop = false;
 
-	private StringItem prgrs = new StringItem(NJTAI.rus ? "Загрузка данных" : "Loading data", "");
+	private StringItem prgrs;
+
+	private String[] loc;
 
 	public MangaPage(int num, Displayable prev) {
 		super("Manga page");
 		id = num;
 		p = prev;
 
+		loc = NJTAIM.getStrings("page");
+
+		back = new Command(loc[0], Command.BACK, 1);
+		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
+		pageN = new StringItem(null, loc[2], StringItem.BUTTON);
+		repair = new StringItem(null, loc[3], StringItem.BUTTON);
+		save = new StringItem(null, loc[4], StringItem.BUTTON);
+		open = new Command(loc[5], Command.ITEM, 1);
+		goTo = new Command(loc[6], Command.OK, 1);
+		repairLite = new Command(loc[7], Command.SCREEN, 1);
+		repairFull = new Command(loc[8], Command.SCREEN, 2);
+		prgrs = new StringItem(loc[9], "");
+		
+		
+		
+		
 		setCommandListener(this);
 		addCommand(back);
 		append(prgrs);
@@ -53,7 +69,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			deleteAll();
 			append(prgrs);
 			status("Not enough memory to load!");
-		} catch(Throwable t) {
+		} catch (Throwable t) {
 			System.gc();
 			deleteAll();
 			append(prgrs);
@@ -84,13 +100,15 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 		deleteAll();
 		ImageItem cover = new ImageItem(
-				mo.img == null ? (NJTAI.rus ? "Загрузка обложки была отключена или произошла ошибка." : "Cover loading was disabled or error happened.")
+				mo.img == null
+						? (NJTAI.rus ? "Загрузка обложки была отключена или произошла ошибка."
+								: "Cover loading was disabled or error happened.")
 						: null,
 				(Image) mo.img, 0, null);
 		cover.setItemCommandListener(this);
 		cover.setDefaultCommand(open);
 		append(cover);
-		
+
 		setTitle(mo.title);
 
 		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));
