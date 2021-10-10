@@ -533,7 +533,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	/**
 	 * @return -1 if drag must be inverted, 1 overwise.
 	 */
-	protected abstract int panDeltaMul();
+	protected int panDeltaMul() {
+		return NJTAI.invertPan ? -1 : 1;
+	}
 
 	protected void pointerDragged(int tx, int ty) {
 		if (touchHoldPos == 7) {

@@ -190,10 +190,6 @@ public class ViewSWR extends View {
 		}
 	}
 
-	protected int panDeltaMul() {
-		return 1;
-	}
-
 	protected boolean useSmoothZoom() {
 		return false;
 	}
