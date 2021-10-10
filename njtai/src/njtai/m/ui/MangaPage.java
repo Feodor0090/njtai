@@ -78,10 +78,14 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			return;
 
 		deleteAll();
-		append(new ImageItem(
-				mo.img == null ? (NJTAI.rus ? "Загрузка обложки была отключена." : "Cover loading was disabled.")
+		ImageItem cover = new ImageItem(
+				mo.img == null ? (NJTAI.rus ? "Загрузка обложки была отключена или произошла ошибка." : "Cover loading was disabled or error happened.")
 						: null,
-				(Image) mo.img, 0, null));
+				(Image) mo.img, 0, null);
+		cover.setItemCommandListener(this);
+		cover.setDefaultCommand(open);
+		append(cover);
+		
 		setTitle(mo.title);
 
 		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));
@@ -180,6 +184,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 					}
 				});
 				NJTAIM.setScr(a);
+			} else {
+				NJTAIM.setScr(ViewBase.create(mo, this, 0));
 			}
 		}
 	}
