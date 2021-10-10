@@ -1,17 +1,18 @@
-Main-Class: njtai.d.NJTAID
-MIDlet-1: NJTAI,/njtai.png,njtai.m.NJTAIM
-MIDlet-Jar-URL: njtai.jar
-MIDlet-Icon: /njtai.png
 Nokia-MIDlet-Category: Internet
-MicroEdition-Configuration: CLDC-1.1
-Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
+Main-Class: njtai.d.NJTAID
 MIDlet-Version: 1.1.41
-MIDlet-Vendor: Feodor0090
-MIDlet-Name: NJTAI
-MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
+Class-Path: .
 MIDlet-Info-URL: https://github.com/Feodor0090/njtai
+Nokia-MIDlet-On-Screen-Keypad: no
+MIDlet-Icon: /njtai.png
+Background: False
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Jar-URL: njtai.jar
+MIDlet-Name: NJTAI
+MIDlet-1: NJTAI,/njtai.png,njtai.m.NJTAIM
+MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
+MIDlet-Permissions-Opt: javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read
 MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.Connector.https
 MicroEdition-Profile: MIDP-2.0
-Class-Path: .
-Background: False
-Nokia-MIDlet-On-Screen-Keypad: no
+MIDlet-Vendor: Feodor0090
+Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
