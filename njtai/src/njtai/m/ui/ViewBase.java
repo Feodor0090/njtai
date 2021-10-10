@@ -6,8 +6,11 @@ import java.io.IOException;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Command;
+import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
 import njtai.m.MangaDownloader;
@@ -20,7 +23,7 @@ import njtai.models.ExtMangaObj;
  * @author Feodor0090
  *
  */
-public abstract class ViewBase extends Canvas implements Runnable {
+public abstract class ViewBase extends Canvas implements Runnable, CommandListener {
 
 	protected ExtMangaObj emo;
 	protected Displayable prev;
@@ -388,7 +391,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 
 		if (k == KEY_NUM7 || k == -10) {
-			//TODO
+			TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
+			tb.addCommand(goTo);
+			tb.addCommand(back);
+			tb.setCommandListener(this);
+			NJTAIM.setScr(tb);
 		}
 
 		if (k == KEY_NUM1) {
@@ -618,6 +625,37 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			}
 		}
 		touchHoldPos = 0;
+		repaint();
+	}
+
+	private Command goTo = new Command("Go", Command.OK, 1);
+	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
+
+	/**
+	 * Listener for textbox.
+	 * 
+	 * @param c
+	 * @param d
+	 */
+	public void commandAction(Command c, Displayable d) {
+		TextBox tb = (TextBox) d;
+		NJTAIM.setScr(this);
+		if (c == goTo) {
+			try {
+				int n = Integer.parseInt(tb.getString());
+				if (n < 1)
+					n = 1;
+				if (n > emo.pages)
+					n = emo.pages;
+				page = n - 1;
+				checkCacheAfterPageSwitch();
+				reload();
+			} catch (Exception e) {
+				NJTAI.pause(100);
+				NJTAIM.setScr(
+						new Alert("Failed to go to page", "Have you entered correct number?", null, AlertType.ERROR));
+			}
+		}
 		repaint();
 	}
 
