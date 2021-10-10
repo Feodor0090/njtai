@@ -9,6 +9,7 @@ import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.List;
 import javax.microedition.lcdui.StringItem;
@@ -270,7 +271,9 @@ public final class MMenu extends List implements CommandListener {
 			f.addCommand(m.backCmd);
 			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
-				f.append(new StringItem(items[i * 2], items[i * 2 + 1]));
+				StringItem s = new StringItem(null, "["+items[i * 2]+"] "+items[i * 2 + 1]+"\n");
+				s.setFont(Font.getFont(0, 0, 8));
+				f.append(s);
 			}
 			return f;
 		} catch (Exception e) {
