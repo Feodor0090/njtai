@@ -1,6 +1,6 @@
 Nokia-MIDlet-Category: Internet
 Main-Class: njtai.d.NJTAID
-MIDlet-Version: 1.1.41
+MIDlet-Version: 1.1.42
 Class-Path: .
 MIDlet-Info-URL: https://github.com/Feodor0090/njtai
 Nokia-MIDlet-On-Screen-Keypad: no
