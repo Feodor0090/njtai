@@ -53,6 +53,11 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			deleteAll();
 			append(prgrs);
 			status("Not enough memory to load!");
+		} catch(Throwable t) {
+			System.gc();
+			deleteAll();
+			append(prgrs);
+			status(t.toString());
 		}
 	}
 
@@ -64,7 +69,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			return;
 		}
 
-		status(NJTAI.rus ? "Обработка данныых (2/3)" : "Processing data (2/3)");
+		status(NJTAI.rus ? "Обработка данных (2/3)" : "Processing data (2/3)");
 		if (stop)
 			return;
 		mo = new ExtMangaObj(id, html);
