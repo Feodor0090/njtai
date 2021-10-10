@@ -1,13 +1,17 @@
 package njtai.m.ui;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
@@ -49,7 +53,7 @@ public final class MMenu extends List implements CommandListener {
 					// Isn't it empty?
 					if (st.length() == 0)
 						throw new NullPointerException();
-					
+
 					MangaObjs r = MangaObjs.getSearchList(processSearchQuery(st), this);
 					if (r == null) {
 						return;
@@ -137,12 +141,13 @@ public final class MMenu extends List implements CommandListener {
 			search();
 			return;
 		case 5:
-			Alert a = new Alert(NJTAI.rus ? "Управление" : "Controls",
-					NJTAI.rus ? "OK - масштаб;\nD-PAD - перемещение/переключение страницы;\nПСК - назад."
-							: "OK - change zoom;\nD-PAD - move page / turn page;\nRSK - return.",
-					null, AlertType.INFO);
-			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a);
+			try {
+
+				NJTAIM.setScr(generateControlsTipsScreen(this));
+			} catch (RuntimeException e) {
+				NJTAIM.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
+						AlertType.ERROR));
+			}
 			return;
 		case 6:
 			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
@@ -262,6 +267,22 @@ public final class MMenu extends List implements CommandListener {
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
 		NJTAIM.setScr(tb);
+	}
+
+	public static Form generateControlsTipsScreen(MMenu m) {
+		try {
+			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
+			f.setCommandListener(m);
+			f.addCommand(m.backCmd);
+			String[] items = NJTAIM.getStrings("tips");
+			for (int i = 0; i < items.length / 2; i++) {
+				f.append(new StringItem(items[i * 2], items[i * 2 + 1]));
+			}
+			return f;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 	}
 
 }
