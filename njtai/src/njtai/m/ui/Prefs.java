@@ -24,8 +24,8 @@ import njtai.m.NJTAIM;
 final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
-	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", 2, 2);
-	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.SCREEN, 2);
+	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.OK, 2);
+	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.CANCEL, 2);
 	private final Command prC = new Command("Proxy setup", 8, 1);
 
 	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
@@ -143,7 +143,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);
-					NJTAIM.setScr(a);
+					NJTAIM.setScr(a, menu);
 				}
 			} else {
 				Alert a = new Alert("Settings",
@@ -160,7 +160,10 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			a.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a);
 		} else if (c == cnclC) {
-			NJTAIM.setScr(menu);
+			NJTAIM.setScr(
+					new Alert(NJTAI.rus ? "Настройки" : "Settings",
+							NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING),
+					menu);
 		}
 	}
 
