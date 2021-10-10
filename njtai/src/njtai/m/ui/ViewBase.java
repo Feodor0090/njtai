@@ -586,6 +586,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				keyPressed(-7);
 			}
 		}
+		touchHoldPos = 0;
 		repaint();
 	}
 
