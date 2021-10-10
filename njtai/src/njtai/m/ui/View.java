@@ -67,17 +67,18 @@ public abstract class View extends ViewBase {
 
 	protected void drawTouchControls(Graphics g, Font f) {
 		int fh = f.getHeight();
-		// grads
-		fillGrad(g, 0, getHeight() - 50, getWidth(), 51, 0, 0x222222);
-		// hor lines
-		g.setGrayScale(255);
-		g.drawLine(0, getHeight() - 50, getWidth(), getHeight() - 50);
+
 		// captions
 		for (int i = 3; i < 6; i++) {
+			fillGrad(g, getWidth() * (i - 3) / 3, getHeight() - 50, getWidth() / 3, 51, 0,
+					touchHoldPos == (i + 1) ? 0x357EDE : 0x222222);
 			g.setGrayScale(255);
 			g.drawString(touchCaps[i], getWidth() * (1 + (i - 3) * 2) / 6, getHeight() - 25 - fh / 2,
 					Graphics.TOP | Graphics.HCENTER);
 		}
+		// hor lines
+		g.setGrayScale(255);
+		g.drawLine(0, getHeight() - 50, getWidth(), getHeight() - 50);
 		// vert lines between btns
 		g.drawLine(getWidth() / 3, getHeight() - 50, getWidth() / 3, getHeight());
 		g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
@@ -86,14 +87,15 @@ public abstract class View extends ViewBase {
 			drawZoomSlider(g, f);
 			return;
 		}
-
-		fillGrad(g, 0, 0, getWidth(), 50, 0x222222, 0);
-		g.setGrayScale(255);
-		g.drawLine(0, 50, getWidth(), 50);
 		for (int i = 0; i < 3; i++) {
+			fillGrad(g, getWidth() * i / 3, 0, getWidth() / 3 + 1, 50, touchHoldPos == (i + 1) ? 0x357EDE : 0x222222,
+					0);
 			g.setGrayScale(255);
 			g.drawString(touchCaps[i], getWidth() * (1 + i * 2) / 6, 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 		}
+		// bottom hor line
+		g.setGrayScale(255);
+		g.drawLine(0, 50, getWidth(), 50);
 		// vert lines between btns
 		g.drawLine(getWidth() / 3, 0, getWidth() / 3, 50);
 		g.drawLine(getWidth() * 2 / 3, 0, getWidth() * 2 / 3, 50);
