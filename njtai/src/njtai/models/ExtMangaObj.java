@@ -132,7 +132,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (infoReady == -1) {
 			infoReady = 100;
 		}
-		return WebAPIA.inst.get(NJTAI.proxyUrl(url));
+		return WebAPIA.inst.getOrNull(NJTAI.proxyUrl(url));
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			return imgs[pageN - 1];
 
 		try {
-			String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
+			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
 			String body = html.substring(html.indexOf("<bo"));
 			html = null;
 			if (body.length() < 200 && body.indexOf("429") != -1) {

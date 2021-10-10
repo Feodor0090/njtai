@@ -11,9 +11,9 @@ import njtai.models.WebAPIA;
 
 public class MIDPWebAPIA extends WebAPIA {
 
-	public byte[] get(String url) {
+	public byte[] get(String url) throws IOException {
 		if (url == null)
-			return null;
+			throw new IllegalArgumentException("URL is null");
 		ByteArrayOutputStream o = null;
 		HttpConnection hc = null;
 		InputStream i = null;
@@ -44,12 +44,6 @@ public class MIDPWebAPIA extends WebAPIA {
 			}
 
 			return o.toByteArray();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
 		} finally {
 			try {
 				if (i != null)
@@ -69,9 +63,21 @@ public class MIDPWebAPIA extends WebAPIA {
 		}
 	}
 
-	public String getUtf(String url) {
+	public byte[] getOrNull(String url) {
 		try {
-			return new String(get(url), "UTF-8");
+			return get(url);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public String getUtf(String url) throws IOException {
+		return new String(get(url), "UTF-8");
+	}
+
+	public String getUtfOrNull(String url) {
+		try {
+			return getUtf(url);
 		} catch (Exception e) {
 			return null;
 		}

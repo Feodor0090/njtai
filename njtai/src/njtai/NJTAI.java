@@ -74,7 +74,7 @@ public class NJTAI {
 	public synchronized static String getHP() throws IOException, IllegalAccessException {
 		String s = hp;
 		if (s == null) {
-			s = WebAPIA.inst.getUtf(proxy + baseUrl);
+			s = WebAPIA.inst.getUtfOrNull(proxy + baseUrl);
 			if (s == null)
 				throw new IOException();
 			if (s.length() < 2)

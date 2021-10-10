@@ -75,7 +75,7 @@ public class MangaObjs implements Enumeration {
 	
 	public static MangaObjs getSearchList(String query, Object caller) throws IOException, IllegalAccessException {
 		String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + query;
-		String r = WebAPIA.inst.getUtf(q);
+		String r = WebAPIA.inst.getUtfOrNull(q);
 		if (r == null) {
 			NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
 			return null;
