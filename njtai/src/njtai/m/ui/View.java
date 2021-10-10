@@ -1,10 +1,13 @@
 package njtai.m.ui;
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
 
 import njtai.NJTAI;
 import njtai.m.NJTAIM;
@@ -18,8 +21,16 @@ import njtai.models.ExtMangaObj;
  */
 public abstract class View extends ViewBase {
 
+	Image slider;
+
 	public View(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
+		try {
+			slider = Image.createImage("/slider.png");
+		} catch (IOException e) {
+			e.printStackTrace();
+			slider = null;
+		}
 	}
 
 	protected void paintHUD(Graphics g, Font f, boolean drawZoom, boolean drawPages) {
@@ -109,9 +120,20 @@ public abstract class View extends ViewBase {
 		int x = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
 
 		// slider's body
-		for (int i = 0; i < 10; i++) {
-			g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0xffffff, i * 255 / 9));
-			g.drawRoundRect(25 - i, 25 - i, getWidth() - 50 + (i * 2), i * 2, i, i);
+		if (slider == null) {
+			for (int i = 0; i < 10; i++) {
+				g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0xffffff, i * 255 / 9));
+				g.drawRoundRect(25 - i, 25 - i, getWidth() - 50 + (i * 2), i * 2, i, i);
+			}
+		} else {
+			int y = touchHoldPos == 8 ? 20 : 0;
+			g.drawRegion(slider, 0, y, 35, 20, 0, 0, 15, 0);
+			g.drawRegion(slider, 35, y, 35, 20, 0, getWidth() - 35, 15, 0);
+			g.setClip(35, 0, getWidth() - 70, 50);
+			for (int i = 35; i < getWidth() - 34; i += 20) {
+				g.drawRegion(slider, 25, y, 20, 20, 0, i, 15, 0);
+			}
+			g.setClip(0, 0, getWidth(), getHeight());
 		}
 
 		// slider's pin
