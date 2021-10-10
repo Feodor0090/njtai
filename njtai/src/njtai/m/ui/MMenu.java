@@ -272,24 +272,10 @@ public final class MMenu extends List implements CommandListener {
 
 	public static Form generateControlsTipsScreen(MMenu m) {
 		try {
-			String locale = System.getProperty("microedition.locale");
-			locale = locale.toLowerCase().substring(0, 2);
-			InputStream s = NJTAIM.class.getResourceAsStream("/text/tips_" + locale + ".txt");
-			if (s == null)
-				s = NJTAIM.class.getResourceAsStream("/text/tips_en.txt");
-
 			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
 			f.setCommandListener(m);
 			f.addCommand(m.backCmd);
-			String[] items;
-			{
-				char[] buf = new char[32 * 1024];
-				InputStreamReader isr = new InputStreamReader(s, "UTF-8");
-				int l = isr.read(buf);
-				isr.close();
-				String r = new String(buf, 0, l).replace('\r', ' ');
-				items = StringUtil.splitFull(r, '\n');
-			}
+			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
 				f.append(new StringItem(items[i * 2], items[i * 2 + 1]));
 			}
