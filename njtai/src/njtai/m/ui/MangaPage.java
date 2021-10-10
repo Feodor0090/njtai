@@ -21,8 +21,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Item repair;
 	public static Command open;
 	private Command goTo;
-	private Command repairLite ;
-	private Command repairFull ;
+	private Command repairLite;
+	private Command repairFull;
 
 	boolean stop = false;
 
@@ -47,10 +47,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		repairLite = new Command(loc[7], Command.SCREEN, 1);
 		repairFull = new Command(loc[8], Command.SCREEN, 2);
 		prgrs = new StringItem(loc[9], "");
-		
-		
-		
-		
+
 		setCommandListener(this);
 		addCommand(back);
 		append(prgrs);
@@ -68,7 +65,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			System.gc();
 			deleteAll();
 			append(prgrs);
-			status("Not enough memory to load!");
+			status(loc[25]);
 		} catch (Throwable t) {
 			System.gc();
 			deleteAll();
@@ -78,19 +75,19 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	private void loadPage() {
-		status(NJTAI.rus ? "Загрузка страницы (1/3)" : "Fetching page (1/3)");
+		status(loc[10]);
 		String html = WebAPIA.inst.getUtf(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
 		if (html == null) {
-			status("Network error! Check connection, return to previous screen and try again.");
+			status(loc[11]);
 			return;
 		}
 
-		status(NJTAI.rus ? "Обработка данных (2/3)" : "Processing data (2/3)");
+		status(loc[12]);
 		if (stop)
 			return;
 		mo = new ExtMangaObj(id, html);
 
-		status(NJTAI.rus ? "Скачивание обложки (3/3)" : "Downloading cover (3/3)");
+		status(loc[13]);
 		if (stop)
 			return;
 		if (NJTAI.loadCoverAtPage)
@@ -99,26 +96,21 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			return;
 
 		deleteAll();
-		ImageItem cover = new ImageItem(
-				mo.img == null
-						? (NJTAI.rus ? "Загрузка обложки была отключена или произошла ошибка."
-								: "Cover loading was disabled or error happened.")
-						: null,
-				(Image) mo.img, 0, null);
+		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
 		cover.setItemCommandListener(this);
 		cover.setDefaultCommand(open);
 		append(cover);
 
 		setTitle(mo.title);
 
-		append(new StringItem(NJTAI.rus ? "Название" : "Title", mo.title));
+		append(new StringItem(loc[15], mo.title));
 		append(new StringItem("ID", "#" + id));
-		append(new StringItem(NJTAI.rus ? "Страницы" : "Pages", "" + mo.pages));
+		append(new StringItem(loc[16], "" + mo.pages));
 		if (mo.lang != null)
-			append(new StringItem(NJTAI.rus ? "Язык" : "Language", mo.lang));
+			append(new StringItem(loc[17], mo.lang));
 		if (mo.parody != null)
-			append(new StringItem(NJTAI.rus ? "Источник" : "Parody", mo.parody));
-		append(new StringItem(NJTAI.rus ? "Тэги" : "Tags", mo.tags));
+			append(new StringItem(loc[18], mo.parody));
+		append(new StringItem(loc[19], mo.tags));
 		page1.setItemCommandListener(this);
 		page1.setDefaultCommand(open);
 		append(page1);
@@ -149,7 +141,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			if (i == page1) {
 				NJTAIM.setScr(ViewBase.create(mo, this, 0));
 			} else if (i == pageN) {
-				final TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
+				final TextBox tb = new TextBox(loc[20], "", 7, 2);
 				tb.addCommand(goTo);
 				tb.addCommand(back);
 				final Displayable menu = this;
@@ -169,8 +161,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 							} catch (Exception e) {
 								NJTAIM.setScr(menu);
 								NJTAI.pause(100);
-								NJTAIM.setScr(new Alert("Failed to go to page", "Have you entered correct number?",
-										null, AlertType.ERROR));
+								NJTAIM.setScr(new Alert(loc[21], loc[22], null, AlertType.ERROR));
 							}
 						}
 					}
@@ -179,10 +170,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			} else if (i == save) {
 				(new MangaDownloader(mo, this)).start();
 			} else if (i == repair) {
-				Alert a = new Alert(NJTAI.rus ? "Восстановление кэша" : "Cache repairing", NJTAI.rus
-						? "Эта утилита найдёт пустые/утерянные изображения и докачает их (\"Докачать\"). Если какие-то файлы были повреждены, запустите полную проверку для их обнаружения и восстановления. Это не не будет работать на устройствах с <10 мб памяти."
-						: "This utility will find empty/missed images in local folder and download them (\"Redownload\"). If some files are broken, run \"Full repair\" to find and redownload them. Warning: this won't work on <10mb-ram devices.",
-						null, AlertType.WARNING);
+				Alert a = new Alert(loc[23], loc[24], null, AlertType.WARNING);
 				a.setTimeout(Alert.FOREVER);
 				a.addCommand(repairFull);
 				a.addCommand(repairLite);
