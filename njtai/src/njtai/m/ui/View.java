@@ -22,7 +22,7 @@ public abstract class View extends ViewBase {
 		super(emo, prev, page);
 	}
 
-	protected void paintHUD(Graphics g, Font f, boolean drawZoom) {
+	protected void paintHUD(Graphics g, Font f, boolean drawZoom, boolean drawPages) {
 		String pageNum = (page + 1) + "/" + emo.pages;
 		String zoomN = useSmoothZoom() ? String.valueOf(zoom) : String.valueOf((int) zoom);
 		if (zoomN.length() > 3)
@@ -48,7 +48,8 @@ public abstract class View extends ViewBase {
 		 * used + "K"; } else { ram = (used / 1024) + "M"; } }
 		 */
 		g.setGrayScale(0);
-		g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
+		if (drawPages)
+			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
 		if (drawZoom)
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
 		if (prefetch != null)
@@ -57,7 +58,8 @@ public abstract class View extends ViewBase {
 		// f.stringWidth(ram), f.getHeight());
 
 		g.setGrayScale(255);
-		g.drawString(pageNum, 0, 0, 0);
+		if (drawPages)
+			g.drawString(pageNum, 0, 0, 0);
 		if (drawZoom)
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
 		if (prefetch != null)
