@@ -1,10 +1,15 @@
 package njtai.m;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
+import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
@@ -155,7 +160,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.keepBitmap = true;
 			NJTAI.preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
-			NJTAI.view = 1;
+			NJTAI.view = 0;
 			NJTAI.invertPan = false;
 		}
 	}
@@ -207,6 +212,27 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		int h = getHeight() * 2 / 3;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 		return NJTAI.resize(i, w, h);
+	}
+
+	public static String[] getStrings(String cat) {
+		try {
+			String locale = System.getProperty("microedition.locale");
+			locale = locale.toLowerCase().substring(0, 2);
+			InputStream s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			if (s == null)
+				s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_en.txt");
+
+			char[] buf = new char[32 * 1024];
+			InputStreamReader isr = new InputStreamReader(s, "UTF-8");
+			int l = isr.read(buf);
+			isr.close();
+			String r = new String(buf, 0, l).replace('\r', ' ');
+			return StringUtil.splitFull(r, '\n');
+		} catch (Exception e) {
+			e.printStackTrace();
+			// null is returned to avoid massive try-catch constructions near every call. Normally, it always return english file.
+			return null;
+		}
 	}
 
 }

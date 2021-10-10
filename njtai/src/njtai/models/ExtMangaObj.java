@@ -66,21 +66,34 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		} catch (Exception e) {
 			tags = "(error)";
 		}
-		lang = meta.indexOf("Languages:") == -1 ? null
-				: StringUtil.range(StringUtil.range(meta, "Languages:", "</div", false), "<span class=\"name\">",
-						"</span", false);
-		parody = meta.indexOf("Parodies:") == -1 ? null
-				: StringUtil.range(StringUtil.range(meta, "Parodies:", "</div", false), "<span class=\"name\">",
-						"</span", false);
-		if (NJTAI.rus && lang != null) {
-			if (lang.equals("japanese"))
-				lang = "японский";
-			else if (lang.equals("english"))
-				lang = "английский";
-			else if (lang.equals("chinese"))
-				lang = "китайский";
+		try {
+			if (meta.indexOf("Languages:") == -1)
+				lang = null;
+			else {
+				String lr = StringUtil.range(meta, "Languages:", "</div", false);
+				if (lr.indexOf("class=\"name\">") == -1)
+					lang = null;
+				else
+					lang = listLangs(StringUtil.splitRanges(lr, "<span class=\"name\">", "</span", false));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			lang = null;
 		}
+		if (meta.indexOf("Parodies:") == -1) {
+			parody = null;
+		} else {
+			String pr = StringUtil.range(meta, "Parodies:", "</div", false);
+			// System.out.println("Parody span: " + pr);
+			if (pr.indexOf("class=\"name\">") == -1)
+				parody = null;
+			else
+				parody = StringUtil.range(pr, "<span class=\"name\">", "</span", false);
+		}
+
 		System.gc();
+
 	}
 
 	/**
@@ -231,5 +244,34 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			sb.append(list[i]);
 		}
 		return sb.toString();
+	}
+
+	public static String listLangs(String[] list) {
+		if (list == null)
+			return null;
+		if (list.length == 0)
+			return null;
+		StringBuffer sb = new StringBuffer();
+		sb.append(translateLang(list[0]));
+		for (int i = 1; i < list.length; i++) {
+			sb.append(", ");
+			String s = translateLang(list[i]);
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
+	private static String translateLang(String s) {
+		if (NJTAI.rus) {
+			if (s.equals("japanese"))
+				s = "японский";
+			else if (s.equals("english"))
+				s = "английский";
+			else if (s.equals("chinese"))
+				s = "китайский";
+			else if (s.equals("translated"))
+				s = "перевод";
+		}
+		return s;
 	}
 }

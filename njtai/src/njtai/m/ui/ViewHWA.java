@@ -13,7 +13,6 @@ import njtai.models.ExtMangaObj;
  * {@link View} implementation, that uses M3G for realtime scaling.
  * 
  * @author Feodor0090
- * @deprecated It's broken. Will be investigated later.
  */
 public class ViewHWA extends View {
 
@@ -37,11 +36,15 @@ public class ViewHWA extends View {
 		_polMode.setWinding(PolygonMode.WINDING_CW);
 		_polMode.setCulling(PolygonMode.CULL_NONE);
 		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
+
+		// strip
+		_ind = new TriangleStripArray(0, new int[] { 4 });
 	}
 
 	protected Material _material;
 	protected CompositingMode _compositing;
 	protected PolygonMode _polMode;
+	protected TriangleStripArray _ind;
 
 	PagePart[] p = null;
 	int iw, ih;
@@ -59,9 +62,9 @@ public class ViewHWA extends View {
 		iw = i.getWidth();
 		Vector v = new Vector();
 		int s = 512;
-		for (int x = 0; x < i.getWidth() + s - 1; x++) {
-			for (int y = 0; y < i.getHeight() + s - 1; y++) {
-				v.addElement(new PagePart(i, x, y, (short) s));
+		for (int x = 0; x < i.getWidth() + s - 1; x += s) {
+			for (int y = 0; y < i.getHeight() + s - 1; y += s) {
+				v.addElement(new PagePart(this, i, x, y, (short) s));
 			}
 		}
 		PagePart[] tmp = new PagePart[v.size()];
@@ -105,13 +108,17 @@ public class ViewHWA extends View {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
 				g3.bindTarget(g);
-				Background b = new Background();
-				b.setColorClearEnable(true);
-				b.setDepthClearEnable(true);
-				g3.clear(b);
-				setupM3G(g3);
-				for (int i = 0; i < p.length; i++) {
-					p[i].paint(g3);
+				try {
+					Background b = new Background();
+					b.setColorClearEnable(true);
+					b.setDepthClearEnable(true);
+					g3.clear(b);
+					setupM3G(g3);
+					for (int i = 0; i < p.length; i++) {
+						p[i].paint(g3);
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
 				}
 				g3.releaseTarget();
 				// touch captions
@@ -119,7 +126,7 @@ public class ViewHWA extends View {
 					drawTouchControls(g, f);
 				}
 			}
-			paintHUD(g, f);
+			paintHUD(g, f, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -147,6 +154,8 @@ public class ViewHWA extends View {
 		cam.setParallel(ih / zoom, getWidth() / (float) getHeight(), 0.1f, 900f);
 		Transform t = new Transform();
 		t.postTranslate(x, y, 100);
+		t.postRotate(180, 0, 0, -1);
+		t.postScale(-1, 1, 1);
 		Light l = new Light();
 		l.setColor(0xffffff); // white light
 		l.setIntensity(1f);
@@ -157,35 +166,37 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	class PagePart {
+	static class PagePart {
 		int size;
 		Appearance ap;
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
 
-		public PagePart(Image page, int x, int y, short s) {
+		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
+
+			size = s;
 
 			// cropping
 			Image part = Image.createImage(s, s);
 			Graphics pg = part.getGraphics();
 			pg.setColor(0);
 			pg.fillRect(0, 0, s, s);
-			pg.drawImage(page, -x, -y, 0);
-			Image spart = Image.createImage(part);
-			part = null;
+			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0,
+					0, 0);
+			System.gc();
 
 			// appearance
-			Image2D image2D = new Image2D(Image2D.RGB, spart);
+			Image2D image2D = new Image2D(Image2D.RGB, part);
 			Texture2D tex = new Texture2D(image2D);
 			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
 			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
 			tex.setBlending(Texture2D.FUNC_MODULATE);
 			ap = new Appearance();
 			ap.setTexture(0, tex);
-			ap.setMaterial(_material);
-			ap.setCompositingMode(_compositing);
-			ap.setPolygonMode(_polMode);
+			ap.setMaterial(base._material);
+			ap.setCompositingMode(base._compositing);
+			ap.setPolygonMode(base._polMode);
 
 			// transform
 			t = new Transform();
@@ -202,7 +213,9 @@ public class ViewHWA extends View {
 			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
 			texArray.set(0, uv.length / 2, uv);
 
-			VertexBuffer vb = new VertexBuffer();
+			ind = base._ind;
+
+			vb = new VertexBuffer();
 			vb.setPositions(vertArray, 1.0f, null);
 			vb.setTexCoords(0, texArray, 1.0f, null);
 			vb.setDefaultColor(-1);
@@ -211,6 +224,14 @@ public class ViewHWA extends View {
 		public void paint(Graphics3D g) {
 			g.render(vb, ind, ap, t);
 		}
+	}
+
+	protected int panDeltaMul() {
+		return -1;
+	}
+
+	protected boolean useSmoothZoom() {
+		return true;
 	}
 
 }

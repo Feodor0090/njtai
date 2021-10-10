@@ -1,0 +1,16 @@
+OK/FIRE/CSK
+Toogle image's zoom.
+LEFT/RIGHT when x1
+Switch pages.
+1/3 at any time
+Switch pages.
+D-PAD/2/4/6/8 when zoomed
+Pan the image.
+*
+Set zoom to x1.
+0
+Set zoom to x2.
+#
+Set zoom to x3.
+RSK
+Close the view.
