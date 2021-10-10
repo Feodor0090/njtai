@@ -363,7 +363,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	public abstract boolean canDraw();
 
 	protected void keyPressed(int k) {
-		if (k == -7) {
+		if (k == -7 || k == KEY_NUM9) {
 			emo.cancelPrefetch();
 			try {
 				if (loader != null && loader.isAlive())
@@ -385,6 +385,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (!canDraw()) {
 			repaint();
 			return;
+		}
+
+		if (k == KEY_NUM7 || k == -10) {
+			//TODO
 		}
 
 		if (k == KEY_NUM1) {
@@ -504,17 +508,28 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (y < 50 && useSmoothZoom()) {
 			setSmoothZoom(tx, getWidth());
 			touchHoldPos = 8;
-		} else if (y < 50 || y > getHeight() - 50) {
-			int add = y < 50 ? 1 : 4;
+		} else if (y < 50) {
 			int b;
 			if (tx < getWidth() / 3) {
-				b = 0;
-			} else if (tx < getWidth() * 2 / 3) {
 				b = 1;
-			} else {
+			} else if (tx < getWidth() * 2 / 3) {
 				b = 2;
+			} else {
+				b = 3;
 			}
-			touchHoldPos = b + add;
+			touchHoldPos = b;
+		} else if (y > getHeight() - 50) {
+			int b;
+			if (tx < getWidth() / 4) {
+				b = 4;
+			} else if (tx < getWidth() * 2 / 4) {
+				b = 5;
+			} else if (tx < getWidth() * 3 / 4) {
+				b = 6;
+			} else {
+				b = 7;
+			}
+			touchHoldPos = b;
 		}
 		repaint();
 	}
@@ -565,17 +580,28 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			return;
 		}
 		int zone = 0;
-		if (y < 50 || y > getHeight() - 50) {
-			int add = y < 50 ? 1 : 4;
+		if (y < 50) {
 			int b;
 			if (x < getWidth() / 3) {
-				b = 0;
-			} else if (x < getWidth() * 2 / 3) {
 				b = 1;
-			} else {
+			} else if (x < getWidth() * 2 / 3) {
 				b = 2;
+			} else {
+				b = 3;
 			}
-			zone = b + add;
+			zone = b;
+		} else if (y > getHeight() - 50) {
+			int b;
+			if (x < getWidth() / 4) {
+				b = 4;
+			} else if (x < getWidth() * 2 / 4) {
+				b = 5;
+			} else if (x < getWidth() * 3 / 4) {
+				b = 6;
+			} else {
+				b = 7;
+			}
+			zone = b;
 		}
 		if (zone == touchHoldPos) {
 			if (zone >= 1 && zone <= 3) {
@@ -584,8 +610,10 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			} else if (zone == 4) {
 				changePage(-1);
 			} else if (zone == 5) {
-				changePage(1);
+				keyPressed(KEY_NUM7);
 			} else if (zone == 6) {
+				changePage(1);
+			} else if (zone == 7) {
 				keyPressed(-7);
 			}
 		}
