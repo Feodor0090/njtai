@@ -24,8 +24,8 @@ import njtai.m.NJTAIM;
 final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
-	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.OK, 2);
-	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.CANCEL, 2);
+	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
+	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 2);
 	private final Command prC = new Command("Proxy setup", 8, 1);
 
 	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
