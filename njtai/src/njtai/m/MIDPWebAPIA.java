@@ -13,7 +13,7 @@ public class MIDPWebAPIA extends WebAPIA {
 
 	public byte[] get(String url) throws IOException {
 		if (url == null)
-			throw new IllegalArgumentException("url");
+			throw new IllegalArgumentException("URL is null");
 		ByteArrayOutputStream o = null;
 		HttpConnection hc = null;
 		InputStream i = null;
@@ -44,12 +44,6 @@ public class MIDPWebAPIA extends WebAPIA {
 			}
 
 			return o.toByteArray();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			throw new IOException(e.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw e;
 		} finally {
 			try {
 				if (i != null)
