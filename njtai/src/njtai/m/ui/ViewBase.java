@@ -406,12 +406,18 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 
 		// zooming via *0#
-		if (k == KEY_STAR)
+		if (k == KEY_STAR) {
 			zoom = 1;
-		if (k == KEY_NUM0)
+			resize((int) zoom);
+		}
+		if (k == KEY_NUM0) {
 			zoom = 2;
-		if (k == KEY_POUND)
+			resize((int) zoom);
+		}
+		if (k == KEY_POUND) {
 			zoom = 3;
+			resize((int) zoom);
+		}
 
 		// zoom is active
 		if (zoom != 1) {
