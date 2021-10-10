@@ -103,6 +103,14 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			s.append('`');
 			s.append(String.valueOf(NJTAI.view));
 			s.append('`');
+			s.append(NJTAI.invertPan ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI._f1 ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI._f2 ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI._f3 ? "1" : "0");
+			s.append('`');
 			s.append(NJTAI.proxy);
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
@@ -137,7 +145,11 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.preloadUrl = s[5].equals("1");
 			NJTAI.keepBitmap = s[6].equals("1");
 			NJTAI.view = Integer.parseInt(s[7]);
-			NJTAI.proxy = s[8];
+			NJTAI.invertPan = s[8].equals("1");
+			NJTAI._f1 = s[9].equals("1");
+			NJTAI._f2 = s[10].equals("1");
+			NJTAI._f3 = s[11].equals("1");
+			NJTAI.proxy = s[12];
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			NJTAI.files = false;
@@ -149,6 +161,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 0;
+			NJTAI.invertPan = false;
 		}
 	}
 

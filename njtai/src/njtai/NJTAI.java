@@ -57,6 +57,10 @@ public class NJTAI {
 	public static boolean keepBitmap = true;
 	public static int view = 0;
 	public static boolean files;
+	public static boolean invertPan;
+	public static boolean _f1;
+	public static boolean _f2;
+	public static boolean _f3;
 
 
 	public static boolean rus = false;

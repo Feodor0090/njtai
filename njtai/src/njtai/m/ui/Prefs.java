@@ -50,6 +50,8 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.rus ? "Загружать обложку на странице" : "Load cover in manga page", 4, ynr, null);
 	private final ChoiceGroup covers = new ChoiceGroup(
 			NJTAI.rus ? "Загружать обложку в списках" : "Load covers in lists", 4, ynr, null);
+	private final ChoiceGroup invert = new ChoiceGroup(NJTAI.rus ? "Инвертировать прокрутку" : "Invert panning", 4, yn,
+			null);
 	private final ChoiceGroup lists = new ChoiceGroup(
 			NJTAI.rus ? "Запоминать списки при открытии страницы" : "Keep lists when opening pages", 4, ynr, null);
 	private final ChoiceGroup bitmaps = new ChoiceGroup(NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)"
@@ -87,6 +89,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
 		files.setSelectedIndex(NJTAI.files ? 1 : 0, true);
 		view.setSelectedIndex(NJTAI.view, true);
+		invert.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
 
@@ -94,10 +97,11 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		if (Runtime.getRuntime().totalMemory() == 2048 * 1024)
 			append(s40Warn);
 		append(cache);
+		append(files);
 		append(pageCover);
 		append(covers);
 		append(lists);
-		append(files);
+		append(invert);
 		append(bitmaps);
 		append(urls);
 		append(proxy);
@@ -128,6 +132,7 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			NJTAI.view = view.getSelectedIndex();
 			NJTAI.files = files.getSelectedIndex() == 1;
 			NJTAI.proxy = proxy.getString();
+			NJTAI.invertPan = invert.getSelectedIndex() == 1;
 			if (NJTAI.proxy.length() == 0) {
 				NJTAI.proxy = "https://";
 			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0

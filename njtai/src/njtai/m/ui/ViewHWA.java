@@ -227,7 +227,7 @@ public class ViewHWA extends View {
 	}
 
 	protected int panDeltaMul() {
-		return -1;
+		return -1 * super.panDeltaMul();
 	}
 
 	protected boolean useSmoothZoom() {
