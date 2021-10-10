@@ -103,7 +103,8 @@ public class ViewSWR extends View {
 				g.fillRect(0, 0, getWidth(), getHeight());
 				limitOffset();
 				if (zoom != 1) {
-					g.drawImage(toDraw, x + getWidth() / 2, y + getHeight() / 2, Graphics.HCENTER | Graphics.VCENTER);
+					g.drawImage(toDraw, (int) x + getWidth() / 2, (int) y + getHeight() / 2,
+							Graphics.HCENTER | Graphics.VCENTER);
 				} else {
 					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, (getHeight() - toDraw.getHeight()) / 2,
 							0);
@@ -114,7 +115,7 @@ public class ViewSWR extends View {
 					drawTouchControls(g, f);
 				}
 			}
-			paintHUD(g, f);
+			paintHUD(g, f, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -187,5 +188,13 @@ public class ViewSWR extends View {
 				}
 			}
 		}
+	}
+
+	protected int panDeltaMul() {
+		return 1;
+	}
+
+	protected boolean useSmoothZoom() {
+		return false;
 	}
 }

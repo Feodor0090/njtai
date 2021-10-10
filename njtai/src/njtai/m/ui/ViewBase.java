@@ -32,9 +32,9 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	protected ByteArrayOutputStream[] cache;
 	protected MangaDownloader fs;
 
-	protected int zoom = 1;
-	protected int x = 0;
-	protected int y = 0;
+	protected float zoom = 1;
+	protected float x = 0;
+	protected float y = 0;
 
 	protected Thread loader;
 	protected Thread preloader;
@@ -386,6 +386,21 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			repaint();
 			return;
 		}
+
+		if (k == KEY_NUM1) {
+			changePage(-1);
+		} else if (k == KEY_NUM3) {
+			changePage(1);
+		}
+
+		// zooming via *0#
+		if (k == KEY_STAR)
+			zoom = 1;
+		if (k == KEY_NUM0)
+			zoom = 2;
+		if (k == KEY_POUND)
+			zoom = 3;
+
 		// zoom is active
 		if (zoom != 1) {
 			if (k == -5) {
@@ -393,23 +408,24 @@ public abstract class ViewBase extends Canvas implements Runnable {
 				if (zoom > 3)
 					zoom = 1;
 
-				resize(zoom);
-			} else if (k == -1) {
+				resize((int) zoom);
+			} else if (k == -1 || k == KEY_NUM2) {
 				// up
 				y += getHeight() / 4;
-			} else if (k == -2) {
+			} else if (k == -2 || k == KEY_NUM8) {
 				y -= getHeight() / 4;
-			} else if (k == -3) {
+			} else if (k == -3 || k == KEY_NUM4) {
 				x += getWidth() / 4;
-			} else if (k == -4) {
+			} else if (k == -4 || k == KEY_NUM6) {
 				x -= getWidth() / 4;
 			}
 		} else {
+			// zoom inactive
 			if (k == -5) {
 				zoom = 2;
 				x = 0;
 				y = 0;
-				resize(zoom);
+				resize((int) zoom);
 			} else if (k == -3) {
 				changePage(-1);
 			} else if (k == -4) {
@@ -427,15 +443,15 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		}
 		// zoom is active
 		if (zoom != 1) {
-			if (k == -1) {
+			if (k == -1 || k == KEY_NUM2) {
 				// up
-				y += getHeight() / 4;
-			} else if (k == -2) {
-				y -= getHeight() / 4;
-			} else if (k == -3) {
-				x += getWidth() / 4;
-			} else if (k == -4) {
-				x -= getWidth() / 4;
+				y += getHeight() * panDeltaMul() / 4;
+			} else if (k == -2 || k == KEY_NUM8) {
+				y -= getHeight() * panDeltaMul() / 4;
+			} else if (k == -3 || k == KEY_NUM4) {
+				x += getWidth() * panDeltaMul() / 4;
+			} else if (k == -4 || k == KEY_NUM6) {
+				x -= getWidth() * panDeltaMul() / 4;
 			}
 		}
 
@@ -467,28 +483,32 @@ public abstract class ViewBase extends Canvas implements Runnable {
 	 * <li>4 - prev
 	 * <li>5 - next
 	 * <li>6 - return
+	 * <li>7 - zoom slider
 	 * </ul>
 	 */
 	int touchHoldPos = 0;
 	int lx, ly;
 	int sx, sy;
 
-	protected void pointerPressed(int x, int y) {
-		if (!canDraw() && y > getHeight() - 50 && x > getWidth() * 2 / 3) {
+	protected void pointerPressed(int tx, int y) {
+		if (!canDraw() && y > getHeight() - 50 && tx > getWidth() * 2 / 3) {
 			keyPressed(-7);
 			return;
 		}
 		touchHoldPos = 0;
-		lx = (sx = x);
+		lx = (sx = tx);
 		ly = (sy = y);
 		if (!touchCtrlShown)
 			return;
-		if (y < 50 || y > getHeight() - 50) {
+		if (y < 50 && useSmoothZoom()) {
+			setSmoothZoom(tx, getWidth());
+			touchHoldPos = 7;
+		} else if (y < 50 || y > getHeight() - 50) {
 			int add = y < 50 ? 1 : 4;
 			int b;
-			if (x < getWidth() / 3) {
+			if (tx < getWidth() / 3) {
 				b = 0;
-			} else if (x < getWidth() * 2 / 3) {
+			} else if (tx < getWidth() * 2 / 3) {
 				b = 1;
 			} else {
 				b = 2;
@@ -498,11 +518,33 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		repaint();
 	}
 
+	protected void setSmoothZoom(int dx, int w) {
+		dx -= 25;
+		w -= 50;
+		zoom = 1 + 4f * ((float) dx / w);
+		if (zoom < 1.01f)
+			zoom = 1;
+		if (zoom > 4.99f)
+			zoom = 5;
+	}
+
+	protected abstract boolean useSmoothZoom();
+
+	/**
+	 * @return -1 if drag must be inverted, 1 overwise.
+	 */
+	protected abstract int panDeltaMul();
+
 	protected void pointerDragged(int tx, int ty) {
+		if (touchHoldPos == 7) {
+			setSmoothZoom(tx, getWidth());
+			repaint();
+			return;
+		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx);
-		y += (ty - ly);
+		x += (tx - lx) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
+		y += (ty - ly) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
 		lx = tx;
 		ly = ty;
 		repaint();
@@ -513,6 +555,11 @@ public abstract class ViewBase extends Canvas implements Runnable {
 			if (Math.abs(sx - x) < 10 && Math.abs(sy - y) < 10) {
 				touchCtrlShown = !touchCtrlShown;
 			}
+		}
+		if (touchHoldPos == 7) {
+			touchHoldPos = 0;
+			repaint();
+			return;
 		}
 		int zone = 0;
 		if (y < 50 || y > getHeight() - 50) {
@@ -530,7 +577,7 @@ public abstract class ViewBase extends Canvas implements Runnable {
 		if (zone == touchHoldPos) {
 			if (zone >= 1 && zone <= 3) {
 				zoom = zone;
-				resize(zoom);
+				resize(zone);
 			} else if (zone == 4) {
 				changePage(-1);
 			} else if (zone == 5) {
