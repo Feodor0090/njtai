@@ -366,6 +366,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	public abstract boolean canDraw();
 
 	protected void keyPressed(int k) {
+		k = qwertyToNum(k);
 		if (k == -7 || k == KEY_NUM9) {
 			emo.cancelPrefetch();
 			try {
@@ -448,6 +449,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	}
 
 	protected void keyRepeated(int k) {
+		k = qwertyToNum(k);
 		if (!canDraw()) {
 			repaint();
 			return;
@@ -674,6 +676,64 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		for (int i = 0; i < h; i++) {
 			g.setColor(NJTAI.blend(c2, c1, i * 255 / h));
 			g.drawLine(x, y + i, x + w, y + i);
+		}
+	}
+
+	public static int qwertyToNum(int k) {
+		char c = (char) k;
+		switch (c) {
+		case 'r':
+		case 'R':
+		case 'к':
+			return Canvas.KEY_NUM1;
+
+		case 't':
+		case 'T':
+		case 'е':
+			return Canvas.KEY_NUM2;
+
+		case 'y':
+		case 'Y':
+		case 'н':
+			return Canvas.KEY_NUM3;
+
+		case 'f':
+		case 'F':
+		case 'а':
+			return Canvas.KEY_NUM4;
+
+		case 'g':
+		case 'G':
+		case 'п':
+			return Canvas.KEY_NUM5;
+
+		case 'h':
+		case 'H':
+		case 'р':
+			return Canvas.KEY_NUM6;
+
+		case 'v':
+		case 'V':
+		case 'м':
+			return Canvas.KEY_NUM7;
+
+		case 'b':
+		case 'B':
+		case 'и':
+			return Canvas.KEY_NUM8;
+
+		case 'n':
+		case 'N':
+		case 'т':
+			return Canvas.KEY_NUM9;
+
+		case 'm':
+		case 'M':
+		case 'ь':
+			return Canvas.KEY_NUM0;
+
+		default:
+			return k;
 		}
 	}
 
