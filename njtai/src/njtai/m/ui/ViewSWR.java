@@ -115,7 +115,7 @@ public class ViewSWR extends View {
 					drawTouchControls(g, f);
 				}
 			}
-			paintHUD(g, f, true, !touchCtrlShown);
+			paintHUD(g, f, true, !touchCtrlShown || !hasPointerEvents());
 		} catch (Exception e) {
 			e.printStackTrace();
 
