@@ -21,13 +21,7 @@ import njtai.models.MangaObjs;
 public final class MMenu extends List implements CommandListener {
 
 	public MMenu() {
-		super("NJTAI", List.IMPLICIT,
-				NJTAI.rus
-						? (new String[] { "Ввести номер", "Популярные", "Новые", "Поиск", "Настройки",
-								"Управление клавиатурой", "О программе" })
-						: (new String[] { "Enter ID", "Popular", "Recently added", "Search", "Settings",
-								"Keyboard controls", "About" }),
-				null);
+		super("NJTAI", List.IMPLICIT, NJTAIM.getStrings("main"), null);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
