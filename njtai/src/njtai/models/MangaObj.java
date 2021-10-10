@@ -47,7 +47,7 @@ public class MangaObj {
 	 */
 	public void loadCover() {
 		try {
-			byte[] d = WebAPIA.inst.get(NJTAI.proxyUrl(imgUrl));
+			byte[] d = WebAPIA.inst.getOrNull(NJTAI.proxyUrl(imgUrl));
 			Object i = NJTAI.pl.decodeImage(d);
 			d = null;
 			System.gc();
