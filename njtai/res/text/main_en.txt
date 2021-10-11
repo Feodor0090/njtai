@@ -2,6 +2,7 @@ Enter ID
 Popular
 Recently added
 Search
+Downloaded
 Settings
 Keyboard controls
 About

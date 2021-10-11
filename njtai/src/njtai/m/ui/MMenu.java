@@ -119,10 +119,6 @@ public final class MMenu extends List implements CommandListener {
 			tb.setCommandListener(this);
 			NJTAIM.setScr(tb);
 			return;
-		case 4:
-			// sets
-			NJTAIM.setScr(new Prefs(this));
-			return;
 		case 1:
 			// popular
 			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, MangaObjs.getPopularList()));
@@ -135,7 +131,23 @@ public final class MMenu extends List implements CommandListener {
 			// search
 			search();
 			return;
+		case 4:
+			if (!NJTAI.files) {
+				Alert a1 = new Alert("NJTAI",
+						NJTAI.rus ? "Приложение настроено не использовать память устройства. Включите в настройках."
+								: "Application wasn't set up to use device's memory. Enable this option in settings.",
+						null, AlertType.WARNING);
+				a1.setTimeout(Alert.FOREVER);
+				NJTAIM.setScr(a1);
+				return;
+			}
+			NJTAIM.setScr(generateDownloadedScreen());
+			return;
 		case 5:
+			// sets
+			NJTAIM.setScr(new Prefs(this));
+			return;
+		case 6:
 			try {
 
 				NJTAIM.setScr(generateControlsTipsScreen(this));
@@ -144,7 +156,7 @@ public final class MMenu extends List implements CommandListener {
 						AlertType.ERROR));
 			}
 			return;
-		case 6:
+		case 7:
 			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
 					"NJTAI v" + NJTAIM.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null,
 					AlertType.INFO);
@@ -152,6 +164,10 @@ public final class MMenu extends List implements CommandListener {
 			NJTAIM.setScr(a1);
 			return;
 		}
+	}
+
+	private Displayable generateDownloadedScreen() {
+		return new Form("TODO");
 	}
 
 	private String processSearchQuery(String data) {
@@ -271,7 +287,7 @@ public final class MMenu extends List implements CommandListener {
 			f.addCommand(m.backCmd);
 			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
-				StringItem s = new StringItem(null, "["+items[i * 2]+"] "+items[i * 2 + 1]+"\n");
+				StringItem s = new StringItem(null, "[" + items[i * 2] + "] " + items[i * 2 + 1] + "\n");
 				s.setFont(Font.getFont(0, 0, 8));
 				f.append(s);
 			}
