@@ -2,14 +2,12 @@ package njtai.m;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Form;
 import javax.microedition.lcdui.Image;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
@@ -33,8 +31,8 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	private static Display dsp;
 	private static NJTAIM inst;
 
-	public static boolean isS60() {
-		return System.getProperty("microedition.platform").indexOf("S60") != -1;
+	public static boolean isS60v3() {
+		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.2") != -1;
 	}
 
 	public static boolean isJ2MEL() {
