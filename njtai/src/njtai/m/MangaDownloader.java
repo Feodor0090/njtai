@@ -232,6 +232,28 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (freeSpace == -1)
 			freeSpace = Long.MAX_VALUE;
 
+		// writing model
+		try {
+			String fn = folder + "model.json";
+			fc = (FileConnection) Connector.open(fn);
+			if (fc.exists())
+				fc.truncate(0);
+			else
+				fc.create();
+			DataOutputStream s = fc.openDataOutputStream();
+			s.write(o.encode().getBytes("UTF-8"));
+			s.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		boolean filesExisted = false;
 		boolean ioError = false;
 		boolean outOfMem = false;
