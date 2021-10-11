@@ -1,5 +1,7 @@
 package njtai.models;
 
+import java.util.Hashtable;
+
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -40,8 +42,14 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 */
 	private boolean prefetched = false;
 
+	/**
+	 * Is this object decoded from FS?
+	 */
+	private boolean offline = false;
+
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
+		offline = false;
 
 		String meta = StringUtil.range(html, "<section id=\"tags\">", "</sect");
 
@@ -93,7 +101,13 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 
 		System.gc();
+	}
 
+	public ExtMangaObj(int num, Hashtable dump) {
+		this.num = num;
+		offline = true;
+		
+		//TODO
 	}
 
 	/**
@@ -143,6 +157,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @see {@link #run()}
 	 */
 	private void loadUrls() throws InterruptedException {
+		if (offline) {
+			infoReady = 100;
+			return;
+		}
 		try {
 			for (int i = 1; i <= pages; i++) {
 				long t = System.currentTimeMillis();
@@ -273,5 +291,18 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				s = "перевод";
 		}
 		return s;
+	}
+
+	public String encode() {
+		Hashtable h = new Hashtable();
+		
+		//TODO
+
+		try {
+			return cc.nnproject.lwjson.JSON.buildJSON(h);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
