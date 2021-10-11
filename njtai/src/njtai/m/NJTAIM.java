@@ -32,7 +32,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	private static NJTAIM inst;
 
 	public static boolean isS60v3() {
-		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.") != -1;
+		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.2") != -1;
 	}
 
 	public static boolean isJ2MEL() {
