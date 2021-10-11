@@ -23,6 +23,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Command goTo;
 	private Command repairLite;
 	private Command repairFull;
+	private Image coverImg = null;
 
 	boolean stop = false;
 
@@ -35,6 +36,29 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		id = num;
 		p = prev;
 
+		initForm();
+
+		l = new Thread(this);
+		l.setPriority(10);
+		l.start();
+	}
+
+	public MangaPage(int num, Displayable prev, ExtMangaObj obj, Image cover) {
+		super("Manga page");
+		id = num;
+		p = prev;
+
+		mo = obj;
+		coverImg = cover;
+
+		initForm();
+
+		l = new Thread(this);
+		l.setPriority(10);
+		l.start();
+	}
+
+	private void initForm() {
 		loc = NJTAIM.getStrings("page");
 
 		back = new Command(loc[0], Command.BACK, 1);
@@ -52,10 +76,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		addCommand(back);
 		append(prgrs);
 		setCommandListener(this);
-
-		l = new Thread(this);
-		l.setPriority(10);
-		l.start();
 	}
 
 	public void run() {
@@ -75,28 +95,35 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	private void loadPage() {
-		status(loc[10]);
-		String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
-		if (html == null) {
-			status(loc[11]);
-			return;
+		if (mo == null) {
+
+			status(loc[10]);
+			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
+			if (html == null) {
+				status(loc[11]);
+				return;
+			}
+
+			status(loc[12]);
+			if (stop)
+				return;
+			mo = new ExtMangaObj(id, html);
+
 		}
 
-		status(loc[12]);
-		if (stop)
-			return;
-		mo = new ExtMangaObj(id, html);
-
-		status(loc[13]);
-		if (stop)
-			return;
-		if (NJTAI.loadCoverAtPage)
-			mo.loadCover();
-		if (stop)
-			return;
+		if (coverImg == null) {
+			status(loc[13]);
+			if (stop)
+				return;
+			if (NJTAI.loadCoverAtPage)
+				mo.loadCover();
+			if (stop)
+				return;
+		}
 
 		deleteAll();
-		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
+		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, coverImg == null ? (Image) mo.img : coverImg,
+				0, null);
 		cover.setItemCommandListener(this);
 		cover.setDefaultCommand(open);
 		append(cover);
