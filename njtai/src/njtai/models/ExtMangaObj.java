@@ -103,11 +103,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		System.gc();
 	}
 
-	public ExtMangaObj(int num, Hashtable dump) {
+	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
-		
-		//TODO
+
+		title = h.get("title").toString();
+		tags = h.get("tags").toString();
+		parody = h.get("parody").toString();
+		lang = h.get("lang").toString();
+		pages = Integer.parseInt(h.get("pages").toString());
 	}
 
 	/**
@@ -295,8 +299,11 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	public String encode() {
 		Hashtable h = new Hashtable();
-		
-		//TODO
+		h.put("title", title);
+		h.put("tags", tags);
+		h.put("parody", parody);
+		h.put("lang", lang);
+		h.put("pages", String.valueOf(pages));
 
 		try {
 			return cc.nnproject.lwjson.JSON.buildJSON(h);
