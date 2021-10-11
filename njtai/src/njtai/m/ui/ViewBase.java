@@ -748,7 +748,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			return new ViewSWR(mo, d, i);
 		if (NJTAI.view == 2)
 			return new ViewHWA(mo, d, i);
-		if (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1)
+		if (System.getProperty("com.nokia.gpu.memory.total") != null)
 			return new ViewHWA(mo, d, i);
 
 		return new ViewSWR(mo, d, i);
