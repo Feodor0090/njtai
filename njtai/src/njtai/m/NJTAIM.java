@@ -330,10 +330,10 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	}
 
 	public static boolean isKem() {
-		return isClsExsists("emulator.custom.CustomMethod");
+		return isClsExists("emulator.custom.CustomMethod");
 	}
 
-	public static boolean isClsExsists(String clsName) {
+	public static boolean isClsExists(String clsName) {
 		try {
 			Class.forName(clsName);
 			return true;
