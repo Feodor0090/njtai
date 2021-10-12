@@ -22,5 +22,5 @@ Enter page number:
 Failed to go to page
 Have you entered correct number?
 Cache repairing
-This utility will find empty/missed images in local folder and download them ("Redownload"). If some files are broken, run "Full repair" to find and redownload them. Warning: this won't work on <10mb-ram devices.
+This utility will find broken files and redownload them. Warning: this won't work on <10mb-ram devices.
 Not enough memory to load!

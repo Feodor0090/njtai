@@ -21,7 +21,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Item repair;
 	public static Command open;
 	private Command goTo;
-	private Command repairLite;
 	private Command repairFull;
 	private Image coverImg = null;
 
@@ -68,8 +67,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		save = new StringItem(null, loc[4], StringItem.BUTTON);
 		open = new Command(loc[5], Command.ITEM, 1);
 		goTo = new Command(loc[6], Command.OK, 1);
-		repairLite = new Command(loc[7], Command.SCREEN, 1);
-		repairFull = new Command(loc[8], Command.SCREEN, 2);
+		repairFull = new Command(loc[3], Command.SCREEN, 2);
 		prgrs = new StringItem(loc[9], "");
 
 		setCommandListener(this);
@@ -202,7 +200,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				Alert a = new Alert(loc[23], loc[24], null, AlertType.WARNING);
 				a.setTimeout(Alert.FOREVER);
 				a.addCommand(repairFull);
-				a.addCommand(repairLite);
 				a.addCommand(back);
 				final Displayable menu = this;
 				a.setCommandListener(new CommandListener() {
@@ -213,12 +210,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 						if (c == repairFull) {
 							MangaDownloader md = new MangaDownloader(mo, menu);
 							md.repair = true;
-							md.check = true;
-							md.start();
-						} else if (c == repairLite) {
-							MangaDownloader md = new MangaDownloader(mo, menu);
-							md.repair = true;
-							md.check = false;
 							md.start();
 						}
 					}

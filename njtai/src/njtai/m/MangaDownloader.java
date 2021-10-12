@@ -40,8 +40,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 	 */
 	public boolean repair = false;
 
-	public boolean check = true;
-
 	private boolean done = false;
 
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
@@ -285,42 +283,36 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 				// If the file exists, we may want to check it or just skip
 				if (fc.exists()) {
-					if (repair) {
-						System.out.println("Attempt to repair");
-						if (fc.fileSize() == 0) {
-							// just overwrite
-						} else if (check) {
-							// attempt to decode
-							System.out.println("Attempt to check...");
-							DataInputStream dis = null;
-							try {
-								dis = fc.openDataInputStream();
-								ByteArrayOutputStream b = new ByteArrayOutputStream();
-								int l = 0;
-								byte[] buf = new byte[1024 * 64];
-								while ((l = dis.read(buf)) != -1) {
-									b.write(buf, 0, l);
-								}
-								dis.close();
-								try {
-									Image.createImage(b.toByteArray(), 0, b.size());
-									// ok
-									fc.close();
-									continue;
-								} catch (Exception e) {
-									// failed
-									fc.truncate(0);
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							} finally {
-								if (dis != null)
-									dis.close();
+					if (fc.fileSize() == 0) {
+						// just overwrite
+					} else if (repair) {
+						System.out.println("Attempt to check");
+						// attempt to decode
+						DataInputStream dis = null;
+						try {
+							dis = fc.openDataInputStream();
+							ByteArrayOutputStream b = new ByteArrayOutputStream();
+							int l = 0;
+							byte[] buf = new byte[1024 * 64];
+							while ((l = dis.read(buf)) != -1) {
+								b.write(buf, 0, l);
 							}
-						} else {
-							fc.close();
-							g.setValue(percs);
-							continue;
+							dis.close();
+							try {
+								Image.createImage(b.toByteArray(), 0, b.size());
+								// Skipping
+								fc.close();
+								continue;
+							} catch (Exception e) {
+								// failed
+								System.out.println("Attempt to repair");
+								fc.truncate(0);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							if (dis != null)
+								dis.close();
 						}
 					} else {
 						// skipping
@@ -430,10 +422,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 			} else if (filesExisted && !repair) {
 				a.setString("Some files existed - they were not overwritten.");
 			} else {
-				a.setString(repair
-						? (check ? "All pages were checked and repaired."
-								: "Missed and empty pages were downloaded, but already existed were not checked.")
-						: "All pages were downloaded.");
+				a.setString(repair ? "All pages were checked and repaired." : "All pages were downloaded.");
 			}
 		} else {
 			NJTAIM.setScr(prev);
@@ -450,10 +439,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 					b = new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING);
 				} else {
 					b = new Alert("NJTAI",
-							repair ? (check ? "All pages were checked and repaired."
-									: "Missed and empty pages were downloaded, but already existed were not checked.")
-									: "All pages were downloaded.",
-							null, AlertType.CONFIRMATION);
+							repair ? "All pages were checked and repaired." : "All pages were downloaded.", null,
+							AlertType.CONFIRMATION);
 				}
 				NJTAIM.setScr(b, prev);
 			} catch (Exception e) {
