@@ -55,6 +55,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 			while (e.hasMoreElements()) {
 				String s = e.nextElement().toString();
 				try {
+					if(s.length()<4) continue;
 					// trying to parse folder's name
 					if (s.charAt(s.length() - 1) != '/')
 						continue;
@@ -65,7 +66,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 					Integer.parseInt(n);
 
 					// push
-					list.append(s, null);
+					list.append(s.substring(0, s.length()-1), null);
 				} catch (Exception ex) {
 					// skipping
 				}
@@ -90,7 +91,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 			FileConnection fc = null;
 
 			// path of folder where we will work
-			final String item = list.getString(list.getSelectedIndex());
+			final String item = list.getString(list.getSelectedIndex())+"/";
 
 			// reading metadata
 			try {
