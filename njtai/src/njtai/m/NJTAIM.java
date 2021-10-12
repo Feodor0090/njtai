@@ -228,11 +228,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			return StringUtil.splitFull(r, '\n');
 		} catch (Exception e) {
 			e.printStackTrace();
-			// null is returned to avoid massive try-catch constructions near every call. Normally, it always return english file.
+			// null is returned to avoid massive try-catch constructions near every call.
+			// Normally, it always return english file.
 			return null;
 		}
 	}
-	
+
 	/**
 	 * resize an image:
 	 */
@@ -323,6 +324,19 @@ public class NJTAIM extends MIDlet implements IPlatform {
 				// final result
 				dst[index1++] = NJTAI.blend(c34, c12, x_d);
 			}
+		}
+	}
+
+	public static boolean isKem() {
+		return isClsExists("emulator.custom.CustomMethod");
+	}
+
+	public static boolean isClsExists(String clsName) {
+		try {
+			Class.forName(clsName);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 

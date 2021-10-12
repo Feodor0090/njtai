@@ -576,8 +576,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
-		y += (ty - ly) * panDeltaMul() * (useSmoothZoom() ? (5f / zoom) : 1);
+		x += (tx - lx) * panDeltaMul() * (useSmoothZoom() && NJTAIM.isKem() ? (5f / zoom) : 1);
+		y += (ty - ly) * panDeltaMul() * (useSmoothZoom() && NJTAIM.isKem() ? (5f / zoom) : 1);
 		lx = tx;
 		ly = ty;
 		repaint();
@@ -748,7 +748,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			return new ViewSWR(mo, d, i);
 		if (NJTAI.view == 2)
 			return new ViewHWA(mo, d, i);
-		if (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") != -1)
+		if (System.getProperty("com.nokia.gpu.memory.total") != null && hasPointerEvents())
 			return new ViewHWA(mo, d, i);
 
 		return new ViewSWR(mo, d, i);
