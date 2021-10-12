@@ -119,11 +119,13 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				mo.loadCover();
 			if (stop)
 				return;
+		} else {
+			mo.img = coverImg;
+			coverImg = null;
 		}
 
 		deleteAll();
-		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, coverImg == null ? (Image) mo.img : coverImg,
-				0, null);
+		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
 		cover.setItemCommandListener(this);
 		cover.setDefaultCommand(open);
 		append(cover);

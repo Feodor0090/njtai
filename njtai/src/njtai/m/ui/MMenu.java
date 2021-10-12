@@ -23,12 +23,13 @@ public final class MMenu extends List implements CommandListener {
 
 	public MMenu() {
 		super("NJTAI", List.IMPLICIT, NJTAIM.getStrings("main"), null);
+		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
 
 	private Command exitCmd = new Command(NJTAI.rus ? "Выход" : "Exit", Command.EXIT, 2);
-	private Command backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
+	public static Command backCmd;
 	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
 
@@ -167,7 +168,9 @@ public final class MMenu extends List implements CommandListener {
 	}
 
 	private Displayable generateDownloadedScreen() {
-		return new Form("TODO");
+		List l = new List("Loading...", List.IMPLICIT);
+		(new DownloadedLister(l, this)).start();
+		return l;
 	}
 
 	private String processSearchQuery(String data) {
