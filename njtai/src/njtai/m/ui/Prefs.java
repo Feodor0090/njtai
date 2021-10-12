@@ -114,13 +114,9 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		append(invert);
 		append(bitmaps);
 		append(urls);
+		append(view);
 		append(proxy);
 		append(aboutProxy);
-		append(new StringItem("Beta features", "Better not to touch them."));
-		append(view);
-		ChoiceGroup c = new ChoiceGroup("Setting", 4, new String[] { "1", "2", "3" }, null);
-		c.setSelectedIndex(1, true);
-		// append(c);
 	}
 
 	public final void commandAction(Command c, Displayable arg1) {
@@ -145,6 +141,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			a.addCommand(dfC);
 			a.addCommand(ccC);
 			a.setCommandListener(this);
+			a.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a);
 		} else if (c == bkC) {
 			NJTAI.cachingPolicy = cache.getSelectedIndex();
@@ -184,10 +181,10 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			a.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a);
 		} else if (c == cnclC) {
-			NJTAIM.setScr(
-					new Alert(NJTAI.rus ? "Настройки" : "Settings",
-							NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING),
-					menu);
+			Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
+					NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
+			a.setTimeout(Alert.FOREVER);
+			NJTAIM.setScr(a, menu);
 		}
 	}
 

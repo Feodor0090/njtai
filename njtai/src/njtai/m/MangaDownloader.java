@@ -203,9 +203,11 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (dir == null) {
 			NJTAIM.setScr(prev);
 			NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-			NJTAIM.setScr(new Alert("Downloader error",
+			Alert a1 = new Alert("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
-					null, AlertType.ERROR), prev);
+					null, AlertType.ERROR);
+			a1.setTimeout(-2);
+			NJTAIM.setScr(a1, prev);
 			return;
 		}
 		g = new Gauge(null, false, 100, 0);
@@ -224,9 +226,11 @@ public class MangaDownloader extends Thread implements CommandListener {
 					fc.close();
 					NJTAIM.setScr(prev);
 					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-					NJTAIM.setScr(new Alert("Downloader error",
+					Alert a1 = new Alert("Downloader error",
 							"Cache is not present in current working folder. Download it first.", null,
-							AlertType.ERROR), prev);
+							AlertType.ERROR);
+					a1.setTimeout(-2);
+					NJTAIM.setScr(a1, prev);
 					return;
 				}
 				fc.mkdir();
@@ -536,6 +540,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 				}
 			}
 		});
+		NJTAIM.setScr(l);
 	}
 
 	public static void useE_NJTAI(Prefs scr) {

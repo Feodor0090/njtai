@@ -133,15 +133,7 @@ public final class MMenu extends List implements CommandListener {
 			search();
 			return;
 		case 4:
-			if (!NJTAI.files) {
-				Alert a1 = new Alert("NJTAI",
-						NJTAI.rus ? "Приложение настроено не использовать память устройства. Включите в настройках."
-								: "Application wasn't set up to use device's memory. Enable this option in settings.",
-						null, AlertType.WARNING);
-				a1.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a1);
-				return;
-			}
+			NJTAI.files = true;
 			NJTAIM.setScr(generateDownloadedScreen());
 			return;
 		case 5:
