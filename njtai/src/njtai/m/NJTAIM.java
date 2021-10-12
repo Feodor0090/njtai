@@ -21,13 +21,6 @@ import njtai.models.WebAPIA;
 
 public class NJTAIM extends MIDlet implements IPlatform {
 
-	public NJTAIM() {
-		inst = this;
-		initAPIAs();
-		new NJTAI();
-		NJTAI.pl = this;
-	}
-
 	private static Display dsp;
 	private static NJTAIM inst;
 
@@ -57,6 +50,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		dsp = Display.getDisplay(inst);
 		if (!NJTAI.running) {
 			NJTAI.running = true;
+			initAPIAs();
+			new NJTAI();
+			NJTAI.pl = this;
 			loadPrefs();
 			setScr(new MMenu());
 		}
