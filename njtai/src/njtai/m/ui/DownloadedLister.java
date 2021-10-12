@@ -32,7 +32,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 	}
 
 	public void run() {
-		path = MangaDownloader.checkDefaultBasePath();
+		path = MangaDownloader.getWD();
 		Enumeration e = null;
 		FileConnection fc = null;
 

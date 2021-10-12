@@ -47,7 +47,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
-			dir = checkDefaultBasePath();
+			dir = getWD();
 		if (dir == null) {
 			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
@@ -116,7 +116,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public synchronized ByteArrayOutputStream read(int i) {
 		if (dir == null)
-			dir = checkDefaultBasePath();
+			dir = getWD();
 		if (dir == null) {
 			NJTAI.pl.showNotification("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
@@ -199,7 +199,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (stop)
 			return;
 		if (dir == null)
-			dir = checkDefaultBasePath();
+			dir = getWD();
 		if (dir == null) {
 			NJTAIM.setScr(prev);
 			NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
@@ -487,17 +487,15 @@ public class MangaDownloader extends Thread implements CommandListener {
 	}
 
 	public static String[] getWDs() {
-		if (NJTAIM.isJ2MEL()) {
-			return new String[] { "file:///c:/NJTAI/", "file:///c:/" };
-		}
 
 		if (WDs != null)
 			return WDs;
 
-		String[] all = new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
-				"file:///F:/Images/", "file:///F:/Data/Images/", "file:///E:/", "file:///F:/",
-				System.getProperty("fileconn.dir.photos"), "file:///C:/Images/", "file:///C:/Data/Images/",
-				"file:///e:/", "file:///c:/", "file:///root/" };
+		String[] all = NJTAIM.isJ2MEL() ? new String[] { "file:///c:/NJTAI/", "file:///c:/" }
+				: new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
+						"file:///F:/Images/", "file:///F:/Data/Images/", "file:///E:/", "file:///F:/",
+						System.getProperty("fileconn.dir.photos"), "file:///C:/Images/", "file:///C:/Data/Images/",
+						"file:///e:/", "file:///c:/", "file:///root/" };
 
 		Vector v = new Vector();
 
@@ -561,150 +559,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		}
 
-	}
-
-	public static String checkDefaultBasePath() {
-		// avoid folders lookups in J2MEL
-		if (NJTAIM.isJ2MEL()) {
-			return "file:///c:/";
-		}
-		try {
-			FileConnection fc = null;
-			try {
-				String dir = "file:///E:/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///E:/Data/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///F:/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///F:/Data/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///E:/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///F:/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = System.getProperty("fileconn.dir.photos");
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///C:/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///C:/Data/Images/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///C:/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///c:/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-			try {
-				String dir = "file:///root/";
-				fc = (FileConnection) Connector.open(dir, Connector.READ);
-				if (!fc.exists())
-					throw new RuntimeException();
-				fc.close();
-				return dir;
-			} catch (Throwable t) {
-				if (fc != null)
-					fc.close();
-			}
-		} catch (Exception e) {
-		}
-		return null;
 	}
 
 	public void commandAction(Command c, Displayable arg1) {
