@@ -290,9 +290,14 @@ public final class MMenu extends List implements CommandListener {
 			f.addCommand(m.backCmd);
 			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
-				StringItem s = new StringItem(null, "[" + items[i * 2] + "] " + items[i * 2 + 1] + "\n");
-				s.setFont(Font.getFont(0, 0, 8));
-				f.append(s);
+				if (NJTAIM.isS60v3()) {
+					f.append(new StringItem(null, items[i * 2 + 1]));
+					f.append(new StringItem(items[i * 2], null));
+				} else {
+					StringItem s = new StringItem(null, "[" + items[i * 2] + "] " + items[i * 2 + 1] + "\n");
+					s.setFont(Font.getFont(0, 0, 8));
+					f.append(s);
+				}
 			}
 			return f;
 		} catch (Exception e) {
