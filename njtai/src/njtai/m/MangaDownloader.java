@@ -216,8 +216,18 @@ public class MangaDownloader extends Thread implements CommandListener {
 		// folder
 		try {
 			fc = (FileConnection) Connector.open(folder, 3);
-			if (!fc.exists())
+			if (!fc.exists()) {
+				if (repair) {
+					fc.close();
+					NJTAIM.setScr(prev);
+					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
+					NJTAIM.setScr(new Alert("Downloader error",
+							"Cache is not present in current working folder. Download it first.", null,
+							AlertType.ERROR), prev);
+					return;
+				}
 				fc.mkdir();
+			}
 			freeSpace = fc.availableSize();
 		} catch (Exception e) {
 		} finally {
