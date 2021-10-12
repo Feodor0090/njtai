@@ -2,6 +2,7 @@ package njtai.m.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.Choice;
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -48,10 +49,8 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 					NJTAI.rus ? "Сохранять уже загруженное" : "Keep already loaded",
 					NJTAI.rus ? "Предзагружать" : "Preload" },
 			null);
-	private final ChoiceGroup pageCover = new ChoiceGroup(
-			NJTAI.rus ? "Загружать обложку на странице" : "Load cover in manga page", 4, ynr, null);
-	private final ChoiceGroup covers = new ChoiceGroup(
-			NJTAI.rus ? "Загружать обложку в списках" : "Load covers in lists", 4, ynr, null);
+	private final ChoiceGroup covers = new ChoiceGroup(NJTAI.rus ? "Загрузка обложек" : "Covers loading", Choice.MULTIPLE,
+			new String[] { NJTAI.rus ? "В списках" : "In lists",NJTAI.rus ? "На странице" : "On page" }, null);
 	private final ChoiceGroup invert = new ChoiceGroup(NJTAI.rus ? "Инвертировать прокрутку" : "Invert panning", 4, yn,
 			null);
 	private final ChoiceGroup lists = new ChoiceGroup(
@@ -89,9 +88,9 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		}
 
 		cache.setSelectedIndex(NJTAI.cachingPolicy, true);
-		pageCover.setSelectedIndex(NJTAI.loadCoverAtPage ? 1 : 0, true);
 		lists.setSelectedIndex(NJTAI.keepLists ? 1 : 0, true);
-		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
+		covers.setSelectedIndex(0,NJTAI.loadCovers);
+		covers.setSelectedIndex(1,NJTAI.loadCoverAtPage);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
 		files.setSelectedIndex(NJTAI.files ? 1 : 0, true);
@@ -108,7 +107,6 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		append(cache);
 		append(files);
 		append(wd);
-		append(pageCover);
 		append(covers);
 		append(lists);
 		append(invert);
@@ -145,9 +143,9 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			NJTAIM.setScr(a);
 		} else if (c == bkC) {
 			NJTAI.cachingPolicy = cache.getSelectedIndex();
-			NJTAI.loadCoverAtPage = pageCover.getSelectedIndex() == 1;
+			NJTAI.loadCoverAtPage = covers.isSelected(1);
 			NJTAI.keepLists = lists.getSelectedIndex() == 1;
-			NJTAI.loadCovers = covers.getSelectedIndex() == 1;
+			NJTAI.loadCovers = covers.isSelected(0);
 			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
 			NJTAI.view = view.getSelectedIndex();
