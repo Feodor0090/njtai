@@ -44,7 +44,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
-			dir = checkBasePath();
+			dir = checkDefaultBasePath();
 		if (dir == null) {
 			NJTAIM.setScr(prev);
 			NJTAI.pause(100);
@@ -113,7 +113,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 
 	public synchronized ByteArrayOutputStream read(int i) {
 		if (dir == null)
-			dir = checkBasePath();
+			dir = checkDefaultBasePath();
 		if (dir == null) {
 			NJTAI.pl.showNotification("Downloader error",
 					"There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.",
@@ -196,7 +196,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (stop)
 			return;
 		if (dir == null)
-			dir = checkBasePath();
+			dir = checkDefaultBasePath();
 		if (dir == null) {
 			NJTAIM.setScr(prev);
 			NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
@@ -465,7 +465,25 @@ public class MangaDownloader extends Thread implements CommandListener {
 		}
 	}
 
-	public static String checkBasePath() {
+	private static boolean pathExists(String p) {
+		FileConnection fc = null;
+		try {
+			fc = (FileConnection) Connector.open(p, Connector.READ);
+			if (!fc.exists())
+				throw new RuntimeException();
+			fc.close();
+			return true;
+		} catch (Throwable t) {
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e) {
+			}
+		}
+		return false;
+	}
+
+	public static String checkDefaultBasePath() {
 		// avoid folders lookups in J2MEL
 		if (NJTAIM.isJ2MEL()) {
 			return "file:///c:/";
