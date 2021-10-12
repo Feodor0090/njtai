@@ -230,6 +230,11 @@ public class MangaDownloader extends Thread implements CommandListener {
 		if (freeSpace == -1)
 			freeSpace = Long.MAX_VALUE;
 
+		boolean filesExisted = false;
+		boolean ioError = false;
+		boolean outOfMem = false;
+		Exception modelExc = null;
+
 		// writing model
 		try {
 			String fn = folder + "model.json";
@@ -243,6 +248,7 @@ public class MangaDownloader extends Thread implements CommandListener {
 			s.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			modelExc = e;
 		} finally {
 			try {
 				if (fc != null)
@@ -251,10 +257,6 @@ public class MangaDownloader extends Thread implements CommandListener {
 				e.printStackTrace();
 			}
 		}
-
-		boolean filesExisted = false;
-		boolean ioError = false;
-		boolean outOfMem = false;
 
 		for (int i = 0; i < o.pages; i++) {
 			int percs = i * 100 / o.pages;
@@ -417,6 +419,8 @@ public class MangaDownloader extends Thread implements CommandListener {
 			done = true;
 			if (ioError) {
 				a.setString("IO error has occurped. Check, are all the files valid.");
+			} else if (modelExc != null) {
+				a.setString("Model was not writed due to " + modelExc.toString());
 			} else if (outOfMem) {
 				a.setString("Downloading was not finished - not enough space on the disk.");
 			} else if (filesExisted && !repair) {
@@ -432,6 +436,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 				if (ioError) {
 					b = new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
 							AlertType.ERROR);
+				} else if (modelExc != null) {
+					b = new Alert("NJTAI", "Model was not writed due to " + modelExc.toString(), null,
+							AlertType.WARNING);
 				} else if (outOfMem) {
 					b = new Alert("NJTAI", "Downloading was not finished - not enough space on the disk.", null,
 							AlertType.WARNING);
