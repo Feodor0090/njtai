@@ -21,6 +21,7 @@ import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
+import njtai.m.ui.Prefs;
 
 public class MangaDownloader extends Thread implements CommandListener {
 	private ExtMangaObj o;
@@ -504,30 +505,62 @@ public class MangaDownloader extends Thread implements CommandListener {
 			if (pathExists(all[i]))
 				v.addElement(all[i]);
 		}
-		currentWD = 0;
 		WDs = new String[v.size()];
 		v.copyInto(WDs);
 		v = null;
+		currentWD = WDs.length == 0 ? null : WDs[0];
 		return WDs;
 	}
 
 	private static String[] WDs = null;
 
-	public static int currentWD = 0;
+	public static String currentWD = null;
+
+	public static String getWD() {
+		if (currentWD != null)
+			return currentWD;
+		getWDs();
+		return currentWD;
+	}
 
 	public static void reselectWD(final Displayable prev) {
 		List l = new List("Choose folder:", List.IMPLICIT, getWDs(), null);
-		l.setSelectedIndex(currentWD, true);
 		l.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable l) {
 				if (c == List.SELECT_COMMAND) {
 
-					currentWD = ((List) l).getSelectedIndex();
+					currentWD = ((List) l).getString(((List) l).getSelectedIndex());
+					if (prev instanceof Prefs) {
+						((Prefs) prev).wd.setText(currentWD);
+					}
 					NJTAIM.setScr(prev);
 				}
 			}
 		});
+	}
+
+	public static void useE_NJTAI(Prefs scr) {
+		FileConnection fc = null;
+		try {
+			String dir = "file:///E:/NJTAI/";
+			fc = (FileConnection) Connector.open(dir);
+			if (!fc.exists())
+				fc.mkdir();
+			fc.close();
+			currentWD = dir;
+			if (scr != null)
+				scr.wd.setText(dir);
+		} catch (Throwable t) {
+			if (scr != null)
+				scr.wd.setText("Error. Try to reselect.");
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e) {
+			}
+		}
+
 	}
 
 	public static String checkDefaultBasePath() {

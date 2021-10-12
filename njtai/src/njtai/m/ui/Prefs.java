@@ -13,6 +13,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
+import njtai.m.MangaDownloader;
 import njtai.m.NJTAIM;
 
 /**
@@ -21,12 +22,13 @@ import njtai.m.NJTAIM;
  * @author Feodor0090
  *
  */
-final class Prefs extends Form implements ItemCommandListener, CommandListener {
+public final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
 	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
-	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 2);
+	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 3);
 	private final Command prC = new Command("Proxy setup", 8, 1);
+	private final Command changeC = new Command(NJTAI.rus ? "Изменить" : "Change", Command.OK, 1);
 
 	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
 	private final String[] ynr = new String[] { NJTAI.rus ? "Нет (экономит память)" : "No (saves RAM)",
@@ -62,6 +64,11 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
+	public final StringItem wd = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
+			MangaDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
+					: MangaDownloader.currentWD,
+			StringItem.HYPERLINK);
+
 	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
 	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
 			4, yn, null);
@@ -92,12 +99,15 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		invert.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
+		wd.setDefaultCommand(changeC);
+		wd.setItemCommandListener(this);
 
 		append(ramWarn);
 		if (Runtime.getRuntime().totalMemory() == 2048 * 1024)
 			append(s40Warn);
 		append(cache);
 		append(files);
+		append(wd);
 		append(pageCover);
 		append(covers);
 		append(lists);
@@ -121,8 +131,22 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		cmd(c);
 	}
 
+	Command dfC = new Command("Use E:/NJTAI", 8, 1);
+	Command ccC = new Command("Choose", 8, 2);
+
 	private final void cmd(Command c) {
-		if (c == bkC) {
+		if (c == dfC) {
+			MangaDownloader.useE_NJTAI(this);
+			NJTAIM.setScr(this);
+		} else if (c == ccC) {
+			MangaDownloader.reselectWD(this);
+		} else if (c == changeC) {
+			Alert a = new Alert("", "Working folder", null, AlertType.INFO);
+			a.addCommand(dfC);
+			a.addCommand(ccC);
+			a.setCommandListener(this);
+			NJTAIM.setScr(a);
+		} else if (c == bkC) {
 			NJTAI.cachingPolicy = cache.getSelectedIndex();
 			NJTAI.loadCoverAtPage = pageCover.getSelectedIndex() == 1;
 			NJTAI.keepLists = lists.getSelectedIndex() == 1;

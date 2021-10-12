@@ -110,6 +110,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			s.append(NJTAI._f3 ? "1" : "0");
 			s.append('`');
 			s.append(NJTAI.proxy);
+			s.append('`');
+			String wd = MangaDownloader.currentWD;
+			s.append(wd == null ? " " : wd);
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
 
@@ -148,6 +151,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI._f2 = s[10].equals("1");
 			NJTAI._f3 = s[11].equals("1");
 			NJTAI.proxy = s[12];
+			MangaDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			NJTAI.files = false;
@@ -160,6 +164,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
+			MangaDownloader.currentWD = null;
 		}
 	}
 
@@ -228,11 +233,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			return StringUtil.splitFull(r, '\n');
 		} catch (Exception e) {
 			e.printStackTrace();
-			// null is returned to avoid massive try-catch constructions near every call. Normally, it always return english file.
+			// null is returned to avoid massive try-catch constructions near every call.
+			// Normally, it always return english file.
 			return null;
 		}
 	}
-	
+
 	/**
 	 * resize an image:
 	 */
