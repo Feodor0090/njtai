@@ -38,7 +38,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 
 		// reading folder's list
 		try {
-			fc = (FileConnection) Connector.open(path);
+			fc = (FileConnection) Connector.open(path, Connector.READ);
 			e = fc.list();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -95,7 +95,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 			// reading metadata
 			try {
 				String fn = path + item + "model.json";
-				fc = (FileConnection) Connector.open(fn);
+				fc = (FileConnection) Connector.open(fn, Connector.READ);
 				if (fc.exists()) {
 					DataInputStream s = fc.openDataInputStream();
 					byte[] buf = new byte[32 * 1024];
@@ -132,7 +132,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 					byte[] buf = new byte[512 * 1024];
 					try {
 						String fn = path + item + n + "_001.jpg";
-						fc = (FileConnection) Connector.open(fn);
+						fc = (FileConnection) Connector.open(fn, Connector.READ);
 						if (fc.exists()) {
 							DataInputStream s = fc.openDataInputStream();
 							len = s.read(buf);
