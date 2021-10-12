@@ -174,14 +174,14 @@ public abstract class View extends ViewBase {
 		if (hasPointerEvents()) {
 			int fh = f.getHeight();
 			// grads
-			fillGrad(g, getWidth() * 2 / 3, getHeight() - 50, getWidth() / 3, 51, 0, 0x222222);
+			fillGrad(g, getWidth() * 3 / 4, getHeight() - 50, getWidth() / 4, 51, 0, 0x222222);
 			// lines
 			g.setGrayScale(255);
-			g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth(), getHeight() - 50);
-			g.drawLine(getWidth() * 2 / 3, getHeight() - 50, getWidth() * 2 / 3, getHeight());
+			g.drawLine(getWidth() * 3 / 4, getHeight() - 50, getWidth(), getHeight() - 50);
+			g.drawLine(getWidth() * 3 / 4, getHeight() - 50, getWidth() * 3 / 4, getHeight());
 			// captions
 			g.setGrayScale(255);
-			g.drawString(touchCaps[6], getWidth() * 5 / 6, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
+			g.drawString(touchCaps[6], getWidth() * 7 / 8, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
 
 		}
 	}
