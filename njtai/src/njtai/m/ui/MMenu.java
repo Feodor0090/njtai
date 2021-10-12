@@ -146,7 +146,7 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 6:
 			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
-					"NJTAI v" + NJTAIM.ver() + "\nDeveloper: Feodor0090\nIcon and proxy by Shinovon", null,
+					"NJTAI v" + NJTAIM.ver() + "\nDevelopers: Feodor0090, Shinovon\nIcon and proxy by Shinovon\nMore info at github.com/Feodor0090/njtai", null,
 					AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a1);
