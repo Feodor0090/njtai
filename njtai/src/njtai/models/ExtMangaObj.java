@@ -108,9 +108,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		offline = true;
 
 		title = h.get("title").toString();
-		tags = h.get("tags").toString();
-		parody = h.get("parody").toString();
-		lang = h.get("lang").toString();
+		if (h.containsKey("tags"))
+			tags = h.get("tags").toString();
+		if (h.containsKey("parody"))
+			parody = h.get("parody").toString();
+		if (h.containsKey("lang"))
+			lang = h.get("lang").toString();
 		pages = Integer.parseInt(h.get("pages").toString());
 	}
 
@@ -300,9 +303,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public String encode() {
 		Hashtable h = new Hashtable();
 		h.put("title", title);
-		h.put("tags", tags);
-		h.put("parody", parody);
-		h.put("lang", lang);
+		if (tags != null)
+			h.put("tags", tags);
+		if (parody != null)
+			h.put("parody", parody);
+		if (lang != null)
+			h.put("lang", lang);
 		h.put("pages", String.valueOf(pages));
 
 		try {
