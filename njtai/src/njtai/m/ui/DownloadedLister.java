@@ -1,42 +1,42 @@
 package njtai.m.ui;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.io.*;
+import java.util.*;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.*;
 
-import cc.nnproject.lwjson.JSON;
 import njtai.NJTAI;
 import njtai.m.MangaDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
+/**
+ * Class, responsible for loading a list of downloaded titles and opening an
+ * offline {@link MangaPage}.
+ * 
+ * @author Feodor0090
+ * @since 1.1.47
+ *
+ */
 public class DownloadedLister extends Thread implements CommandListener {
 
-	private List l;
-	private MMenu b;
+	private List list;
+	private MMenu mm;
 	private String path;
 
 	public DownloadedLister(List l, MMenu b) {
-		this.l = l;
-		this.b = b;
+		list = l;
+		mm = b;
 	}
 
 	public void run() {
 		path = MangaDownloader.checkBasePath();
 		Enumeration e = null;
 		FileConnection fc = null;
+
+		// reading folder's list
 		try {
 			fc = (FileConnection) Connector.open(path);
 			e = fc.list();
@@ -50,10 +50,12 @@ public class DownloadedLister extends Thread implements CommandListener {
 				exx.printStackTrace();
 			}
 		}
-		if (e != null)
+
+		if (e != null) {
 			while (e.hasMoreElements()) {
 				String s = e.nextElement().toString();
 				try {
+					// trying to parse folder's name
 					if (s.charAt(s.length() - 1) != '/')
 						continue;
 					int i = s.indexOf('-');
@@ -61,26 +63,36 @@ public class DownloadedLister extends Thread implements CommandListener {
 						continue;
 					String n = s.substring(0, i).trim();
 					Integer.parseInt(n);
-					l.append(s, null);
+
+					// push
+					list.append(s, null);
 				} catch (Exception ex) {
+					// skipping
 				}
 			}
-		l.setTitle(path);
-		l.addCommand(MMenu.backCmd);
-		l.setCommandListener(this);
+		}
+		list.setTitle(path);
+		list.addCommand(MMenu.backCmd);
+		list.setCommandListener(this);
 	}
 
 	public void commandAction(Command c, Displayable arg1) {
 		if (c == MMenu.backCmd) {
-			NJTAIM.setScr(b);
+			NJTAIM.setScr(mm);
 			return;
 		}
 		if (c == List.SELECT_COMMAND) {
+
+			// vars
 			MangaPage mp;
 			ExtMangaObj o;
 			String d = null;
 			FileConnection fc = null;
-			final String item = l.getString(l.getSelectedIndex());
+
+			// path of folder where we will work
+			final String item = list.getString(list.getSelectedIndex());
+
+			// reading metadata
 			try {
 				String fn = path + item + "model.json";
 				fc = (FileConnection) Connector.open(fn);
@@ -106,12 +118,15 @@ public class DownloadedLister extends Thread implements CommandListener {
 				return;
 			}
 
+			// restoring ExtMangaObj from loaded data
 			try {
-				Hashtable h = (Hashtable) JSON.parseJSON(d);
+				Hashtable h = (Hashtable) cc.nnproject.lwjson.JSON.parseJSON(d);
 				String n = item.substring(0, item.indexOf('-')).trim();
 				o = new ExtMangaObj(Integer.parseInt(n), h);
 				h = null;
 				Image cover = null;
+
+				// cover loading
 				if (NJTAI.loadCoverAtPage) {
 					int len = 0;
 					byte[] buf = new byte[512 * 1024];
@@ -138,14 +153,15 @@ public class DownloadedLister extends Thread implements CommandListener {
 					System.gc();
 					cover = (Image) NJTAI.pl.prescaleCover(cover);
 				}
-				mp = new MangaPage(Integer.parseInt(n), l, o, cover);
+
+				// creating the screen
+				mp = new MangaPage(Integer.parseInt(n), list, o, cover);
+				NJTAIM.setScr(mp);
 			} catch (Throwable t) {
 				t.printStackTrace();
 				NJTAIM.setScr(new Alert(item, "Metadata file is corrupted", null, AlertType.ERROR));
 				return;
 			}
-
-			NJTAIM.setScr(mp);
 		}
 	}
 }
