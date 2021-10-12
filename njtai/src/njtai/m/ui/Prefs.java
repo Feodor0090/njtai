@@ -112,7 +112,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		append(covers);
 		append(lists);
 		append(invert);
-		append(bitmaps);
+		//append(bitmaps);
 		append(urls);
 		append(view);
 		append(proxy);
