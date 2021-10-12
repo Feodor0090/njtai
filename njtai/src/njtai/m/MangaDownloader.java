@@ -227,8 +227,9 @@ public class MangaDownloader extends Thread implements CommandListener {
 					NJTAIM.setScr(prev);
 					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
 					Alert a1 = new Alert("Downloader error",
-							"Cache is not present in current working folder. Download it first.", null,
-							AlertType.ERROR);
+							NJTAI.rus ? "Кэш отсутствует в данной рабочей папке. Сначала скачайте."
+									: "Cache is not present in current working folder. Download it first.",
+							null, AlertType.ERROR);
 					a1.setTimeout(-2);
 					NJTAIM.setScr(a1, prev);
 					return;
@@ -307,24 +308,21 @@ public class MangaDownloader extends Thread implements CommandListener {
 					} else if (repair) {
 						System.out.println("Attempt to check");
 						// attempt to decode
-						DataInputStream dis = null;
+						InputStream dis = null;
 						try {
-							dis = fc.openDataInputStream();
-							ByteArrayOutputStream b = new ByteArrayOutputStream();
-							int l = 0;
-							byte[] buf = new byte[1024 * 64];
-							while ((l = dis.read(buf)) != -1) {
-								b.write(buf, 0, l);
-							}
-							dis.close();
+							dis = fc.openInputStream();
 							try {
-								Image.createImage(b.toByteArray(), 0, b.size());
+								Image.createImage(dis);
+								dis.close();
+								dis = null;
 								// Skipping
 								fc.close();
 								continue;
 							} catch (Exception e) {
 								// failed
 								System.out.println("Attempt to repair");
+								if (dis != null)
+									dis.close();
 								fc.truncate(0);
 							}
 						} catch (Exception e) {

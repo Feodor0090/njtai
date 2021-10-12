@@ -55,7 +55,8 @@ public class DownloadedLister extends Thread implements CommandListener {
 			while (e.hasMoreElements()) {
 				String s = e.nextElement().toString();
 				try {
-					if(s.length()<4) continue;
+					if (s.length() < 4)
+						continue;
 					// trying to parse folder's name
 					if (s.charAt(s.length() - 1) != '/')
 						continue;
@@ -66,7 +67,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 					Integer.parseInt(n);
 
 					// push
-					list.append(s.substring(0, s.length()-1), null);
+					list.append(s.substring(0, s.length() - 1), null);
 				} catch (Exception ex) {
 					// skipping
 				}
@@ -91,7 +92,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 			FileConnection fc = null;
 
 			// path of folder where we will work
-			final String item = list.getString(list.getSelectedIndex())+"/";
+			final String item = list.getString(list.getSelectedIndex()) + "/";
 
 			// reading metadata
 			try {
@@ -99,19 +100,20 @@ public class DownloadedLister extends Thread implements CommandListener {
 				fc = (FileConnection) Connector.open(fn, Connector.READ);
 				if (fc.exists()) {
 					DataInputStream s = fc.openDataInputStream();
-					byte[] buf = new byte[32 * 1024];
+					byte[] buf = new byte[(int) (fc.fileSize()+1)];
 					int len = s.read(buf);
 					d = new String(buf, 0, len, "UTF-8");
 					s.close();
 				}
+				fc.close();
+				fc = null;
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				try {
 					if (fc != null)
 						fc.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException e1) {
 				}
 			}
 			if (d == null) {
@@ -130,15 +132,17 @@ public class DownloadedLister extends Thread implements CommandListener {
 				// cover loading
 				if (NJTAI.loadCoverAtPage) {
 					int len = 0;
-					byte[] buf = new byte[512 * 1024];
+					byte[] buf = null;
 					try {
 						String fn = path + item + n + "_001.jpg";
 						fc = (FileConnection) Connector.open(fn, Connector.READ);
 						if (fc.exists()) {
 							DataInputStream s = fc.openDataInputStream();
+							buf = new byte[(int) (fc.fileSize()+1)];
 							len = s.read(buf);
 							s.close();
 						}
+						fc.close();
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {
@@ -149,10 +153,14 @@ public class DownloadedLister extends Thread implements CommandListener {
 							e.printStackTrace();
 						}
 					}
-					cover = Image.createImage(buf, 0, len);
-					buf = null;
-					System.gc();
-					cover = (Image) NJTAI.pl.prescaleCover(cover);
+					if (len == 0||buf==null) {
+						cover = Image.createImage(1, 1);
+					} else {
+						cover = Image.createImage(buf, 0, len);
+						buf = null;
+						System.gc();
+						cover = (Image) NJTAI.pl.prescaleCover(cover);
+					}
 				}
 
 				// creating the screen
@@ -160,7 +168,9 @@ public class DownloadedLister extends Thread implements CommandListener {
 				NJTAIM.setScr(mp);
 			} catch (Throwable t) {
 				t.printStackTrace();
-				NJTAIM.setScr(new Alert(item, "Metadata file is corrupted", null, AlertType.ERROR));
+				NJTAIM.setScr(new Alert(item,
+						(NJTAI.rus ? "Файл метаданных повреждён: " : "Metadata file is corrupted: ") + t.toString(),
+						null, AlertType.ERROR));
 				return;
 			}
 		}
