@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Vector;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
@@ -16,6 +17,7 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
@@ -481,6 +483,51 @@ public class MangaDownloader extends Thread implements CommandListener {
 			}
 		}
 		return false;
+	}
+
+	public static String[] getWDs() {
+		if (NJTAIM.isJ2MEL()) {
+			return new String[] { "file:///c:/NJTAI/", "file:///c:/" };
+		}
+
+		if (WDs != null)
+			return WDs;
+
+		String[] all = new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
+				"file:///F:/Images/", "file:///F:/Data/Images/", "file:///E:/", "file:///F:/",
+				System.getProperty("fileconn.dir.photos"), "file:///C:/Images/", "file:///C:/Data/Images/",
+				"file:///e:/", "file:///c:/", "file:///root/" };
+
+		Vector v = new Vector();
+
+		for (int i = 0; i < all.length; i++) {
+			if (pathExists(all[i]))
+				v.addElement(all[i]);
+		}
+		currentWD = 0;
+		WDs = new String[v.size()];
+		v.copyInto(WDs);
+		v = null;
+		return WDs;
+	}
+
+	private static String[] WDs = null;
+
+	public static int currentWD = 0;
+
+	public static void reselectWD(final Displayable prev) {
+		List l = new List("Choose folder:", List.IMPLICIT, getWDs(), null);
+		l.setSelectedIndex(currentWD, true);
+		l.setCommandListener(new CommandListener() {
+
+			public void commandAction(Command c, Displayable l) {
+				if (c == List.SELECT_COMMAND) {
+
+					currentWD = ((List) l).getSelectedIndex();
+					NJTAIM.setScr(prev);
+				}
+			}
+		});
 	}
 
 	public static String checkDefaultBasePath() {
