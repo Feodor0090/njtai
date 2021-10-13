@@ -488,22 +488,30 @@ public class MangaDownloader extends Thread implements CommandListener {
 		return false;
 	}
 
-	public static String[] getWDs() {
+	public static String[] getWDs(boolean quick) {
 
 		if (WDs != null)
 			return WDs;
 
-		String[] all = NJTAIM.isJ2MEL() ? new String[] { "file:///c:/NJTAI/", "file:///c:/" }
-				: new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
-						"file:///F:/Images/", "file:///F:/Data/Images/", "file:///E:/", "file:///F:/",
-						System.getProperty("fileconn.dir.photos"), "file:///C:/Images/", "file:///C:/Data/Images/",
-						"file:///e:/", "file:///c:/", "file:///root/" };
+		String[] all;
+		if (NJTAIM.isJ2MEL()) {
+			all = new String[] { "file:///c:/NJTAI/", "file:///c:/" };
+		} else {
+			all = new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
+					"file:///F:/Images/", "file:///F:/Data/Images/", "file:///E:/", "file:///F:/", "file:///C:/Images/",
+					System.getProperty("fileconn.dir.photos"), "file:///e:/", "file:///c:/", "file:///root/" };
+		}
 
 		Vector v = new Vector();
 
 		for (int i = 0; i < all.length; i++) {
-			if (pathExists(all[i]))
+			if (pathExists(all[i])) {
+				if (quick) {
+					currentWD = all[i];
+					return new String[] { all[i] };
+				}
 				v.addElement(all[i]);
+			}
 		}
 		WDs = new String[v.size()];
 		v.copyInto(WDs);
@@ -519,12 +527,12 @@ public class MangaDownloader extends Thread implements CommandListener {
 	public static String getWD() {
 		if (currentWD != null)
 			return currentWD;
-		getWDs();
+		getWDs(true);
 		return currentWD;
 	}
 
 	public static void reselectWD(final Displayable prev) {
-		List l = new List("Choose folder:", List.IMPLICIT, getWDs(), null);
+		List l = new List("Choose folder:", List.IMPLICIT, getWDs(false), null);
 		l.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable l) {
