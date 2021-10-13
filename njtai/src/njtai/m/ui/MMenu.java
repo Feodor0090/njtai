@@ -1,8 +1,6 @@
 package njtai.m.ui;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
@@ -279,7 +277,7 @@ public final class MMenu extends List implements CommandListener {
 		try {
 			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
 			f.setCommandListener(m);
-			f.addCommand(m.backCmd);
+			f.addCommand(backCmd);
 			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
 				if (NJTAIM.isS60v3()) {
