@@ -151,110 +151,132 @@ public class DownloadedLister extends Thread implements CommandListener {
 			return;
 		}
 		if (c == confirmDelC) {
-			// path of folder where we will work
-			final String item = list.getString(list.getSelectedIndex()) + "/";
+			final CommandListener listener = this;
+			(new Thread() {
+				public void run() {
 
-			String n = item.substring(0, item.indexOf('-')).trim();
+					String item = list.getString(list.getSelectedIndex());
 
-			FileConnection fc = null;
-
-			// model
-			try {
-				String fn = path + item + "model.json";
-				fc = (FileConnection) Connector.open(fn);
-				if (fc.exists()) {
-					fc.delete();
-				}
-				fc.close();
-				fc = null;
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (fc != null)
-						fc.close();
-				} catch (IOException e1) {
-				}
-			}
-
-			Enumeration e = null;
-
-			try {
-				fc = (FileConnection) Connector.open(path + item, Connector.READ);
-				e = fc.list();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			} finally {
-				try {
-					if (fc != null)
-						fc.close();
-				} catch (Exception exx) {
-					exx.printStackTrace();
-				}
-			}
-
-			if (e == null)
-				return;
-			int max = 0;
-
-			while (e.hasMoreElements()) {
-				String name = e.nextElement().toString();
-				try {
-					String l = name.substring(name.indexOf('_'));
-					l = l.substring(0, l.indexOf('.'));
-					int m = Integer.parseInt(l);
-					if (m > max)
-						max = m;
-				} catch (RuntimeException ex) {
-				}
-			}
-
-			for (int i = 1; i <= max; i++) {
-				try {
-					String fn = path + item + n + "_" + i + ".jpg";
-					fc = (FileConnection) Connector.open(fn);
-					if (fc.exists()) {
-						fc.delete();
+					// alert
+					{
+						Alert a = new Alert(item, NJTAI.rus ? "Удаление" : "Deleting", null, AlertType.INFO);
+						a.setTimeout(Alert.FOREVER);
+						Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
+						a.setIndicator(g);
+						a.setCommandListener(listener);
+						NJTAIM.setScr(a);
 					}
-					fc.close();
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				} finally {
+
+					// path of folder where we will work
+					item = item + "/";
+
+					String n = item.substring(0, item.indexOf('-')).trim();
+
+					FileConnection fc = null;
+
+					// model
 					try {
-						if (fc != null)
-							fc.close();
-					} catch (IOException exx) {
-						exx.printStackTrace();
-					}
-				}
-			}
-			
-			try {
-				fc = (FileConnection) Connector.open(path+item);
-				fc.delete();
-				fc.close();
-				Alert a = new Alert("NJTAI", NJTAI.rus ? "Удалено." : "Deleted.", null,
-						AlertType.CONFIRMATION);
-				a.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a, list);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				Alert a = new Alert("NJTAI", NJTAI.rus ? "В папке остались посторонние файлы." : "There are third files in the folder.", null,
-						AlertType.WARNING);
-				a.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a, list);
-			} finally {
-				try {
-					if (fc != null)
+						String fn = path + item + "model.json";
+						fc = (FileConnection) Connector.open(fn);
+						if (fc.exists()) {
+							fc.delete();
+						}
 						fc.close();
-				} catch (Exception exx) {
-					exx.printStackTrace();
+						fc = null;
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if (fc != null)
+								fc.close();
+						} catch (IOException e1) {
+						}
+					}
+
+					Enumeration e = null;
+
+					try {
+						fc = (FileConnection) Connector.open(path + item, Connector.READ);
+						e = fc.list();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					} finally {
+						try {
+							if (fc != null)
+								fc.close();
+						} catch (Exception exx) {
+							exx.printStackTrace();
+						}
+					}
+
+					if (e == null)
+						return;
+					int max = 0;
+
+					while (e.hasMoreElements()) {
+						String name = e.nextElement().toString();
+						try {
+							String l = name.substring(name.indexOf('_'));
+							l = l.substring(0, l.indexOf('.'));
+							int m = Integer.parseInt(l);
+							if (m > max)
+								max = m;
+						} catch (RuntimeException ex) {
+						}
+					}
+
+					for (int i = 1; i <= max; i++) {
+						try {
+							String fn = path + item + n + "_" + i + ".jpg";
+							fc = (FileConnection) Connector.open(fn);
+							if (fc.exists()) {
+								fc.delete();
+							}
+							fc.close();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						} finally {
+							try {
+								if (fc != null)
+									fc.close();
+							} catch (IOException exx) {
+								exx.printStackTrace();
+							}
+						}
+					}
+
+					try {
+						fc = (FileConnection) Connector.open(path + item);
+						fc.delete();
+						fc.close();
+						NJTAIM.setScr(list);
+						NJTAI.pause(100);
+						Alert a = new Alert("NJTAI", NJTAI.rus ? "Удалено." : "Deleted.", null, AlertType.CONFIRMATION);
+						a.setTimeout(Alert.FOREVER);
+						NJTAIM.setScr(a, list);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						NJTAIM.setScr(list);
+						NJTAI.pause(100);
+						Alert a = new Alert("NJTAI", NJTAI.rus ? "В папке остались посторонние файлы."
+								: "There are third files in the folder.", null, AlertType.WARNING);
+						a.setTimeout(Alert.FOREVER);
+						NJTAIM.setScr(a, list);
+					} finally {
+						try {
+							if (fc != null)
+								fc.close();
+						} catch (Exception exx) {
+							exx.printStackTrace();
+						}
+					}
+
 				}
-			}
-			
+			}).start();
 
 			return;
 		}
+
 		if (c == List.SELECT_COMMAND) {
 
 			// vars
