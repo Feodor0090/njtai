@@ -21,7 +21,7 @@ import njtai.models.WebAPIA;
  * @since 1.1.47
  *
  */
-public class SavedLister extends Thread implements CommandListener {
+public class SavedManager extends Thread implements CommandListener {
 
 	private List list;
 	private MMenu mm;
@@ -34,7 +34,7 @@ public class SavedLister extends Thread implements CommandListener {
 	private final Command cancelDelC = new Command(NJTAI.rus ? "Отмена" : "Cancel", Command.CANCEL, 1);
 	private final Command confirmDelC = new Command(NJTAI.rus ? "Продолжить" : "Continue", Command.OK, 1);
 
-	public SavedLister(List l, MMenu b) {
+	public SavedManager(List l, MMenu b) {
 		list = l;
 		mm = b;
 	}
