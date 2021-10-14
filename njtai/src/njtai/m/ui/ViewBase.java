@@ -45,7 +45,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	int nokiaRam;
 
-	private boolean modelDumped = false;
+	private boolean cacheOk = false;
 
 	/**
 	 * Creates the view.
@@ -100,15 +100,17 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 					repaint();
 					return null;
 				}
+
+				if (!cacheOk) {
+					cacheOk = true;
+					fs.createFolder();
+					fs.writeModel(fs.getFolderName());
+				}
+
 				a = new ByteArrayOutputStream(b.length);
 
 				fs.cache(b, n);
-				
-				if (!modelDumped) {
-					modelDumped = true;
-					fs.writeModel(fs.getFolderName());
-				}
-				
+
 				a.write(b);
 				return a;
 			} catch (IOException e) {

@@ -167,16 +167,17 @@ public class SavedManager extends Thread implements CommandListener {
 				// path of folder where we will work
 				item = item + "/";
 
-				String n = item.substring(0, item.indexOf('-')).trim();
+				String id = item.substring(0, item.indexOf('-')).trim();
 
 				FileConnection fc = null;
 
 				// model
 				try {
 					String fn = path + item + "model.json";
-					fc = (FileConnection) Connector.open(fn);
-					if (fc.exists()) {
+					fc = (FileConnection) Connector.open(fn, Connector.WRITE);
+					try {
 						fc.delete();
+					} catch (IOException ioe) {
 					}
 					fc.close();
 					fc = null;
@@ -213,14 +214,25 @@ public class SavedManager extends Thread implements CommandListener {
 					}
 				}
 
-				for (int i = 1; i <= max; i++) {
+				for (int i = 0; i <= max; i++) {
+					String n;
+					int j = i;
+					if (j < 10) {
+						n = "00" + j;
+					} else if (j < 100) {
+						n = "0" + j;
+					} else {
+						n = "" + j;
+					}
 					try {
-						String fn = path + item + n + "_" + i + ".jpg";
-						fc = (FileConnection) Connector.open(fn);
-						if (fc.exists()) {
+						String fn = path + item + id + "_" + n + ".jpg";
+						fc = (FileConnection) Connector.open(fn, Connector.WRITE);
+						try {
 							fc.delete();
+						} catch (IOException ioe) {
 						}
 						fc.close();
+						fc = null;
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					} finally {
@@ -229,7 +241,7 @@ public class SavedManager extends Thread implements CommandListener {
 				}
 
 				try {
-					fc = (FileConnection) Connector.open(path + item);
+					fc = (FileConnection) Connector.open(path + item, Connector.WRITE);
 					fc.delete();
 					fc.close();
 					NJTAIM.setScr(list);

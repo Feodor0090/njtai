@@ -66,6 +66,7 @@ public class MDownloader extends Thread implements CommandListener {
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		cache(a.toByteArray(), i);
 	}
+
 	/**
 	 * Caches an image.
 	 * 
@@ -87,18 +88,6 @@ public class MDownloader extends Thread implements CommandListener {
 		FileConnection fc = null;
 
 		String folder = getFolderName();
-		// folder
-		try {
-			fc = (FileConnection) Connector.open(folder, 3);
-			if (!fc.exists())
-				fc.mkdir();
-		} catch (Exception e) {
-		} finally {
-			try {
-				fc.close();
-			} catch (IOException e) {
-			}
-		}
 
 		DataOutputStream ou = null;
 
@@ -140,6 +129,20 @@ public class MDownloader extends Thread implements CommandListener {
 		}
 	}
 
+	public void createFolder() {
+		FileConnection fc = null;
+		try {
+			fc = (FileConnection) Connector.open(getFolderName(), Connector.WRITE);
+			fc.mkdir();
+		} catch (Exception e) {
+		} finally {
+			try {
+				fc.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
 	/**
 	 * Reads cached image.
 	 * 
@@ -173,7 +176,7 @@ public class MDownloader extends Thread implements CommandListener {
 			} else {
 				n = "" + j;
 			}
-			fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg");
+			fc = (FileConnection) Connector.open(folder + o.num + "_" + n + ".jpg", Connector.READ);
 			if (!fc.exists()) {
 				return null;
 			}
@@ -492,11 +495,12 @@ public class MDownloader extends Thread implements CommandListener {
 		Exception ex = null;
 		try {
 			String fn = folder + "model.json";
-			fc = (FileConnection) Connector.open(fn);
-			if (fc.exists())
-				fc.truncate(0);
-			else
+			fc = (FileConnection) Connector.open(fn, Connector.WRITE);
+			try {
 				fc.create();
+			} catch (IOException ioe) {
+				fc.truncate(0);
+			}
 			DataOutputStream s = fc.openDataOutputStream();
 			s.write(o.encode().getBytes("UTF-8"));
 			s.close();
@@ -511,7 +515,7 @@ public class MDownloader extends Thread implements CommandListener {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return ex;
 	}
 
