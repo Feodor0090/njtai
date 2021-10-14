@@ -280,30 +280,9 @@ public class MDownloader extends Thread implements CommandListener {
 		boolean filesExisted = false;
 		boolean ioError = false;
 		boolean outOfMem = false;
-		Exception modelExc = null;
 
 		// writing model
-		try {
-			String fn = folder + "model.json";
-			fc = (FileConnection) Connector.open(fn);
-			if (fc.exists())
-				fc.truncate(0);
-			else
-				fc.create();
-			DataOutputStream s = fc.openDataOutputStream();
-			s.write(o.encode().getBytes("UTF-8"));
-			s.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-			modelExc = e;
-		} finally {
-			try {
-				if (fc != null)
-					fc.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		Exception modelExc = writeModel(folder);
 
 		for (int i = (o.imgUrl == null ? 0 : -1); i < o.pages; i++) {
 			int percs = Math.max(0, i * 100 / o.pages);
@@ -498,6 +477,34 @@ public class MDownloader extends Thread implements CommandListener {
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	private Exception writeModel(String folder) {
+		FileConnection fc = null;
+		Exception ex = null;
+		try {
+			String fn = folder + "model.json";
+			fc = (FileConnection) Connector.open(fn);
+			if (fc.exists())
+				fc.truncate(0);
+			else
+				fc.create();
+			DataOutputStream s = fc.openDataOutputStream();
+			s.write(o.encode().getBytes("UTF-8"));
+			s.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			ex = e;
+		} finally {
+			try {
+				if (fc != null)
+					fc.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return ex;
 	}
 
 	private static boolean pathExists(String p) {
