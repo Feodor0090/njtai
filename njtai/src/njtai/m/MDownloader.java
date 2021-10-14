@@ -277,7 +277,7 @@ public class MDownloader extends Thread implements CommandListener {
 		}
 
 		for (int i = (o.imgUrl == null ? 0 : -1); i < o.pages; i++) {
-			int percs = i * 100 / o.pages;
+			int percs = Math.max(0, i * 100 / o.pages);
 			String url = null;
 
 			DataOutputStream ou = null;
@@ -317,6 +317,7 @@ public class MDownloader extends Thread implements CommandListener {
 								dis = null;
 								// Skipping
 								fc.close();
+								g.setValue(percs);
 								continue;
 							} catch (Exception e) {
 								// failed
