@@ -276,7 +276,7 @@ public class MDownloader extends Thread implements CommandListener {
 			}
 		}
 
-		for (int i = 0; i < o.pages; i++) {
+		for (int i = (o.imgUrl == null ? 0 : -1); i < o.pages; i++) {
 			int percs = i * 100 / o.pages;
 			String url = null;
 
@@ -346,7 +346,7 @@ public class MDownloader extends Thread implements CommandListener {
 
 				a.setString("Fetching " + percs + "%");
 				try {
-					url = o.loadUrl(i + 1);
+					url = i < 0 ? o.imgUrl : o.loadUrl(i + 1);
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
