@@ -320,7 +320,7 @@ public class SavedLister extends Thread implements CommandListener {
 			// cover loading
 			if (NJTAI.loadCoverAtPage) {
 				try {
-					String fn = path + item + n + "_001.jpg";
+					String fn = path + item + n + "_000.jpg";
 					fc = (FileConnection) Connector.open(fn, Connector.READ);
 					InputStream s = null;
 					if (fc.exists()) {
@@ -332,6 +332,19 @@ public class SavedLister extends Thread implements CommandListener {
 							cover = null;
 						}
 						s.close();
+					} else {
+						fc.close();
+						fc = (FileConnection) Connector.open(path + item + n + "_001.jpg", Connector.READ);
+						if (fc.exists()) {
+							s = fc.openInputStream();
+							try {
+								cover = Image.createImage(s);
+							} catch (Throwable t) {
+								t.printStackTrace();
+								cover = null;
+							}
+							s.close();
+						}
 					}
 					fc.close();
 				} catch (Exception e) {
