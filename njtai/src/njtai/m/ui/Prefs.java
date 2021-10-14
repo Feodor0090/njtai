@@ -181,7 +181,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		} else if (c == cnclC) {
 			Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
 					NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
-			a.setTimeout(Alert.FOREVER);
+			a.setTimeout(1500);
 			NJTAIM.setScr(a, menu);
 		}
 	}
