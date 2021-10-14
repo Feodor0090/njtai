@@ -294,8 +294,8 @@ public class SavedLister extends Thread implements CommandListener {
 				DataInputStream s = fc.openDataInputStream();
 				byte[] buf = new byte[(int) (fc.fileSize() + 1)];
 				int len = s.read(buf);
-				d = new String(buf, 0, len, "UTF-8");
 				s.close();
+				d = new String(buf, 0, len, "UTF-8");
 			}
 			fc.close();
 			fc = null;
@@ -319,15 +319,18 @@ public class SavedLister extends Thread implements CommandListener {
 
 			// cover loading
 			if (NJTAI.loadCoverAtPage) {
-				int len = 0;
-				byte[] buf = null;
 				try {
 					String fn = path + item + n + "_001.jpg";
 					fc = (FileConnection) Connector.open(fn, Connector.READ);
+					InputStream s = null;
 					if (fc.exists()) {
-						DataInputStream s = fc.openDataInputStream();
-						buf = new byte[(int) (fc.fileSize() + 1)];
-						len = s.read(buf);
+						s = fc.openInputStream();
+						try {
+							cover = Image.createImage(s);
+						} catch (Throwable t) {
+							t.printStackTrace();
+							cover = null;
+						}
 						s.close();
 					}
 					fc.close();
@@ -336,19 +339,15 @@ public class SavedLister extends Thread implements CommandListener {
 				} finally {
 					cfc(fc);
 				}
-				if (len == 0 || buf == null) {
-					cover = null;
-				} else {
-					cover = Image.createImage(buf, 0, len);
-					buf = null;
-					System.gc();
+				
+				if(cover!=null) {
 					cover = (Image) NJTAI.pl.prescaleCover(cover);
 				}
 			}
 
 			// creating the screen
 			mp = new MangaPage(Integer.parseInt(n), list, o, cover);
-			if (cover == null) {
+			if (cover == null && NJTAI.loadCoverAtPage) {
 				Alert a1 = new Alert(item,
 						NJTAI.rus ? "Ни одного изображения не скачано." : "No images are downloaded.", null,
 						AlertType.WARNING);
