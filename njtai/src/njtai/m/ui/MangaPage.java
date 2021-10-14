@@ -30,16 +30,17 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private String[] loc;
 
+	/**
+	 * @deprecated Use another constructor.
+	 * @param num  ID
+	 * @param prev Previous screen.
+	 */
 	public MangaPage(int num, Displayable prev) {
 		super("Manga page");
 		id = num;
 		p = prev;
 
 		initForm();
-
-		l = new Thread(this);
-		l.setPriority(10);
-		l.start();
 	}
 
 	public MangaPage(int num, Displayable prev, ExtMangaObj obj, Image cover) {
@@ -51,10 +52,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		coverImg = cover;
 
 		initForm();
-
-		l = new Thread(this);
-		l.setPriority(10);
-		l.start();
 	}
 
 	private void initForm() {
@@ -74,6 +71,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		addCommand(back);
 		append(prgrs);
 		setCommandListener(this);
+
+		l = new Thread(this);
+		l.setPriority(10);
+		l.start();
 	}
 
 	public void run() {
@@ -118,7 +119,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			if (stop)
 				return;
 		} else {
-			mo.img = coverImg;
+			if (NJTAI.loadCoverAtPage)
+				mo.img = coverImg;
 			coverImg = null;
 		}
 
