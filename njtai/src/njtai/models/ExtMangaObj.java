@@ -114,7 +114,11 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			parody = h.get("parody").toString();
 		if (h.containsKey("lang"))
 			lang = h.get("lang").toString();
-		pages = Integer.parseInt(h.get("pages").toString());
+		Object p = h.get("pages");
+		if (p instanceof Integer) {
+			pages = ((Integer) p).intValue();
+		} else
+			pages = Integer.parseInt(p.toString());
 	}
 
 	/**
@@ -309,7 +313,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			h.put("parody", parody);
 		if (lang != null)
 			h.put("lang", lang);
-		h.put("pages", String.valueOf(pages));
+		h.put("pages", new Integer(pages));
 
 		try {
 			return cc.nnproject.lwjson.JSON.buildJSON(h);
