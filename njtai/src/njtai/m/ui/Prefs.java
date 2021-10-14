@@ -63,6 +63,9 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
+	/**
+	 * Working folder switcher button.
+	 */
 	public final StringItem wd = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
 			MDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
 					: MDownloader.currentWD,
@@ -72,6 +75,10 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
 			4, yn, null);
 
+	/**
+	 * Creates prefs screen.
+	 * @param menu Main menu screen.
+	 */
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
 		this.menu = menu;

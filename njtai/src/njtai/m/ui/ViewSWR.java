@@ -21,6 +21,13 @@ import njtai.models.ExtMangaObj;
  */
 public class ViewSWR extends View {
 
+	/**
+	 * Creates the view.
+	 * 
+	 * @param emo  Object with data.
+	 * @param prev Previous screen.
+	 * @param page Number of page to start.
+	 */
 	public ViewSWR(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
 	}

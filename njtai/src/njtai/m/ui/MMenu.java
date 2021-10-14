@@ -17,8 +17,17 @@ import njtai.NJTAI;
 import njtai.m.NJTAIM;
 import njtai.models.MangaObjs;
 
+/**
+ * Main menu of mobile application.
+ * 
+ * @author Feodor0090
+ *
+ */
 public final class MMenu extends List implements CommandListener {
 
+	/**
+	 * Creates menu screen.
+	 */
 	public MMenu() {
 		super("NJTAI", List.IMPLICIT, NJTAIM.getStrings("main"), null);
 		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
@@ -27,6 +36,9 @@ public final class MMenu extends List implements CommandListener {
 	}
 
 	private Command exitCmd = new Command(NJTAI.rus ? "Выход" : "Exit", Command.EXIT, 2);
+	/**
+	 * Back command.
+	 */
 	public static Command backCmd;
 	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
@@ -69,7 +81,7 @@ public final class MMenu extends List implements CommandListener {
 			}
 			if (c == openCmd) {
 				try {
-					NJTAIM.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this));
+					NJTAIM.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this, null, null));
 				} catch (Exception e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
@@ -153,6 +165,8 @@ public final class MMenu extends List implements CommandListener {
 					AlertType.INFO);
 			a1.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a1);
+			return;
+		default:
 			return;
 		}
 	}
@@ -273,6 +287,12 @@ public final class MMenu extends List implements CommandListener {
 		NJTAIM.setScr(tb);
 	}
 
+	/**
+	 * Creates a screen with control tips.
+	 * 
+	 * @param m Main menu screen.
+	 * @return Form to open.
+	 */
 	public static Form generateControlsTipsScreen(MMenu m) {
 		try {
 			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
@@ -280,7 +300,7 @@ public final class MMenu extends List implements CommandListener {
 			f.addCommand(backCmd);
 			String[] items = NJTAIM.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
-				if (NJTAIM.isS60v3()) {
+				if (NJTAIM.isS60v3fp2()) {
 					f.append(new StringItem(null, items[i * 2 + 1]));
 					f.append(new StringItem(items[i * 2], null));
 				} else {

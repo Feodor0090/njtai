@@ -24,10 +24,20 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	private static Display dsp;
 	private static NJTAIM inst;
 
-	public static boolean isS60v3() {
+	/**
+	 * Are we working on 9.3?
+	 * 
+	 * @return Status of 9.3 detection.
+	 */
+	public static boolean isS60v3fp2() {
 		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.2") != -1;
 	}
 
+	/**
+	 * Are we working on J2ME Loader?
+	 * 
+	 * @return Status of j2meL detection.
+	 */
 	public static boolean isJ2MEL() {
 		String vendor = System.getProperty("java.vendor");
 		return (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1);
@@ -213,6 +223,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		return NJTAIM.resize(i, w, h);
 	}
 
+	/**
+	 * Loads localization file.
+	 * 
+	 * @param cat Category of strings.
+	 * @return List of strings to use.
+	 */
 	public static String[] getStrings(String cat) {
 		try {
 			String locale = System.getProperty("microedition.locale");
@@ -236,7 +252,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	}
 
 	/**
-	 * resize an image:
+	 * Resizes the image.
+	 * 
+	 * @param src_i  Original image.
+	 * @param size_w
+	 * @param size_h
+	 * @return Resized image.
 	 */
 	public static Image resize(Image src_i, int size_w, int size_h) {
 

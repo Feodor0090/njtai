@@ -63,17 +63,38 @@ public class MangaObjs implements Enumeration {
 	static final String PAGIN_SEC = "<section class=\"pagination\">";
 	static final String SEARCH_Q = "/search/?q=";
 
+	/**
+	 * Gets list of popular.
+	 * 
+	 * @return Loaded list.
+	 * @throws IOException            Connection error.
+	 * @throws IllegalAccessException Proxy is broken.
+	 */
 	public static MangaObjs getPopularList() throws IOException, IllegalAccessException {
 		String sec = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
 		return new MangaObjs(sec);
 	}
 
+	/**
+	 * Gets list of new uploads.
+	 * 
+	 * @return Loaded list.
+	 * @throws IOException            Connection error.
+	 * @throws IllegalAccessException Proxy is broken.
+	 */
 	public static MangaObjs getNewList() throws IOException, IllegalAccessException {
 		String sec = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
 		return new MangaObjs(sec);
 	}
-	
-	public static MangaObjs getSearchList(String query, Object caller) throws IOException, IllegalAccessException {
+
+	/**
+	 * Searches for the title and gets list of results.
+	 * 
+	 * @param query  Text to search.
+	 * @param caller Screen to work after.
+	 * @return Loaded list.
+	 */
+	public static MangaObjs getSearchList(String query, Object caller) {
 		String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + query;
 		String r = WebAPIA.inst.getUtfOrNull(q);
 		if (r == null) {

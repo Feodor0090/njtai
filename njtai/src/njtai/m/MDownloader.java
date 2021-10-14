@@ -23,10 +23,22 @@ import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 import njtai.m.ui.Prefs;
 
+/**
+ * Class, responsible for caching/reading images.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class MDownloader extends Thread implements CommandListener {
 	private ExtMangaObj o;
 	private Displayable prev;
 
+	/**
+	 * Creates a downloader.
+	 * 
+	 * @param o    Object to work with.
+	 * @param prev Screen to work in.
+	 */
 	public MDownloader(ExtMangaObj o, Displayable prev) {
 		this.o = o;
 		this.prev = prev;
@@ -45,6 +57,12 @@ public class MDownloader extends Thread implements CommandListener {
 
 	private boolean done = false;
 
+	/**
+	 * Caches an image.
+	 * 
+	 * @param a Data to write.
+	 * @param i Number of the image, [1; pages].
+	 */
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
 		if (dir == null)
 			dir = getWD();
@@ -114,6 +132,12 @@ public class MDownloader extends Thread implements CommandListener {
 		}
 	}
 
+	/**
+	 * Reads cached image.
+	 * 
+	 * @param i Number of the image, [1; pages].
+	 * @return Content of the file.
+	 */
 	public synchronized ByteArrayOutputStream read(int i) {
 		if (dir == null)
 			dir = getWD();
@@ -172,6 +196,11 @@ public class MDownloader extends Thread implements CommandListener {
 		return null;
 	}
 
+	/**
+	 * Gets the name of the folder, where current manga is stored.
+	 * 
+	 * @return Path to cache.
+	 */
 	public String getFolderName() {
 		StringBuffer t = new StringBuffer();
 		for (int i = 0; (i < o.title.length() && i < 24); i++) {
@@ -385,9 +414,9 @@ public class MDownloader extends Thread implements CommandListener {
 						fc.close();
 						outOfMem = true;
 						break;
-					} else {
-						freeSpace -= dataLen;
 					}
+
+					freeSpace -= dataLen;
 				}
 
 				ins = httpCon.openInputStream();
@@ -489,6 +518,12 @@ public class MDownloader extends Thread implements CommandListener {
 		return false;
 	}
 
+	/**
+	 * Finds available folders to work in.
+	 * 
+	 * @param quick False to list all the locations, true to find the first.
+	 * @return List of available WDs.
+	 */
 	public static String[] getWDs(boolean quick) {
 
 		if (WDs != null)
@@ -523,8 +558,16 @@ public class MDownloader extends Thread implements CommandListener {
 
 	private static String[] WDs = null;
 
+	/**
+	 * Folder, currently used for cache.
+	 */
 	public static String currentWD = null;
 
+	/**
+	 * Gets WD path.
+	 * 
+	 * @return WD path.
+	 */
 	public static String getWD() {
 		if (currentWD != null)
 			return currentWD;
@@ -532,14 +575,19 @@ public class MDownloader extends Thread implements CommandListener {
 		return currentWD;
 	}
 
+	/**
+	 * Opens the menu for user to select another WD.
+	 * 
+	 * @param prev Calling screen.
+	 */
 	public static void reselectWD(final Displayable prev) {
 		List l = new List("Choose folder:", List.IMPLICIT, getWDs(false), null);
 		l.setCommandListener(new CommandListener() {
 
-			public void commandAction(Command c, Displayable l) {
+			public void commandAction(Command c, Displayable d) {
 				if (c == List.SELECT_COMMAND) {
 
-					currentWD = ((List) l).getString(((List) l).getSelectedIndex());
+					currentWD = ((List) d).getString(((List) d).getSelectedIndex());
 					if (prev instanceof Prefs) {
 						((Prefs) prev).wd.setText(currentWD);
 					}
@@ -550,17 +598,22 @@ public class MDownloader extends Thread implements CommandListener {
 		NJTAIM.setScr(l);
 	}
 
+	/**
+	 * Sets working directory to file:///E:/NJTAI/ and creates it.
+	 * 
+	 * @param scr Screen from what this call was made.
+	 */
 	public static void useE_NJTAI(Prefs scr) {
 		FileConnection fc = null;
 		try {
-			String dir = "file:///E:/NJTAI/";
-			fc = (FileConnection) Connector.open(dir);
+			String d = "file:///E:/NJTAI/";
+			fc = (FileConnection) Connector.open(d);
 			if (!fc.exists())
 				fc.mkdir();
 			fc.close();
-			currentWD = dir;
+			currentWD = d;
 			if (scr != null)
-				scr.wd.setText(dir);
+				scr.wd.setText(d);
 		} catch (Throwable t) {
 			if (scr != null)
 				scr.wd.setText("Error. Try to reselect.");

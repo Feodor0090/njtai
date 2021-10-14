@@ -10,12 +10,19 @@ import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
- * {@link View} implementation, that uses M3G for realtime scaling.
+ * {@link View} implementation, that uses M3G for real-time scaling.
  * 
  * @author Feodor0090
  */
 public class ViewHWA extends View {
 
+	/**
+	 * Creates the view.
+	 * 
+	 * @param emo  Object with data.
+	 * @param prev Previous screen.
+	 * @param page Number of page to start.
+	 */
 	public ViewHWA(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
 
@@ -62,9 +69,9 @@ public class ViewHWA extends View {
 		iw = i.getWidth();
 		Vector v = new Vector();
 		int s = 512;
-		for (int x = 0; x < i.getWidth() + s - 1; x += s) {
-			for (int y = 0; y < i.getHeight() + s - 1; y += s) {
-				v.addElement(new PagePart(this, i, x, y, (short) s));
+		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
+			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
+				v.addElement(new PagePart(this, i, ix, iy, (short) s));
 			}
 		}
 		PagePart[] tmp = new PagePart[v.size()];

@@ -1,21 +1,49 @@
 package njtai;
 
+/**
+ * Top interface for main platform-specific classes.
+ * 
+ * @author Feodor0090
+ *
+ */
 public interface IPlatform {
 
+	/**
+	 * Loads prefs.
+	 */
 	void loadPrefs();
 
+	/**
+	 * Writes prefs.
+	 * @return False if failed.
+	 */
 	boolean savePrefs();
 
+	/**
+	 * Inits APIAs.
+	 */
 	void initAPIAs();
 
+	/**
+	 * Quits the application.
+	 */
 	void exit();
 
+	/**
+	 * Forces UI update.
+	 */
 	void repaint();
 
+	/**
+	 * Decodes image from raw file content.
+	 * @param data File content.
+	 * @return Image in platform-specific type.
+	 */
 	Object decodeImage(byte[] data);
 
 	/**
-	 * On LCDUI platform must receive Image object and fit it to 2/3 of screen. On SWT/AWT/Swing can do nothing.
+	 * On LCDUI platform must receive Image object and fit it to 2/3 of screen. On
+	 * SWT/AWT/Swing can do nothing.
 	 * 
 	 * @param original Loaded image.
 	 * @return Image to use in UI.

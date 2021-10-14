@@ -36,6 +36,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	private Thread urlFetcher = null;
 
+	/**
+	 * Filed, reflecting the state of internal prefetcher.
+	 */
 	public int infoReady = -2;
 	/**
 	 * Are URLs already prefetched?
@@ -47,6 +50,14 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 */
 	private boolean offline = false;
 
+	/**
+	 * Parses this object from html fragment.
+	 * 
+	 * @param num  ID of this.
+	 * @param html HTML content of the web page.
+	 * @throws NumberFormatException Failed to parse pages count. This may indicate
+	 *                               broken page.
+	 */
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
 		offline = false;
@@ -103,6 +114,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		System.gc();
 	}
 
+	/**
+	 * Creates an object from the hashtable.
+	 * 
+	 * @param num ID.
+	 * @param h   Object with data.
+	 */
 	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
@@ -199,6 +216,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
+	/**
+	 * Stops {@link #loadUrls() the prefetcher}.
+	 */
 	public void cancelPrefetch() {
 		try {
 			if (urlFetcher != null && urlFetcher.isAlive()) {
@@ -275,6 +295,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		return sb.toString();
 	}
 
+	/**
+	 * Joins langs list with commas, translating known.
+	 * 
+	 * @param list Array of langs.
+	 * @return String like "translated, english".
+	 */
 	public static String listLangs(String[] list) {
 		if (list == null)
 			return null;
@@ -304,6 +330,11 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		return s;
 	}
 
+	/**
+	 * Gets JSON encoding of this object.
+	 * 
+	 * @return JSON string.
+	 */
 	public String encode() {
 		Hashtable h = new Hashtable();
 		h.put("title", title);

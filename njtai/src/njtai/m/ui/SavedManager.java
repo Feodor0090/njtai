@@ -34,6 +34,12 @@ public class SavedManager extends Thread implements CommandListener {
 	private final Command cancelDelC = new Command(NJTAI.rus ? "Отмена" : "Cancel", Command.CANCEL, 1);
 	private final Command confirmDelC = new Command(NJTAI.rus ? "Продолжить" : "Continue", Command.OK, 1);
 
+	/**
+	 * Creates a manager.
+	 * 
+	 * @param l List, where we will work.
+	 * @param b Main menu screen.
+	 */
 	public SavedManager(List l, MMenu b) {
 		list = l;
 		mm = b;
@@ -352,8 +358,8 @@ public class SavedManager extends Thread implements CommandListener {
 				} finally {
 					cfc(fc);
 				}
-				
-				if(cover!=null) {
+
+				if (cover != null) {
 					cover = (Image) NJTAI.pl.prescaleCover(cover);
 				}
 			}

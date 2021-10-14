@@ -23,6 +23,13 @@ public abstract class View extends ViewBase {
 
 	Image slider;
 
+	/**
+	 * Creates the view.
+	 * 
+	 * @param emo  Object with data.
+	 * @param prev Previous screen.
+	 * @param page Number of page to start.
+	 */
 	public View(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
 		try {
@@ -117,7 +124,7 @@ public abstract class View extends ViewBase {
 
 	private void drawZoomSlider(Graphics g, Font f) {
 
-		int x = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
+		int px = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
 
 		// slider's body
 		if (slider == null) {
@@ -126,12 +133,12 @@ public abstract class View extends ViewBase {
 				g.drawRoundRect(25 - i, 25 - i, getWidth() - 50 + (i * 2), i * 2, i, i);
 			}
 		} else {
-			int y = touchHoldPos == 8 ? 20 : 0;
-			g.drawRegion(slider, 0, y, 35, 20, 0, 0, 15, 0);
-			g.drawRegion(slider, 35, y, 35, 20, 0, getWidth() - 35, 15, 0);
+			int spy = touchHoldPos == 8 ? 20 : 0;
+			g.drawRegion(slider, 0, spy, 35, 20, 0, 0, 15, 0);
+			g.drawRegion(slider, 35, spy, 35, 20, 0, getWidth() - 35, 15, 0);
 			g.setClip(35, 0, getWidth() - 70, 50);
 			for (int i = 35; i < getWidth() - 34; i += 20) {
-				g.drawRegion(slider, 25, y, 20, 20, 0, i, 15, 0);
+				g.drawRegion(slider, 25, spy, 20, 20, 0, i, 15, 0);
 			}
 			g.setClip(0, 0, getWidth(), getHeight());
 		}
@@ -140,18 +147,18 @@ public abstract class View extends ViewBase {
 
 		for (int i = 0; i < 15; i++) {
 			g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0, i * 255 / 14));
-			g.fillArc(x - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
+			g.fillArc(px - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
 		}
 		g.setColor(touchHoldPos == 8 ? 0x357EDE : -1);
 
-		g.drawArc(x - 16, 9, 30, 30, 0, 360);
+		g.drawArc(px - 16, 9, 30, 30, 0, 360);
 
 		String ft = String.valueOf(zoom);
 		if (ft.length() > 3) {
 			ft = ft.substring(0, 3);
 		}
 		g.setColor(-1);
-		g.drawString(ft, x, 25 - f.getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
+		g.drawString(ft, px, 25 - f.getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
 	}
 
 	protected void paintNullImg(Graphics g, Font f) {

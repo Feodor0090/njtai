@@ -45,6 +45,12 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	int nokiaRam;
 
+	/**
+	 * Creates the view.
+	 * @param emo Object with data.
+	 * @param prev Previous screen.
+	 * @param page Number of page to start.
+	 */
 	public ViewBase(ExtMangaObj emo, Displayable prev, int page) {
 		this.emo = emo;
 		this.prev = prev;
@@ -100,43 +106,44 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				e.printStackTrace();
 				return null;
 			}
-		} else {
-			try {
-				if (cache == null)
-					cache = new ByteArrayOutputStream[emo.pages];
+		}
 
-				if (forceCacheIgnore)
-					cache[n] = null;
-				else if (cache[n] != null)
-					return cache[n];
+		try {
+			if (cache == null)
+				cache = new ByteArrayOutputStream[emo.pages];
 
-				synchronized (cache) {
-					long ct = System.currentTimeMillis();
-					if (ct - lastTime < 350)
-						Thread.sleep(ct - lastTime);
-					lastTime = ct;
-					byte[] b = emo.getPage(n);
-					try {
-						if (b == null) {
-							error = true;
-							repaint();
-							return null;
-						}
-						ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+			if (forceCacheIgnore)
+				cache[n] = null;
+			else if (cache[n] != null)
+				return cache[n];
 
-						s.write(b);
-
-						cache[n] = s;
-						return s;
-					} catch (IOException e) {
-						e.printStackTrace();
+			synchronized (cache) {
+				long ct = System.currentTimeMillis();
+				if (ct - lastTime < 350)
+					Thread.sleep(ct - lastTime);
+				lastTime = ct;
+				byte[] b = emo.getPage(n);
+				try {
+					if (b == null) {
+						error = true;
+						repaint();
 						return null;
 					}
+					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
+
+					s.write(b);
+
+					cache[n] = s;
+					return s;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
 				}
-			} catch (RuntimeException e) {
-				return null;
 			}
+		} catch (RuntimeException e) {
+			return null;
 		}
+
 	}
 
 	/**
@@ -363,6 +370,10 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	protected abstract void reload();
 
+	/**
+	 * Is there something to draw?
+	 * @return False if view is blocked.
+	 */
 	public abstract boolean canDraw();
 
 	protected void keyPressed(int k) {
@@ -510,20 +521,20 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	int lx, ly;
 	int sx, sy;
 
-	protected void pointerPressed(int tx, int y) {
-		if (!canDraw() && y > getHeight() - 50 && tx > getWidth() * 2 / 3) {
+	protected void pointerPressed(int tx, int ty) {
+		if (!canDraw() && ty > getHeight() - 50 && tx > getWidth() * 2 / 3) {
 			keyPressed(-7);
 			return;
 		}
 		touchHoldPos = 0;
 		lx = (sx = tx);
-		ly = (sy = y);
+		ly = (sy = ty);
 		if (!touchCtrlShown)
 			return;
-		if (y < 50 && useSmoothZoom()) {
+		if (ty < 50 && useSmoothZoom()) {
 			setSmoothZoom(tx, getWidth());
 			touchHoldPos = 8;
-		} else if (y < 50) {
+		} else if (ty < 50) {
 			int b;
 			if (tx < getWidth() / 3) {
 				b = 1;
@@ -533,7 +544,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				b = 3;
 			}
 			touchHoldPos = b;
-		} else if (y > getHeight() - 50) {
+		} else if (ty > getHeight() - 50) {
 			int b;
 			if (tx < getWidth() / 4) {
 				b = 4;
@@ -583,9 +594,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	protected void pointerReleased(int x, int y) {
+	protected void pointerReleased(int tx, int ty) {
 		if (!touchCtrlShown || touchHoldPos == 0) {
-			if (Math.abs(sx - x) < 10 && Math.abs(sy - y) < 10) {
+			if (Math.abs(sx - tx) < 10 && Math.abs(sy - ty) < 10) {
 				touchCtrlShown = !touchCtrlShown;
 			}
 		}
@@ -595,23 +606,23 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			return;
 		}
 		int zone = 0;
-		if (y < 50) {
+		if (ty < 50) {
 			int b;
-			if (x < getWidth() / 3) {
+			if (tx < getWidth() / 3) {
 				b = 1;
-			} else if (x < getWidth() * 2 / 3) {
+			} else if (tx < getWidth() * 2 / 3) {
 				b = 2;
 			} else {
 				b = 3;
 			}
 			zone = b;
-		} else if (y > getHeight() - 50) {
+		} else if (ty > getHeight() - 50) {
 			int b;
-			if (x < getWidth() / 4) {
+			if (tx < getWidth() / 4) {
 				b = 4;
-			} else if (x < getWidth() * 2 / 4) {
+			} else if (tx < getWidth() * 2 / 4) {
 				b = 5;
-			} else if (x < getWidth() * 3 / 4) {
+			} else if (tx < getWidth() * 3 / 4) {
 				b = 6;
 			} else {
 				b = 7;
@@ -685,6 +696,11 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 	}
 
+	/**
+	 * Converts qwerty key code to corresponding 12k key code.
+	 * @param k Original key code.
+	 * @return Converted key code.
+	 */
 	public static int qwertyToNum(int k) {
 		char c = (char) k;
 		switch (c) {
@@ -743,6 +759,13 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 	}
 
+	/**
+	 * Creates a view.
+	 * @param mo Object to work with.
+	 * @param d Previous screen.
+	 * @param i Page number.
+	 * @return Created view.
+	 */
 	public static ViewBase create(ExtMangaObj mo, Displayable d, int i) {
 		if (NJTAI.view == 1)
 			return new ViewSWR(mo, d, i);

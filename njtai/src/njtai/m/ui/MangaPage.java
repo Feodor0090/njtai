@@ -176,10 +176,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				final Displayable menu = this;
 				tb.setCommandListener(new CommandListener() {
 
-					public void commandAction(Command c, Displayable d) {
-						if (c == back) {
+					public void commandAction(Command cmd, Displayable d) {
+						if (cmd == back) {
 							NJTAIM.setScr(menu);
-						} else if (c == goTo) {
+						} else if (cmd == goTo) {
 							try {
 								int n = Integer.parseInt(tb.getString());
 								if (n < 1)
@@ -206,10 +206,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				final Displayable menu = this;
 				a.setCommandListener(new CommandListener() {
 
-					public void commandAction(Command c, Displayable d) {
+					public void commandAction(Command cmd, Displayable d) {
 						NJTAIM.setScr(menu);
 
-						if (c == repairFull) {
+						if (cmd == repairFull) {
 							MDownloader md = new MDownloader(mo, menu);
 							md.repair = true;
 							md.start();
