@@ -159,7 +159,7 @@ public final class MMenu extends List implements CommandListener {
 
 	private Displayable generateDownloadedScreen() {
 		List l = new List("Loading...", List.IMPLICIT);
-		(new DownloadedLister(l, this)).start();
+		(new SavedLister(l, this)).start();
 		return l;
 	}
 

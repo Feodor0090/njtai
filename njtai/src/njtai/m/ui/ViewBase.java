@@ -13,7 +13,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
-import njtai.m.MangaDownloader;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
@@ -33,7 +33,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	protected int page;
 
 	protected ByteArrayOutputStream[] cache;
-	protected MangaDownloader fs;
+	protected MDownloader fs;
 
 	protected float zoom = 1;
 	protected float x = 0;
@@ -54,7 +54,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				: (40 * 1024 * 1024);
 		NJTAI.clearHP();
 		if (NJTAI.files)
-			fs = new MangaDownloader(emo, this);
+			fs = new MDownloader(emo, this);
 		reload();
 		setFullScreenMode(true);
 	}

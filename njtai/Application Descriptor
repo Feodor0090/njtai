@@ -5,7 +5,7 @@ MIDlet-Permissions-Opt: javax.microedition.io.Connector.file.write,javax.microed
 MIDlet-Icon: /njtai.png
 MicroEdition-Configuration: CLDC-1.1
 Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
-MIDlet-Version: 1.1.53
+MIDlet-Version: 1.1.54
 MIDlet-Info-URL: https://github.com/Feodor0090/njtai
 MIDlet-Name: NJTAI
 MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.

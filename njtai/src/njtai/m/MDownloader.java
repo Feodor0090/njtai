@@ -23,11 +23,11 @@ import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
 import njtai.m.ui.Prefs;
 
-public class MangaDownloader extends Thread implements CommandListener {
+public class MDownloader extends Thread implements CommandListener {
 	private ExtMangaObj o;
 	private Displayable prev;
 
-	public MangaDownloader(ExtMangaObj o, Displayable prev) {
+	public MDownloader(ExtMangaObj o, Displayable prev) {
 		this.o = o;
 		this.prev = prev;
 	}

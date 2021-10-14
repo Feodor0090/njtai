@@ -8,7 +8,7 @@ import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
-import njtai.m.MangaDownloader;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 import njtai.models.WebAPIA;
@@ -21,7 +21,7 @@ import njtai.models.WebAPIA;
  * @since 1.1.47
  *
  */
-public class DownloadedLister extends Thread implements CommandListener {
+public class SavedLister extends Thread implements CommandListener {
 
 	private List list;
 	private MMenu mm;
@@ -34,13 +34,13 @@ public class DownloadedLister extends Thread implements CommandListener {
 	private final Command cancelDelC = new Command(NJTAI.rus ? "Отмена" : "Cancel", Command.CANCEL, 1);
 	private final Command confirmDelC = new Command(NJTAI.rus ? "Продолжить" : "Continue", Command.OK, 1);
 
-	public DownloadedLister(List l, MMenu b) {
+	public SavedLister(List l, MMenu b) {
 		list = l;
 		mm = b;
 	}
 
 	public void run() {
-		path = MangaDownloader.getWD();
+		path = MDownloader.getWD();
 		Enumeration e = null;
 		FileConnection fc = null;
 
@@ -95,7 +95,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 			return;
 		}
 		if (c == switchC) {
-			MangaDownloader.reselectWD(mm);
+			MDownloader.reselectWD(mm);
 			return;
 		}
 		if (c == repairC) {
@@ -148,6 +148,8 @@ public class DownloadedLister extends Thread implements CommandListener {
 
 				// alert
 				{
+					NJTAIM.setScr(list);
+					NJTAI.pause(100);
 					Alert a = new Alert(item, NJTAI.rus ? "Удаление" : "Deleting", null, AlertType.INFO);
 					a.setTimeout(Alert.FOREVER);
 					Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
@@ -268,7 +270,7 @@ public class DownloadedLister extends Thread implements CommandListener {
 		}
 		ExtMangaObj emo = new ExtMangaObj(Integer.parseInt(n), html);
 		// running downloader
-		MangaDownloader md = new MangaDownloader(emo, list);
+		MDownloader md = new MDownloader(emo, list);
 		md.repair = true;
 		md.start();
 	}

@@ -3,7 +3,7 @@ package njtai.m.ui;
 import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
-import njtai.m.MangaDownloader;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 import njtai.models.WebAPIA;
@@ -195,7 +195,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				});
 				NJTAIM.setScr(tb);
 			} else if (i == save) {
-				(new MangaDownloader(mo, this)).start();
+				(new MDownloader(mo, this)).start();
 			} else if (i == repair) {
 				Alert a = new Alert(loc[23], loc[24], null, AlertType.WARNING);
 				a.setTimeout(Alert.FOREVER);
@@ -208,7 +208,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 						NJTAIM.setScr(menu);
 
 						if (c == repairFull) {
-							MangaDownloader md = new MangaDownloader(mo, menu);
+							MDownloader md = new MDownloader(mo, menu);
 							md.repair = true;
 							md.start();
 						}

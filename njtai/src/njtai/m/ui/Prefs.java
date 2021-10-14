@@ -14,7 +14,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
-import njtai.m.MangaDownloader;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 
 /**
@@ -64,8 +64,8 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
 	public final StringItem wd = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
-			MangaDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
-					: MangaDownloader.currentWD,
+			MDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
+					: MDownloader.currentWD,
 			StringItem.HYPERLINK);
 
 	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
@@ -130,10 +130,10 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 
 	private final void cmd(Command c) {
 		if (c == dfC) {
-			MangaDownloader.useE_NJTAI(this);
+			MDownloader.useE_NJTAI(this);
 			NJTAIM.setScr(this);
 		} else if (c == ccC) {
-			MangaDownloader.reselectWD(this);
+			MDownloader.reselectWD(this);
 		} else if (c == changeC) {
 			Alert a = new Alert("", "Working folder", null, AlertType.INFO);
 			a.addCommand(dfC);

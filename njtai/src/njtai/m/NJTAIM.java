@@ -107,7 +107,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			s.append('`');
 			s.append(NJTAI.proxy);
 			s.append('`');
-			String wd = MangaDownloader.currentWD;
+			String wd = MDownloader.currentWD;
 			s.append(wd == null ? " " : wd);
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
@@ -147,7 +147,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI._f2 = s[10].equals("1");
 			NJTAI._f3 = s[11].equals("1");
 			NJTAI.proxy = s[12];
-			MangaDownloader.currentWD = s[13].equals(" ") ? null : s[13];
+			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			NJTAI.files = false;
@@ -160,7 +160,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
-			MangaDownloader.currentWD = null;
+			MDownloader.currentWD = null;
 		}
 	}
 
