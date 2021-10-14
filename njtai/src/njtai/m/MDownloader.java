@@ -64,6 +64,15 @@ public class MDownloader extends Thread implements CommandListener {
 	 * @param i Number of the image, [1; pages].
 	 */
 	public synchronized void cache(ByteArrayOutputStream a, int i) {
+		cache(a.toByteArray(), i);
+	}
+	/**
+	 * Caches an image.
+	 * 
+	 * @param a Data to write.
+	 * @param i Number of the image, [1; pages].
+	 */
+	public synchronized void cache(byte[] a, int i) {
 		if (dir == null)
 			dir = getWD();
 		if (dir == null) {
@@ -110,9 +119,8 @@ public class MDownloader extends Thread implements CommandListener {
 			}
 			fc.create();
 			ou = fc.openDataOutputStream();
-			byte[] buf = a.toByteArray();
 
-			ou.write(buf, 0, buf.length);
+			ou.write(a, 0, a.length);
 			ou.flush();
 			ou.close();
 			fc.close();
@@ -479,7 +487,7 @@ public class MDownloader extends Thread implements CommandListener {
 		}
 	}
 
-	private Exception writeModel(String folder) {
+	public Exception writeModel(String folder) {
 		FileConnection fc = null;
 		Exception ex = null;
 		try {

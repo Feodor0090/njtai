@@ -45,9 +45,12 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	int nokiaRam;
 
+	private boolean modelDumped = false;
+
 	/**
 	 * Creates the view.
-	 * @param emo Object with data.
+	 * 
+	 * @param emo  Object with data.
 	 * @param prev Previous screen.
 	 * @param page Number of page to start.
 	 */
@@ -99,8 +102,14 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				}
 				a = new ByteArrayOutputStream(b.length);
 
+				fs.cache(b, n);
+				
+				if (!modelDumped) {
+					modelDumped = true;
+					fs.writeModel(fs.getFolderName());
+				}
+				
 				a.write(b);
-				fs.cache(a, n);
 				return a;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -372,6 +381,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	/**
 	 * Is there something to draw?
+	 * 
 	 * @return False if view is blocked.
 	 */
 	public abstract boolean canDraw();
@@ -698,6 +708,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	/**
 	 * Converts qwerty key code to corresponding 12k key code.
+	 * 
 	 * @param k Original key code.
 	 * @return Converted key code.
 	 */
@@ -761,9 +772,10 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	/**
 	 * Creates a view.
+	 * 
 	 * @param mo Object to work with.
-	 * @param d Previous screen.
-	 * @param i Page number.
+	 * @param d  Previous screen.
+	 * @param i  Page number.
 	 * @return Created view.
 	 */
 	public static ViewBase create(ExtMangaObj mo, Displayable d, int i) {
