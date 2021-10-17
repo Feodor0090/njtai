@@ -175,12 +175,7 @@ public class SavedManager extends Thread implements CommandListener {
 				try {
 					String fn = path + item + "model.json";
 					fc = (FileConnection) Connector.open(fn, Connector.WRITE);
-					try {
-						fc.delete();
-					} catch (IOException ioe) {
-					}
-					fc.close();
-					fc = null;
+					fc.delete();
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
@@ -200,41 +195,22 @@ public class SavedManager extends Thread implements CommandListener {
 
 				if (e == null)
 					return;
-				int max = 0;
 
 				while (e.hasMoreElements()) {
-					String name = e.nextElement().toString();
-					try {
-						String l = name.substring(name.indexOf('_'));
-						l = l.substring(0, l.indexOf('.'));
-						int m = Integer.parseInt(l);
-						if (m > max)
-							max = m;
-					} catch (RuntimeException ex) {
-					}
-				}
 
-				for (int i = 0; i <= max; i++) {
-					String n;
-					int j = i;
-					if (j < 10) {
-						n = "00" + j;
-					} else if (j < 100) {
-						n = "0" + j;
-					} else {
-						n = "" + j;
-					}
+					String name = e.nextElement().toString();
+
+					if (!name.endsWith(".jpg"))
+						continue;
+					if (!name.startsWith(id))
+						continue;
+					if (name.indexOf('_') == -1)
+						continue;
 					try {
-						String fn = path + item + id + "_" + n + ".jpg";
+						String fn = path + item + name;
 						fc = (FileConnection) Connector.open(fn, Connector.WRITE);
-						try {
-							fc.delete();
-						} catch (IOException ioe) {
-						}
-						fc.close();
-						fc = null;
+						fc.delete();
 					} catch (Exception ex) {
-						ex.printStackTrace();
 					} finally {
 						cfc(fc);
 					}
