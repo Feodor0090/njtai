@@ -314,7 +314,7 @@ public class SavedManager extends Thread implements CommandListener {
 			// cover loading
 			if (NJTAI.loadCoverAtPage) {
 				try {
-					String fn = path + item + n + "_000.jpg";
+					String fn = path + item + n + "_cover.jpg";
 					fc = (FileConnection) Connector.open(fn, Connector.READ);
 					InputStream s = null;
 					if (fc.exists()) {

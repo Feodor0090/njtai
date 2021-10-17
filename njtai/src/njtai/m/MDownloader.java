@@ -315,7 +315,7 @@ public class MDownloader extends Thread implements CommandListener {
 				}
 
 				a.setString("Checking " + percs + "%");
-				String fn = folder + o.num + "_" + n + ".jpg";
+				String fn = folder + o.num + "_" + (i == -1 ? "cover" : n) + ".jpg";
 
 				System.out.println("Writing a page to " + fn);
 				fc = (FileConnection) Connector.open(fn);
