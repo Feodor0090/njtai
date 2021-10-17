@@ -168,9 +168,9 @@ public abstract class View extends ViewBase {
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
 		} else if (emo.infoReady == -2 && NJTAI.preloadUrl && NJTAI.cachingPolicy != 2 && !emo.isOffline()) {
-			info = NJTAI.rus ? "Ожидание загрузчика..." : "Waiting loader...";
+			info = NJTAI.rus ? "Ожидание" : "Waiting";
 		} else {
-			info = (NJTAI.rus ? "Подготовка..." : "Preparing...");
+			info = (NJTAI.rus ? "Подготовка изображения" : "Image preparing");
 		}
 		g.setGrayScale(0);
 		int w = g.getFont().stringWidth(info);

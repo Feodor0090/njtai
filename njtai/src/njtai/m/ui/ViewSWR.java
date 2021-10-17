@@ -35,6 +35,8 @@ public class ViewSWR extends View {
 	Image toDraw;
 	Image orig;
 
+	private boolean firstDraw = true;
+
 	protected void resize(int size) {
 		try {
 			toDraw = null;
@@ -103,6 +105,11 @@ public class ViewSWR extends View {
 			Font f = Font.getFont(0, 0, 8);
 			g.setFont(f);
 			if (toDraw == null) {
+				if (firstDraw) {
+					firstDraw = false;
+					g.setGrayScale(0);
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
 				paintNullImg(g, f);
 			} else {
 				// bg fill
