@@ -353,4 +353,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			return null;
 		}
 	}
+
+	/**
+	 * Was this object decoded offline?
+	 * @return Value of {@link #offline}.
+	 */
+	public boolean isOffline() {
+		return offline;
+	}
 }

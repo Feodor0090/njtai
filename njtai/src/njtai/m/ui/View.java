@@ -167,7 +167,7 @@ public abstract class View extends ViewBase {
 			info = "Failed to load image.";
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
-		} else if (emo.infoReady == -2 && NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
+		} else if (emo.infoReady == -2 && NJTAI.preloadUrl && NJTAI.cachingPolicy != 2 && !emo.isOffline()) {
 			info = NJTAI.rus ? "Ожидание загрузчика..." : "Waiting loader...";
 		} else {
 			info = (NJTAI.rus ? "Подготовка..." : "Preparing...");
