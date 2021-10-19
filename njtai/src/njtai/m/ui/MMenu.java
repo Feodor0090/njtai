@@ -178,7 +178,7 @@ public final class MMenu extends List implements CommandListener {
 					"stacorp, ales_alte, mineshanya"));
 			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte"));
 			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-					"nnproject, Jazmin Rocio, other testers"));
+					"nnproject, SIStore, Jazmin Rocio, testers"));
 			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
 					"2200 2404 4035 6554\ndonate.stream/f0090"));
 			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:", "github.com/Feodor0090/njtai"));
