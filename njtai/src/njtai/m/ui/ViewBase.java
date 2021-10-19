@@ -659,7 +659,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	private Command goTo = new Command("Go", Command.OK, 1);
+	private Command goTo = new Command(NJTAI.rus ? "Перейти":"Go", Command.OK, 1);
 	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
 
 	/**
@@ -785,7 +785,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			return new ViewSWR(mo, d, i);
 		if (NJTAI.view == 2)
 			return new ViewHWA(mo, d, i);
-		if (System.getProperty("com.nokia.gpu.memory.total") != null && hasPointerEvents())
+		String vram = System.getProperty("com.nokia.gpu.memory.total");
+		if (vram != null && !vram.equals("0"))
 			return new ViewHWA(mo, d, i);
 
 		return new ViewSWR(mo, d, i);

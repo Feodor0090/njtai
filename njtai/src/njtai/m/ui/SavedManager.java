@@ -47,6 +47,18 @@ public class SavedManager extends Thread implements CommandListener {
 
 	public void run() {
 		path = MDownloader.getWD();
+
+		refresh();
+
+		list.setTitle(path);
+		list.addCommand(MMenu.backCmd);
+		list.addCommand(delC);
+		list.addCommand(repairC);
+		list.addCommand(switchC);
+		list.setCommandListener(this);
+	}
+
+	public void refresh() {
 		Enumeration e = null;
 		FileConnection fc = null;
 
@@ -64,6 +76,8 @@ public class SavedManager extends Thread implements CommandListener {
 				exx.printStackTrace();
 			}
 		}
+
+		list.deleteAll();
 
 		if (e != null) {
 			while (e.hasMoreElements()) {
@@ -87,12 +101,6 @@ public class SavedManager extends Thread implements CommandListener {
 				}
 			}
 		}
-		list.setTitle(path);
-		list.addCommand(MMenu.backCmd);
-		list.addCommand(delC);
-		list.addCommand(repairC);
-		list.addCommand(switchC);
-		list.setCommandListener(this);
 	}
 
 	public void commandAction(Command c, Displayable arg1) {
@@ -237,6 +245,8 @@ public class SavedManager extends Thread implements CommandListener {
 				} finally {
 					cfc(fc);
 				}
+
+				refresh();
 			}
 		}).start();
 

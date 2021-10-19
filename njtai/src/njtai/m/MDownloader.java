@@ -399,7 +399,8 @@ public class MDownloader extends Thread implements CommandListener {
 
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
-					if (freeSpace < (dataLen * 4)) {
+					freeSpace = fc.availableSize();
+					if (freeSpace < (dataLen * 2) || freeSpace < 1024 * 1024) {
 						fc.delete();
 						fc.close();
 						outOfMem = true;
@@ -600,7 +601,7 @@ public class MDownloader extends Thread implements CommandListener {
 	 * @param prev Calling screen.
 	 */
 	public static void reselectWD(final Displayable prev) {
-		List l = new List("Choose folder:", List.IMPLICIT, getWDs(false), null);
+		List l = new List(NJTAI.rus ? "Выберите папку:" : "Choose folder:", List.IMPLICIT, getWDs(false), null);
 		l.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable d) {

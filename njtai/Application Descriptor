@@ -1,16 +1,24 @@
 Manifest-Version: 1.0
-MIDlet-1: NJTAI,/njtai.png,njtai.m.NJTAIM
-MIDlet-Jar-URL: njtai.jar
-MIDlet-Permissions-Opt: javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read
-MIDlet-Icon: /njtai.png
-MicroEdition-Configuration: CLDC-1.1
-Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
-MIDlet-Version: 1.1.56
+MIDlet-Version: 1.2.0
 MIDlet-Info-URL: https://github.com/Feodor0090/njtai
-MIDlet-Name: NJTAI
-MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
-MIDlet-Vendor: Feodor0090
-MIDlet-Permissions: javax.microedition.io.Connector.http
-MicroEdition-Profile: MIDP-2.0
-Background: False
+LGE-MIDlet-Allowed-background: yes
 Nokia-MIDlet-On-Screen-Keypad: no
+MIDlet-Icon: /njtai.png
+Background: False
+MicroEdition-Configuration: CLDC-1.1
+MIDlet-Jar-URL: njtai.jar
+MIDlet-Name: NJTAI
+Nokia-Scalable-Icon: /njtai.svg
+LGE-MIDlet-Height: 480
+LGE-MIDlet-TargetLCD-Width: 480
+LGE-MIDlet-Width: 320
+MIDlet-1: NJTAI,/njtai.png,njtai.m.NJTAIM
+Nokia-UI-Enhancement: CanvasHasBackground
+Nokia-MIDlet-S60-Selection-Key-Compatibility: true
+MIDlet-Permissions-Opt: javax.microedition.io.Connector.file.write,javax.microedition.io.Connector.file.read
+MIDlet-Description: Simple client to access nhentai.net from MIDP2.0+ devices.
+MIDlet-Permissions: javax.microedition.io.Connector.http
+MIDlet-Vendor: Feodor0090
+MicroEdition-Profile: MIDP-2.0
+Nokia-Scalable-Icon-MIDlet-1: /njtai.svg
+LGE-MIDlet-TargetLCD-Height: 320

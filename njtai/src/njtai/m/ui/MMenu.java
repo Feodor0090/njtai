@@ -9,7 +9,9 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Form;
+import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.List;
+import javax.microedition.lcdui.Spacer;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextBox;
 
@@ -64,7 +66,7 @@ public final class MMenu extends List implements CommandListener {
 					if (r == null) {
 						return;
 					}
-					NJTAIM.setScr(new MangaList("Search results", this, r));
+					NJTAIM.setScr(new MangaList(NJTAI.rus ? "Результаты поиска" : "Search results", this, r));
 				} catch (NullPointerException e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
@@ -104,13 +106,14 @@ public final class MMenu extends List implements CommandListener {
 			if (t instanceof OutOfMemoryError) {
 				info = "Not enough memory!";
 			} else if (t instanceof IOException) {
-				info = "Failed to connect. Check connection and proxy.";
+				info = NJTAI.rus ? "Не удалось соедениться. Проверьте подключение и прокси."
+						: "Failed to connect. Check connection and proxy.";
 			} else if (t instanceof IllegalAccessException) {
 				info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
 			} else {
 				info = t.toString();
 			}
-			NJTAIM.setScr(new Alert("App error", info, null, AlertType.ERROR));
+			NJTAIM.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
 		}
 	}
 
@@ -160,11 +163,34 @@ public final class MMenu extends List implements CommandListener {
 			}
 			return;
 		case 7:
-			Alert a1 = new Alert(NJTAI.rus ? "О программе" : "About",
-					"NJTAI v" + NJTAIM.ver() + "\nDevelopers: Feodor0090, Shinovon\nIcon and proxy by Shinovon\nMore info at github.com/Feodor0090/njtai", null,
-					AlertType.INFO);
-			a1.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a1);
+			Form ab = new Form(NJTAI.rus ? "О программе" : "About this software");
+			ab.append(new StringItem("NJTAI v" + NJTAIM.ver(),
+					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
+							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
+			try {
+				ab.append(Image.createImage("/njtai.png"));
+			} catch (Throwable t) {
+				ab.append(new StringItem("Тут должна быть иконка", "но её сожрали неко"));
+			}
+			ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon"));
+			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
+			ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
+					"stacorp, ales_alte, mineshanya"));
+			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte"));
+			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
+					"nnproject, SIStore, Jazmin Rocio, testers"));
+			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
+					"2200 2404 4035 6554\ndonate.stream/f0090"));
+			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:", "github.com/Feodor0090/njtai"));
+			ab.append(new Spacer(100, 300));
+			StringItem bottomJoke = new StringItem(null, "\nИ помните: порода Махо - чёрный пудель!");
+			bottomJoke.setFont(Font.getFont(0, 0, 8));
+			ab.append(bottomJoke);
+
+			// setting up
+			ab.setCommandListener(this);
+			ab.addCommand(backCmd);
+			NJTAIM.setScr(ab);
 			return;
 		default:
 			return;

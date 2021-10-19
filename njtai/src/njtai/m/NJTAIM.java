@@ -54,8 +54,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	}
 
 	protected void startApp() throws MIDletStateChangeException {
-		String locale = System.getProperty("microedition.locale");
-		NJTAI.rus = (locale != null && (locale.equals("ru_RU") || locale.equals("ru-RU")));
+		String loc = System.getProperty("microedition.locale");
+		if (loc != null) {
+			loc = loc.toLowerCase();
+			NJTAI.rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
+					|| loc.indexOf("by") != -1);
+		}
 		inst = this;
 		dsp = Display.getDisplay(inst);
 		if (!NJTAI.running) {
