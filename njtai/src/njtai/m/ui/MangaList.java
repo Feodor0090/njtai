@@ -43,7 +43,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 			try {
 				while (objs.hasMoreElements()) {
 					MangaObj o = (MangaObj) objs.nextElement();
-					ImageItem img = new ImageItem(o.title, (Image)o.img, 3, null, Item.HYPERLINK);
+					ImageItem img = new ImageItem(o.title, (Image) o.img, 3, null, Item.HYPERLINK);
 					OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
 					h.attach(img);
 					this.append(img);
@@ -100,7 +100,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 				System.gc();
 				Thread.yield();
 			}
-			NJTAIM.setScr(new MangaPage(n, wasOom ? null : p));
+			NJTAIM.setScr(new MangaPage(n, wasOom ? null : p, null, ((ImageItem) i).getImage()));
 		}
 	}
 

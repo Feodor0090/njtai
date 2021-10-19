@@ -9,6 +9,12 @@ import javax.microedition.io.HttpConnection;
 
 import njtai.models.WebAPIA;
 
+/**
+ * {@link njtai.models.WebAPIA WebAPIA}, that works with MIDP 2.0.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class MIDPWebAPIA extends WebAPIA {
 
 	public byte[] get(String url) throws IOException {
@@ -22,12 +28,12 @@ public class MIDPWebAPIA extends WebAPIA {
 			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
 			int r = hc.getResponseCode();
-			if(r == 301) {
+			if (r == 301) {
 				String redir = hc.getHeaderField("Location");
-				if(redir.startsWith("/")) {
+				if (redir.startsWith("/")) {
 					String s2 = url.substring(url.indexOf("//") + 2);
 					String host = url.substring(0, url.indexOf("//")) + "//" + s2.substring(0, s2.indexOf("/"));
-					System.out.println("redir: " + redir + " | " + url + " | " + host + " | " + s2) ;
+					System.out.println("redir: " + redir + " | " + url + " | " + host + " | " + s2);
 					redir = host + redir;
 				}
 				hc.close();

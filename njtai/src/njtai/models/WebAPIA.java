@@ -7,6 +7,9 @@ import java.io.IOException;
  * same code to query data both on ME and SE.
  */
 public abstract class WebAPIA {
+	/**
+	 * Instance to work with.
+	 */
 	public static WebAPIA inst;
 	
 	/**
@@ -33,6 +36,7 @@ public abstract class WebAPIA {
 	 * @see njtai.models.WebAPIA#get(String)
 	 * @param url URL to work with.
 	 * @return Response data as UTF-8 string.
+	 * @throws IOException 
 	 */
 	public abstract String getUtf(String url) throws IOException;
 

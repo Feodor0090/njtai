@@ -21,12 +21,21 @@ import njtai.models.ExtMangaObj;
  */
 public class ViewSWR extends View {
 
+	/**
+	 * Creates the view.
+	 * 
+	 * @param emo  Object with data.
+	 * @param prev Previous screen.
+	 * @param page Number of page to start.
+	 */
 	public ViewSWR(ExtMangaObj emo, Displayable prev, int page) {
 		super(emo, prev, page);
 	}
 
 	Image toDraw;
 	Image orig;
+
+	private boolean firstDraw = true;
 
 	protected void resize(int size) {
 		try {
@@ -96,6 +105,11 @@ public class ViewSWR extends View {
 			Font f = Font.getFont(0, 0, 8);
 			g.setFont(f);
 			if (toDraw == null) {
+				if (firstDraw) {
+					firstDraw = false;
+					g.setGrayScale(0);
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
 				paintNullImg(g, f);
 			} else {
 				// bg fill

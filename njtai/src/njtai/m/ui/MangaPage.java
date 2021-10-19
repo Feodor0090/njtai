@@ -3,7 +3,7 @@ package njtai.m.ui;
 import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
-import njtai.m.MangaDownloader;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 import njtai.models.WebAPIA;
@@ -21,8 +21,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private Item repair;
 	public static Command open;
 	private Command goTo;
-	private Command repairLite;
 	private Command repairFull;
+	private Image coverImg = null;
 
 	boolean stop = false;
 
@@ -30,11 +30,31 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private String[] loc;
 
+	/**
+	 * @deprecated Use another constructor.
+	 * @param num  ID
+	 * @param prev Previous screen.
+	 */
 	public MangaPage(int num, Displayable prev) {
 		super("Manga page");
 		id = num;
 		p = prev;
 
+		initForm();
+	}
+
+	public MangaPage(int num, Displayable prev, ExtMangaObj obj, Image cover) {
+		super("Manga page");
+		id = num;
+		p = prev;
+
+		mo = obj;
+		coverImg = cover;
+
+		initForm();
+	}
+
+	private void initForm() {
 		loc = NJTAIM.getStrings("page");
 
 		back = new Command(loc[0], Command.BACK, 1);
@@ -44,8 +64,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		save = new StringItem(null, loc[4], StringItem.BUTTON);
 		open = new Command(loc[5], Command.ITEM, 1);
 		goTo = new Command(loc[6], Command.OK, 1);
-		repairLite = new Command(loc[7], Command.SCREEN, 1);
-		repairFull = new Command(loc[8], Command.SCREEN, 2);
+		repairFull = new Command(loc[3], Command.SCREEN, 2);
 		prgrs = new StringItem(loc[9], "");
 
 		setCommandListener(this);
@@ -75,25 +94,35 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	private void loadPage() {
-		status(loc[10]);
-		String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
-		if (html == null) {
-			status(loc[11]);
-			return;
+		if (mo == null) {
+
+			status(loc[10]);
+			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
+			if (html == null) {
+				status(loc[11]);
+				return;
+			}
+
+			status(loc[12]);
+			if (stop)
+				return;
+			mo = new ExtMangaObj(id, html);
+
 		}
 
-		status(loc[12]);
-		if (stop)
-			return;
-		mo = new ExtMangaObj(id, html);
-
-		status(loc[13]);
-		if (stop)
-			return;
-		if (NJTAI.loadCoverAtPage)
-			mo.loadCover();
-		if (stop)
-			return;
+		if (coverImg == null) {
+			status(loc[13]);
+			if (stop)
+				return;
+			if (NJTAI.loadCoverAtPage)
+				mo.loadCover();
+			if (stop)
+				return;
+		} else {
+			if (NJTAI.loadCoverAtPage)
+				mo.img = coverImg;
+			coverImg = null;
+		}
 
 		deleteAll();
 		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
@@ -147,10 +176,10 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				final Displayable menu = this;
 				tb.setCommandListener(new CommandListener() {
 
-					public void commandAction(Command c, Displayable d) {
-						if (c == back) {
+					public void commandAction(Command cmd, Displayable d) {
+						if (cmd == back) {
 							NJTAIM.setScr(menu);
-						} else if (c == goTo) {
+						} else if (cmd == goTo) {
 							try {
 								int n = Integer.parseInt(tb.getString());
 								if (n < 1)
@@ -168,28 +197,21 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				});
 				NJTAIM.setScr(tb);
 			} else if (i == save) {
-				(new MangaDownloader(mo, this)).start();
+				(new MDownloader(mo, this)).start();
 			} else if (i == repair) {
 				Alert a = new Alert(loc[23], loc[24], null, AlertType.WARNING);
 				a.setTimeout(Alert.FOREVER);
 				a.addCommand(repairFull);
-				a.addCommand(repairLite);
 				a.addCommand(back);
 				final Displayable menu = this;
 				a.setCommandListener(new CommandListener() {
 
-					public void commandAction(Command c, Displayable d) {
+					public void commandAction(Command cmd, Displayable d) {
 						NJTAIM.setScr(menu);
 
-						if (c == repairFull) {
-							MangaDownloader md = new MangaDownloader(mo, menu);
+						if (cmd == repairFull) {
+							MDownloader md = new MDownloader(mo, menu);
 							md.repair = true;
-							md.check = true;
-							md.start();
-						} else if (c == repairLite) {
-							MangaDownloader md = new MangaDownloader(mo, menu);
-							md.repair = true;
-							md.check = false;
 							md.start();
 						}
 					}

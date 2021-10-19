@@ -12,10 +12,6 @@ import njtai.models.WebAPIA;
  */
 public class NJTAI {
 
-	public NJTAI() {
-		inst = this;
-	}
-
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
 	 * method} to see how it works.
@@ -23,11 +19,15 @@ public class NJTAI {
 	 * @see {@link #loadPrefs()}, {@link njtai.ui.Prefs#proxy}
 	 */
 	public static String proxy;
-	public static String baseUrl = "nhentai.net";
+	/**
+	 * Base site URL.
+	 */
+	public static final String baseUrl = "nhentai.net";
 
-	private static NJTAI inst;
+	/**
+	 * Instance of currently active platform.
+	 */
 	public static IPlatform pl;
-	
 
 	/**
 	 * Home page content
@@ -60,9 +60,10 @@ public class NJTAI {
 	public static boolean _f2;
 	public static boolean _f3;
 
-
+	/**
+	 * Use russian localization?
+	 */
 	public static boolean rus = false;
-
 
 	/**
 	 * Gets home page.
@@ -87,12 +88,16 @@ public class NJTAI {
 		return s;
 	}
 
+	/**
+	 * Clears main page's content.
+	 */
 	public synchronized static void clearHP() {
 		hp = null;
 	}
 
 	/**
 	 * Converts, for example, https://ya.ru to http://proxy.com/proxy.php?ya.ru.
+	 * 
 	 * @param url Original URL.
 	 * @return URL, ready to be loaded.
 	 */
@@ -108,6 +113,10 @@ public class NJTAI {
 		return NJTAI.proxy + url;
 	}
 
+	/**
+	 * Stops a thread, ignoring interruptions.
+	 * @param ms Ms to wait.
+	 */
 	public static void pause(int ms) {
 		try {
 			Thread.sleep(ms);
@@ -116,7 +125,13 @@ public class NJTAI {
 		}
 	}
 
-	// tube42 lib
+	/**
+	 * Part of tube42 imagelib. Blends 2 colors.
+	 * @param c1
+	 * @param c2
+	 * @param value256
+	 * @return Blended value.
+	 */
 	public static final int blend(final int c1, final int c2, final int value256) {
 
 		final int v1 = value256 & 0xFF;

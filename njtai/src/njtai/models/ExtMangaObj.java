@@ -1,5 +1,7 @@
 package njtai.models;
 
+import java.util.Hashtable;
+
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -34,14 +36,31 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	private Thread urlFetcher = null;
 
+	/**
+	 * Filed, reflecting the state of internal prefetcher.
+	 */
 	public int infoReady = -2;
 	/**
 	 * Are URLs already prefetched?
 	 */
 	private boolean prefetched = false;
 
+	/**
+	 * Is this object decoded from FS?
+	 */
+	private boolean offline = false;
+
+	/**
+	 * Parses this object from html fragment.
+	 * 
+	 * @param num  ID of this.
+	 * @param html HTML content of the web page.
+	 * @throws NumberFormatException Failed to parse pages count. This may indicate
+	 *                               broken page.
+	 */
 	public ExtMangaObj(int num, String html) throws NumberFormatException {
 		this.num = num;
+		offline = false;
 
 		String meta = StringUtil.range(html, "<section id=\"tags\">", "</sect");
 
@@ -93,7 +112,30 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 
 		System.gc();
+	}
 
+	/**
+	 * Creates an object from the hashtable.
+	 * 
+	 * @param num ID.
+	 * @param h   Object with data.
+	 */
+	public ExtMangaObj(int num, Hashtable h) {
+		this.num = num;
+		offline = true;
+
+		title = h.get("title").toString();
+		if (h.containsKey("tags"))
+			tags = h.get("tags").toString();
+		if (h.containsKey("parody"))
+			parody = h.get("parody").toString();
+		if (h.containsKey("lang"))
+			lang = h.get("lang").toString();
+		Object p = h.get("pages");
+		if (p instanceof Integer) {
+			pages = ((Integer) p).intValue();
+		} else
+			pages = Integer.parseInt(p.toString());
 	}
 
 	/**
@@ -143,6 +185,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @see {@link #run()}
 	 */
 	private void loadUrls() throws InterruptedException {
+		if (offline) {
+			infoReady = 100;
+			return;
+		}
 		try {
 			for (int i = 1; i <= pages; i++) {
 				long t = System.currentTimeMillis();
@@ -170,6 +216,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		}
 	}
 
+	/**
+	 * Stops {@link #loadUrls() the prefetcher}.
+	 */
 	public void cancelPrefetch() {
 		try {
 			if (urlFetcher != null && urlFetcher.isAlive()) {
@@ -246,6 +295,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		return sb.toString();
 	}
 
+	/**
+	 * Joins langs list with commas, translating known.
+	 * 
+	 * @param list Array of langs.
+	 * @return String like "translated, english".
+	 */
 	public static String listLangs(String[] list) {
 		if (list == null)
 			return null;
@@ -273,5 +328,37 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				s = "перевод";
 		}
 		return s;
+	}
+
+	/**
+	 * Gets JSON encoding of this object.
+	 * 
+	 * @return JSON string.
+	 */
+	public String encode() {
+		Hashtable h = new Hashtable();
+		h.put("title", title);
+		if (tags != null)
+			h.put("tags", tags);
+		if (parody != null)
+			h.put("parody", parody);
+		if (lang != null)
+			h.put("lang", lang);
+		h.put("pages", new Integer(pages));
+
+		try {
+			return cc.nnproject.lwjson.JSON.buildJSON(h);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Was this object decoded offline?
+	 * @return Value of {@link #offline}.
+	 */
+	public boolean isOffline() {
+		return offline;
 	}
 }

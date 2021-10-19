@@ -39,6 +39,9 @@ public class MangaObj {
 		title = StringUtil.range(html, "<div class=\"caption\">", "</div>", false);
 	}
 
+	/**
+	 * Creates empty object.
+	 */
 	public MangaObj() {
 	}
 

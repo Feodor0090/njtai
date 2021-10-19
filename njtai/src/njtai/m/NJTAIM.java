@@ -21,20 +21,23 @@ import njtai.models.WebAPIA;
 
 public class NJTAIM extends MIDlet implements IPlatform {
 
-	public NJTAIM() {
-		inst = this;
-		initAPIAs();
-		new NJTAI();
-		NJTAI.pl = this;
-	}
-
 	private static Display dsp;
 	private static NJTAIM inst;
 
-	public static boolean isS60v3() {
+	/**
+	 * Are we working on 9.3?
+	 * 
+	 * @return Status of 9.3 detection.
+	 */
+	public static boolean isS60v3fp2() {
 		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.2") != -1;
 	}
 
+	/**
+	 * Are we working on J2ME Loader?
+	 * 
+	 * @return Status of j2meL detection.
+	 */
 	public static boolean isJ2MEL() {
 		String vendor = System.getProperty("java.vendor");
 		return (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1);
@@ -57,6 +60,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		dsp = Display.getDisplay(inst);
 		if (!NJTAI.running) {
 			NJTAI.running = true;
+			initAPIAs();
+			new NJTAI();
+			NJTAI.pl = this;
 			loadPrefs();
 			setScr(new MMenu());
 		}
@@ -110,6 +116,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			s.append(NJTAI._f3 ? "1" : "0");
 			s.append('`');
 			s.append(NJTAI.proxy);
+			s.append('`');
+			String wd = MDownloader.currentWD;
+			s.append(wd == null ? " " : wd);
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
 
@@ -148,6 +157,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI._f2 = s[10].equals("1");
 			NJTAI._f3 = s[11].equals("1");
 			NJTAI.proxy = s[12];
+			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			NJTAI.files = false;
@@ -160,6 +170,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
+			MDownloader.currentWD = null;
 		}
 	}
 
@@ -212,6 +223,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		return NJTAIM.resize(i, w, h);
 	}
 
+	/**
+	 * Loads localization file.
+	 * 
+	 * @param cat Category of strings.
+	 * @return List of strings to use.
+	 */
 	public static String[] getStrings(String cat) {
 		try {
 			String locale = System.getProperty("microedition.locale");
@@ -235,7 +252,12 @@ public class NJTAIM extends MIDlet implements IPlatform {
 	}
 
 	/**
-	 * resize an image:
+	 * Resizes the image.
+	 * 
+	 * @param src_i  Original image.
+	 * @param size_w
+	 * @param size_h
+	 * @return Resized image.
 	 */
 	public static Image resize(Image src_i, int size_w, int size_h) {
 

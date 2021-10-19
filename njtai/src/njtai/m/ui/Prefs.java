@@ -2,6 +2,7 @@ package njtai.m.ui;
 
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
+import javax.microedition.lcdui.Choice;
 import javax.microedition.lcdui.ChoiceGroup;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -13,6 +14,7 @@ import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 
 /**
@@ -21,12 +23,13 @@ import njtai.m.NJTAIM;
  * @author Feodor0090
  *
  */
-final class Prefs extends Form implements ItemCommandListener, CommandListener {
+public final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
 	private MMenu menu;
 	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
-	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 2);
+	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 3);
 	private final Command prC = new Command("Proxy setup", 8, 1);
+	private final Command changeC = new Command(NJTAI.rus ? "Изменить" : "Change", Command.OK, 1);
 
 	private final String[] yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
 	private final String[] ynr = new String[] { NJTAI.rus ? "Нет (экономит память)" : "No (saves RAM)",
@@ -46,10 +49,8 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 					NJTAI.rus ? "Сохранять уже загруженное" : "Keep already loaded",
 					NJTAI.rus ? "Предзагружать" : "Preload" },
 			null);
-	private final ChoiceGroup pageCover = new ChoiceGroup(
-			NJTAI.rus ? "Загружать обложку на странице" : "Load cover in manga page", 4, ynr, null);
-	private final ChoiceGroup covers = new ChoiceGroup(
-			NJTAI.rus ? "Загружать обложку в списках" : "Load covers in lists", 4, ynr, null);
+	private final ChoiceGroup covers = new ChoiceGroup(NJTAI.rus ? "Загрузка обложек" : "Covers loading", Choice.MULTIPLE,
+			new String[] { NJTAI.rus ? "В списках" : "In lists",NJTAI.rus ? "На странице" : "On page" }, null);
 	private final ChoiceGroup invert = new ChoiceGroup(NJTAI.rus ? "Инвертировать прокрутку" : "Invert panning", 4, yn,
 			null);
 	private final ChoiceGroup lists = new ChoiceGroup(
@@ -62,10 +63,22 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 
+	/**
+	 * Working folder switcher button.
+	 */
+	public final StringItem wd = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
+			MDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
+					: MDownloader.currentWD,
+			StringItem.HYPERLINK);
+
 	private final ChoiceGroup view = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
 	private final ChoiceGroup files = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
 			4, yn, null);
 
+	/**
+	 * Creates prefs screen.
+	 * @param menu Main menu screen.
+	 */
 	public Prefs(MMenu menu) {
 		super("NJTAI settings");
 		this.menu = menu;
@@ -82,9 +95,9 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		}
 
 		cache.setSelectedIndex(NJTAI.cachingPolicy, true);
-		pageCover.setSelectedIndex(NJTAI.loadCoverAtPage ? 1 : 0, true);
 		lists.setSelectedIndex(NJTAI.keepLists ? 1 : 0, true);
-		covers.setSelectedIndex(NJTAI.loadCovers ? 1 : 0, true);
+		covers.setSelectedIndex(0,NJTAI.loadCovers);
+		covers.setSelectedIndex(1,NJTAI.loadCoverAtPage);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
 		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
 		files.setSelectedIndex(NJTAI.files ? 1 : 0, true);
@@ -92,25 +105,23 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		invert.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
 		aboutProxy.setDefaultCommand(prC);
 		aboutProxy.setItemCommandListener(this);
+		wd.setDefaultCommand(changeC);
+		wd.setItemCommandListener(this);
 
 		append(ramWarn);
 		if (Runtime.getRuntime().totalMemory() == 2048 * 1024)
 			append(s40Warn);
 		append(cache);
 		append(files);
-		append(pageCover);
+		append(wd);
 		append(covers);
 		append(lists);
 		append(invert);
-		append(bitmaps);
+		//append(bitmaps);
 		append(urls);
+		append(view);
 		append(proxy);
 		append(aboutProxy);
-		append(new StringItem("Beta features", "Better not to touch them."));
-		append(view);
-		ChoiceGroup c = new ChoiceGroup("Setting", 4, new String[] { "1", "2", "3" }, null);
-		c.setSelectedIndex(1, true);
-		// append(c);
 	}
 
 	public final void commandAction(Command c, Displayable arg1) {
@@ -121,12 +132,27 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 		cmd(c);
 	}
 
+	Command dfC = new Command("Use E:/NJTAI", 8, 1);
+	Command ccC = new Command("Choose", 8, 2);
+
 	private final void cmd(Command c) {
-		if (c == bkC) {
+		if (c == dfC) {
+			MDownloader.useE_NJTAI(this);
+			NJTAIM.setScr(this);
+		} else if (c == ccC) {
+			MDownloader.reselectWD(this);
+		} else if (c == changeC) {
+			Alert a = new Alert("", "Working folder", null, AlertType.INFO);
+			a.addCommand(dfC);
+			a.addCommand(ccC);
+			a.setCommandListener(this);
+			a.setTimeout(Alert.FOREVER);
+			NJTAIM.setScr(a);
+		} else if (c == bkC) {
 			NJTAI.cachingPolicy = cache.getSelectedIndex();
-			NJTAI.loadCoverAtPage = pageCover.getSelectedIndex() == 1;
+			NJTAI.loadCoverAtPage = covers.isSelected(1);
 			NJTAI.keepLists = lists.getSelectedIndex() == 1;
-			NJTAI.loadCovers = covers.getSelectedIndex() == 1;
+			NJTAI.loadCovers = covers.isSelected(0);
 			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
 			NJTAI.view = view.getSelectedIndex();
@@ -160,10 +186,10 @@ final class Prefs extends Form implements ItemCommandListener, CommandListener {
 			a.setTimeout(Alert.FOREVER);
 			NJTAIM.setScr(a);
 		} else if (c == cnclC) {
-			NJTAIM.setScr(
-					new Alert(NJTAI.rus ? "Настройки" : "Settings",
-							NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING),
-					menu);
+			Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
+					NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
+			a.setTimeout(1500);
+			NJTAIM.setScr(a, menu);
 		}
 	}
 
