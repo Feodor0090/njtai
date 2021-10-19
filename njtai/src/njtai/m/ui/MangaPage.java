@@ -30,19 +30,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private String[] loc;
 
-	/**
-	 * @deprecated Use another constructor.
-	 * @param num  ID
-	 * @param prev Previous screen.
-	 */
-	public MangaPage(int num, Displayable prev) {
-		super("Manga page");
-		id = num;
-		p = prev;
-
-		initForm();
-	}
-
 	public MangaPage(int num, Displayable prev, ExtMangaObj obj, Image cover) {
 		super(NJTAI.rus ? "Страница манги" : "Manga page");
 		id = num;
