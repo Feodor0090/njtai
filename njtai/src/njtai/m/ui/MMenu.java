@@ -183,7 +183,7 @@ public final class MMenu extends List implements CommandListener {
 					"2200 2404 4035 6554\ndonate.stream/f0090"));
 			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:", "github.com/Feodor0090/njtai"));
 			ab.append(new Spacer(100, 300));
-			StringItem bottomJoke = new StringItem(null, "И помните: порода Махо - чёрный пудель!");
+			StringItem bottomJoke = new StringItem(null, "\nИ помните: порода Махо - чёрный пудель!");
 			bottomJoke.setFont(Font.getFont(0, 0, 8));
 			ab.append(bottomJoke);
 
