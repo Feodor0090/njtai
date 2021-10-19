@@ -245,6 +245,8 @@ public class SavedManager extends Thread implements CommandListener {
 				} finally {
 					cfc(fc);
 				}
+
+				refresh();
 			}
 		}).start();
 
