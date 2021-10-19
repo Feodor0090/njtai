@@ -66,7 +66,7 @@ public final class MMenu extends List implements CommandListener {
 					if (r == null) {
 						return;
 					}
-					NJTAIM.setScr(new MangaList("Search results", this, r));
+					NJTAIM.setScr(new MangaList(NJTAI.rus ? "Результаты поиска" : "Search results", this, r));
 				} catch (NullPointerException e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
@@ -106,13 +106,14 @@ public final class MMenu extends List implements CommandListener {
 			if (t instanceof OutOfMemoryError) {
 				info = "Not enough memory!";
 			} else if (t instanceof IOException) {
-				info = "Failed to connect. Check connection and proxy.";
+				info = NJTAI.rus ? "Не удалось соедениться. Проверьте подключение и прокси."
+						: "Failed to connect. Check connection and proxy.";
 			} else if (t instanceof IllegalAccessException) {
 				info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
 			} else {
 				info = t.toString();
 			}
-			NJTAIM.setScr(new Alert("App error", info, null, AlertType.ERROR));
+			NJTAIM.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
 		}
 	}
 

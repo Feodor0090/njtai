@@ -659,7 +659,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	private Command goTo = new Command("Go", Command.OK, 1);
+	private Command goTo = new Command(NJTAI.rus ? "Перейти":"Go", Command.OK, 1);
 	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
 
 	/**

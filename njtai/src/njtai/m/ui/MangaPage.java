@@ -44,7 +44,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	public MangaPage(int num, Displayable prev, ExtMangaObj obj, Image cover) {
-		super("Manga page");
+		super(NJTAI.rus ? "Страница манги" : "Manga page");
 		id = num;
 		p = prev;
 
