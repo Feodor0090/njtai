@@ -168,7 +168,7 @@ public final class MMenu extends List implements CommandListener {
 					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
 							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
 			try {
-				ab.append(Image.createImage("/nhentai.png"));
+				ab.append(Image.createImage("/njtai.png"));
 			} catch (Throwable t) {
 				ab.append(new StringItem("Тут должна быть иконка", "но её сожрали неко"));
 			}
