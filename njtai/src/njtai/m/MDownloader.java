@@ -399,7 +399,7 @@ public class MDownloader extends Thread implements CommandListener {
 
 				long dataLen = httpCon.getLength();
 				if (dataLen > 0) {
-					if (freeSpace < (dataLen * 4)) {
+					if (freeSpace < (dataLen * 2) || freeSpace < 1024 * 1024) {
 						fc.delete();
 						fc.close();
 						outOfMem = true;
