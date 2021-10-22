@@ -46,9 +46,13 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 		back = new Command(loc[0], Command.BACK, 1);
 		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
+		page1.setLayout(Item.LAYOUT_EXPAND);
 		pageN = new StringItem(null, loc[2], StringItem.BUTTON);
+		pageN.setLayout(Item.LAYOUT_EXPAND);
 		repair = new StringItem(null, loc[3], StringItem.BUTTON);
+		repair.setLayout(Item.LAYOUT_EXPAND);
 		save = new StringItem(null, loc[4], StringItem.BUTTON);
+		save.setLayout(Item.LAYOUT_EXPAND);
 		open = new Command(loc[5], Command.ITEM, 1);
 		goTo = new Command(loc[6], Command.OK, 1);
 		repairFull = new Command(loc[3], Command.SCREEN, 2);
