@@ -171,7 +171,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.loadCovers = true;
 			NJTAI.keepBitmap = true;
 			NJTAI.preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
-			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
+			NJTAI.proxy = "http://nnproject.cc/hproxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
 			MDownloader.currentWD = null;
