@@ -30,8 +30,9 @@ public class MangaObjs implements Enumeration {
 		Vector v = new Vector();
 		for (int i = 0; i < items.length; i++) {
 			try {
-				if (!items[i].startsWith("<h"))
+				if (!items[i].startsWith("<h")) {
 					v.addElement(new MangaObj(items[i]));
+				}
 			} catch (RuntimeException e) {
 				System.out.println("Failed on " + i);
 				e.printStackTrace();
@@ -52,8 +53,9 @@ public class MangaObjs implements Enumeration {
 	}
 
 	public Object nextElement() {
-		if (NJTAI.loadCovers)
+		if (NJTAI.loadCovers) {
 			list[next].loadCover();
+		}
 		next++;
 		return list[next - 1];
 	}

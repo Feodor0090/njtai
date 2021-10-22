@@ -82,7 +82,6 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 	private void loadPage() {
 		if (mo == null) {
-
 			status(loc[10]);
 			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + id + "/");
 			if (html == null) {
@@ -91,23 +90,21 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			}
 
 			status(loc[12]);
-			if (stop)
-				return;
+			if (stop) return;
 			mo = new ExtMangaObj(id, html);
-
 		}
 
 		if (coverImg == null) {
 			status(loc[13]);
-			if (stop)
-				return;
-			if (NJTAI.loadCoverAtPage)
+			if (stop) return;
+			if (NJTAI.loadCoverAtPage) {
 				mo.loadCover();
-			if (stop)
-				return;
+			}
+			if (stop) return;
 		} else {
-			if (NJTAI.loadCoverAtPage)
+			if (NJTAI.loadCoverAtPage) {
 				mo.img = coverImg;
+			}
 			coverImg = null;
 		}
 
@@ -192,10 +189,8 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 				a.addCommand(back);
 				final Displayable menu = this;
 				a.setCommandListener(new CommandListener() {
-
 					public void commandAction(Command cmd, Displayable d) {
 						NJTAIM.setScr(menu);
-
 						if (cmd == repairFull) {
 							MDownloader md = new MDownloader(mo, menu);
 							md.repair = true;

@@ -52,8 +52,9 @@ public abstract class View extends ViewBase {
 			prefetch = (preloadProgress > 0 && preloadProgress < 100)
 					? ((NJTAI.files ? "downloading " : "caching ") + preloadProgress + "%")
 					: null;
-		} else
+		} else {
 			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
+		}
 		/*
 		 * } else { if (preloadProgress < 100) prefetch = "preloading " +
 		 * preloadProgress + "%"; else if (preloadProgress == 104) { prefetch = "OOM"; }
@@ -66,22 +67,28 @@ public abstract class View extends ViewBase {
 		 * used + "K"; } else { ram = (used / 1024) + "M"; } }
 		 */
 		g.setGrayScale(0);
-		if (drawPages)
+		if (drawPages) {
 			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
-		if (drawZoom)
+		}
+		if (drawZoom) {
 			g.fillRect(getWidth() - f.stringWidth(zoomN), 0, f.stringWidth(zoomN), f.getHeight());
-		if (prefetch != null)
+		}
+		if (prefetch != null) {
 			g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(prefetch), f.getHeight());
+		}
 		// g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(),
 		// f.stringWidth(ram), f.getHeight());
 
 		g.setGrayScale(255);
-		if (drawPages)
+		if (drawPages) {
 			g.drawString(pageNum, 0, 0, 0);
-		if (drawZoom)
+		}
+		if (drawZoom) {
 			g.drawString(zoomN, getWidth() - f.stringWidth(zoomN), 0, 0);
-		if (prefetch != null)
+		}
+		if (prefetch != null) {
 			g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
+		}
 		// g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
 	}
 
@@ -123,7 +130,6 @@ public abstract class View extends ViewBase {
 	}
 
 	private void drawZoomSlider(Graphics g, Font f) {
-
 		int px = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
 
 		// slider's body
@@ -144,7 +150,6 @@ public abstract class View extends ViewBase {
 		}
 
 		// slider's pin
-
 		for (int i = 0; i < 15; i++) {
 			g.setColor(NJTAI.blend(touchHoldPos == 8 ? 0x357EDE : 0x444444, 0, i * 255 / 14));
 			g.fillArc(px - 15 + i, 10 + i, 30 - i * 2, 30 - i * 2, 0, 360);
@@ -189,7 +194,6 @@ public abstract class View extends ViewBase {
 			// captions
 			g.setGrayScale(255);
 			g.drawString(touchCaps[6], getWidth() * 7 / 8, getHeight() - 25 - fh / 2, Graphics.TOP | Graphics.HCENTER);
-
 		}
 	}
 

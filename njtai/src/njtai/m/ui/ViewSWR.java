@@ -59,8 +59,9 @@ public class ViewSWR extends View {
 					if (emo.imgs != null) {
 						url = emo.imgs[page];
 					}
-					if (url == null)
+					if (url == null) {
 						url = "null";
+					}
 					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes, url=" + url);
 					origImg = null;
 					if (NJTAI.files) {
@@ -123,7 +124,6 @@ public class ViewSWR extends View {
 					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, (getHeight() - toDraw.getHeight()) / 2,
 							0);
 				}
-
 				// touch captions
 				if (hasPointerEvents() && touchCtrlShown) {
 					drawTouchControls(g, f);
@@ -132,7 +132,6 @@ public class ViewSWR extends View {
 			paintHUD(g, f, true, !touchCtrlShown || !hasPointerEvents());
 		} catch (Exception e) {
 			e.printStackTrace();
-
 			try {
 				NJTAIM.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
 			} catch (Exception e1) {
@@ -144,14 +143,10 @@ public class ViewSWR extends View {
 	protected void limitOffset() {
 		int hw = toDraw.getWidth() / 2;
 		int hh = toDraw.getHeight() / 2;
-		if (x < -hw)
-			x = -hw;
-		if (x > hw)
-			x = hw;
-		if (y < -hh)
-			y = -hh;
-		if (y > hh)
-			y = hh;
+		if (x < -hw) x = -hw;
+		if (x > hw) x = hw;
+		if (y < -hh) y = -hh;
+		if (y > hh) y = hh;
 	}
 
 	protected void reload() {
@@ -186,8 +181,9 @@ public class ViewSWR extends View {
 				if (emo.imgs != null) {
 					url = emo.imgs[page];
 				}
-				if (url == null)
+				if (url == null) {
 					url = "null";
+				}
 				System.out.println("Failed to decode an image in preparing. Size=" + l + "bytes, url=" + url);
 				if (NJTAI.files) {
 					showBrokenNotify();

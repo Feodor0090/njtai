@@ -13,12 +13,6 @@ import java.util.Vector;
  */
 public class JSON {
 
-	// configuration constants
-
-	public final static boolean parse_other_values = false;
-	public final static boolean parse_hexunicode = false;
-	public final static boolean build_reconstruct_strings = false;
-
 	/**
 	 * Creates an object from it's JSON representation.
 	 * 
@@ -39,81 +33,8 @@ public class JSON {
 		} else if (first == '"') {
 			// String
 			str = str.substring(1, str.length() - 1);
-			if (parse_hexunicode) {
-				if (str.indexOf("\\u") > -1) {
-					try {
-						int l = str.length();
-						StringBuffer sb = new StringBuffer();
-						int i = 0;
-						while (i < l) {
-							char c = str.charAt(i);
-							switch (c) {
-							case '\\':
-								if (str.charAt(i + 1) == 'u') {
-									i++;
-									String h = "" + str.charAt(i++) + str.charAt(i++) + str.charAt(i++)
-											+ str.charAt(i++);
-									if (h.charAt(2) < '0' || h.charAt(2) > 'F' || h.charAt(3) < '0'
-											|| h.charAt(3) > 'F')
-										throw new Exception("Wrong hex");
-									i += 5;
-									sb.append((char) Integer.parseInt(h, 16));
-								}
-								break;
-							default:
-								sb.append(c);
-								i++;
-							}
-						}
-						str = sb.toString();
-					} catch (Exception e) {
-					}
-				}
-			}
-			/*
-			 * str = replace(str, "<br>", "\n"); str = replace(str, "&amp;", "&"); str =
-			 * replace(str, "&lt;", "<"); str = replace(str, "&gt;", ">"); str =
-			 * replace(str, "&quot;", "\""); str = replace(str, "\\n", "\n"); str =
-			 * replace(str, "\\\"", "\""); str = replace(str, "\\\'", "\'"); str =
-			 * replace(str, "\\/", "/"); str = replace(str, "\\\\", "\\");
-			 */
 			return str;
 		} else if (first != '{' && first != '[') {
-			if (parse_other_values) {
-				// Null
-				// if (str.equals("null"))
-				// return null;
-				// Boolean
-				if (str.equals("true"))
-					return Boolean.TRUE;
-				if (str.equals("false"))
-					return Boolean.FALSE;
-				// Hexadecimal
-				if (str.charAt(0) == '0' && str.charAt(1) == 'x') {
-					try {
-						return new Integer(Integer.parseInt(str.substring(2), 16));
-					} catch (Exception e) {
-						try {
-							return new Long(Long.parseLong(str.substring(2), 16));
-						} catch (Exception e2) {
-							// Skip
-						}
-					}
-				}
-				// Numbers
-				try {
-					return Integer.valueOf(str);
-				} catch (Exception e) {
-					try {
-						return new Long(Long.parseLong(str));
-					} catch (Exception e2) {
-						try {
-							return Double.valueOf(str);
-						} catch (Exception e3) {
-						}
-					}
-				}
-			}
 			return str;
 		} else {
 			// JSON
@@ -132,39 +53,29 @@ public class JSON {
 			boolean e = false;
 			String n = null;
 			Object res = null;
-			if (o)
-				res = new Hashtable();
-			else
-				res = new Vector();
+			if (o) res = new Hashtable();
+			else res = new Vector();
 
-			int j;
-			for (; i < l; i = j + 1) {
+			for (int j; i < l; i = j + 1) {
 				while (i < l - 1 && str.charAt(i) == ' ') {
 					i++;
 				}
-
 				j = i;
 
 				// Quotes
-				boolean s;
-				for (s = false; j < l && (s || d > 0 || str.charAt(j) != spl); j++) {
+				boolean s = false;
+				while (j < l && (s || d > 0 || str.charAt(j) != spl)) {
 					char c = str.charAt(j);
 					if (!e) {
-						if (c == '\\')
-							e = true;
-
-						if (c == '"')
-							s = !s;
-					} else
-						e = false;
-
+						if (c == '\\') e = true;
+						if (c == '"') s = !s;
+					} else e = false;
 					if (!s) {
 						if (c != '{' && c != '[') {
-							if (c == '}' || c == ']')
-								d--;
-						} else
-							d++;
+							if (c == '}' || c == ']') d--;
+						} else d++;
 					}
+					j++;
 				}
 
 				if (s || d > 0) {
@@ -176,13 +87,14 @@ public class JSON {
 					spl = ',';
 				} else {
 					Object v = str.substring(i, j);
-					v = parseJSON(v.toString());
+					v = parseJSON((String) v);
 					if (o) {
 						((Hashtable) res).put(n, v);
 						n = null;
 						spl = ':';
-					} else if (j > i)
+					} else if (j > i) {
 						((Vector) res).addElement(v);
+					}
 				}
 			}
 			return res;
@@ -229,11 +141,6 @@ public class JSON {
 			}
 			s += "]";
 			return s;
-		} else if (build_reconstruct_strings) {
-			if (j instanceof String) {
-				return reconstructJSONString((String) j);
-			}
-			return j.toString();
 		} else if (j instanceof String) {
 			return "\"" + j.toString() + "\"";
 		} else if (j instanceof Integer || j instanceof Double || j instanceof Long || j instanceof Byte
@@ -246,34 +153,11 @@ public class JSON {
 		}
 	}
 
-	/**
-	 * @deprecated
-	 */
-	private static String reconstructJSONString(String s) {
-		if (s.equals("true") || s.equals("false") || s.equals("null"))
-			return s;
-		try {
-			return "" + Integer.parseInt(s);
-		} catch (Exception e) {
-			try {
-				return "" + Long.parseLong(s);
-			} catch (Exception e2) {
-				try {
-					return "" + Double.parseDouble(s);
-				} catch (Exception e3) {
-				}
-			}
-		}
-		return "\"" + s + "\"";
-	}
-
 	// Replace util
 	private static String removeChars(String str, char from) {
 		int j = str.indexOf(from);
-
 		if (j == -1)
 			return str;
-
 		int k = 0;
 		final StringBuffer sb = new StringBuffer();
 
