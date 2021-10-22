@@ -181,8 +181,7 @@ public class ViewHWA extends View {
 		IndexBuffer ind;
 
 		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
-
-			size = s;
+			this.size = s;
 
 			// cropping
 			Image part = Image.createImage(s, s);

@@ -70,8 +70,7 @@ public class SavedManager extends Thread implements CommandListener {
 			ex.printStackTrace();
 		} finally {
 			try {
-				if (fc != null)
-					fc.close();
+				if (fc != null) fc.close();
 			} catch (Exception exx) {
 				exx.printStackTrace();
 			}
@@ -83,14 +82,17 @@ public class SavedManager extends Thread implements CommandListener {
 			while (e.hasMoreElements()) {
 				String s = e.nextElement().toString();
 				try {
-					if (s.length() < 4)
+					if (s.length() < 4) {
 						continue;
+					}
 					// trying to parse folder's name
-					if (s.charAt(s.length() - 1) != '/')
+					if (s.charAt(s.length() - 1) != '/') {
 						continue;
+					}
 					int i = s.indexOf('-');
-					if (i == -1)
+					if (i == -1) {
 						continue;
+					}
 					String n = s.substring(0, i).trim();
 					Integer.parseInt(n);
 
@@ -280,7 +282,6 @@ public class SavedManager extends Thread implements CommandListener {
 	}
 
 	private void onSelect() {
-
 		// vars
 		MangaPage mp;
 		ExtMangaObj o;
@@ -384,8 +385,7 @@ public class SavedManager extends Thread implements CommandListener {
 
 	private void cfc(FileConnection c) {
 		try {
-			if (c != null)
-				c.close();
+			if (c != null) c.close();
 		} catch (Exception e) {
 		}
 	}

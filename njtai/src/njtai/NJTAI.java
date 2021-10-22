@@ -81,7 +81,7 @@ public class NJTAI {
 			if (s.length() < 2)
 				throw new IllegalAccessException();
 
-			if ((Runtime.getRuntime().totalMemory() != 2048 * 1024)) {
+			if (Runtime.getRuntime().totalMemory() != 2048 * 1024) {
 				hp = s;
 			}
 		}
