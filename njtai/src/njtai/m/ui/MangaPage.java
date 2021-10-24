@@ -44,7 +44,13 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private void initForm() {
 		loc = NJTAIM.getStrings("page");
 
-		int layout = Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_AFTER;
+		int layout;
+		// число выбрано от балды
+		if (getWidth() > 480) {
+			layout = Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_AFTER;
+		} else {
+			layout = 0;
+		}
 		back = new Command(loc[0], Command.BACK, 1);
 		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
 		page1.setLayout(layout);
@@ -101,11 +107,13 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 		if (coverImg == null) {
 			status(loc[13]);
-			if (stop) return;
+			if (stop)
+				return;
 			if (NJTAI.loadCoverAtPage) {
 				mo.loadCover();
 			}
-			if (stop) return;
+			if (stop)
+				return;
 		} else {
 			if (NJTAI.loadCoverAtPage) {
 				mo.img = coverImg;
