@@ -16,3 +16,10 @@ Failed to connect. Check connection and proxy.
 Open
 close
 Page number
+Cancel
+Looking for the folder
+Folder select
+Downloader error
+There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.
+All pages were checked and repaired.
+All pages were downloaded.
