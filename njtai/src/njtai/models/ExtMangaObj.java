@@ -123,8 +123,15 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
-		
-		title = h.get("title").toString();
+
+		if (h == null)
+			throw new NullPointerException();
+
+		if(h.containsKey("title")) {
+			title = h.get("title").toString();
+		} else {
+			title = "<MODEL PARSING ERROR!!!>";
+		}
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
 		}
@@ -358,6 +365,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	/**
 	 * Was this object decoded offline?
+	 * 
 	 * @return Value of {@link #offline}.
 	 */
 	public boolean isOffline() {
