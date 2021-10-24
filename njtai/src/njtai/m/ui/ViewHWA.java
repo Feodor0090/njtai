@@ -53,7 +53,7 @@ public class ViewHWA extends View {
 	protected PolygonMode _polMode;
 	protected TriangleStripArray _ind;
 
-	PagePart[] p = null;
+	Node[] p = null;
 	int iw, ih;
 
 	protected void reset() {
@@ -71,10 +71,10 @@ public class ViewHWA extends View {
 		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				v.addElement(new PagePart(this, i, ix, iy, (short) s));
+				v.addElement(new PagePart(this, i, ix, iy, (short) s).toNode());
 			}
 		}
-		PagePart[] tmp = new PagePart[v.size()];
+		Node[] tmp = new Node[v.size()];
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
@@ -117,12 +117,14 @@ public class ViewHWA extends View {
 				g3.bindTarget(g, false, Graphics3D.ANTIALIAS);
 				try {
 					Background b = new Background();
+					Transform id = new Transform();
+					id.setIdentity();
 					b.setColorClearEnable(true);
 					b.setDepthClearEnable(true);
 					g3.clear(b);
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						p[i].paint(g3);
+						g3.render(p[i], id);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -230,6 +232,12 @@ public class ViewHWA extends View {
 
 		public void paint(Graphics3D g) {
 			g.render(vb, ind, ap, t);
+		}
+
+		public Node toNode() {
+			Mesh m = new Mesh(vb, ind, ap);
+			m.setTransform(t);
+			return m;
 		}
 	}
 
