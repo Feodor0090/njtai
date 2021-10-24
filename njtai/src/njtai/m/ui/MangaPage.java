@@ -107,13 +107,11 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 		if (coverImg == null) {
 			status(loc[13]);
-			if (stop)
-				return;
+			if (stop) return;
 			if (NJTAI.loadCoverAtPage) {
 				mo.loadCover();
 			}
-			if (stop)
-				return;
+			if (stop) return;
 		} else {
 			if (NJTAI.loadCoverAtPage) {
 				mo.img = coverImg;
