@@ -1,0 +1,6 @@
+japanese
+english
+chinese
+korean
+translated
+speechless

@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import njtai.NJTAI;
 import njtai.StringUtil;
+import njtai.m.NJTAIM;
 
 /**
  * Extension for {@link MangaObj}. Contains data to show pages.
@@ -122,7 +123,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
-		
+
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
@@ -313,26 +314,29 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (list.length == 0)
 			return null;
 		StringBuffer sb = new StringBuffer();
-		sb.append(translateLang(list[0]));
+		String[] langs = NJTAIM.getStrings("langs");
+		sb.append(translateLang(list[0], langs));
 		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");
-			String s = translateLang(list[i]);
+			String s = translateLang(list[i], langs);
 			sb.append(s);
 		}
 		return sb.toString();
 	}
 
-	private static String translateLang(String s) {
-		if (NJTAI.rus) {
-			if (s.equals("japanese"))
-				s = "японский";
-			else if (s.equals("english"))
-				s = "английский";
-			else if (s.equals("chinese"))
-				s = "китайский";
-			else if (s.equals("translated"))
-				s = "перевод";
-		}
+	private static String translateLang(String s, String[] l) {
+		if (s.equals("japanese"))
+			return l[0];
+		if (s.equals("english"))
+			return l[1];
+		if (s.equals("chinese"))
+			return l[2];
+		if (s.equals("korean"))
+			return l[3];
+		if (s.equals("translated"))
+			return l[4];
+		if (s.equals("speechless"))
+			return l[5];
 		return s;
 	}
 
@@ -362,6 +366,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	/**
 	 * Was this object decoded offline?
+	 * 
 	 * @return Value of {@link #offline}.
 	 */
 	public boolean isOffline() {
