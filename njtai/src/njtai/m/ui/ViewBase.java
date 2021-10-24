@@ -425,8 +425,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 		if (k == KEY_NUM7 || k == -10 || k == 8) {
 			TextBox tb = new TextBox(NJTAI.rus ? "Номер страницы:" : "Enter page number:", "", 7, 2);
-			tb.addCommand(goTo);
-			tb.addCommand(back);
+			tb.addCommand(MMenu.openCmd);
+			tb.addCommand(MMenu.openCmd);
 			tb.setCommandListener(this);
 			NJTAIM.setScr(tb);
 		}
@@ -668,9 +668,6 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	private Command goTo = new Command(NJTAI.rus ? "Перейти":"Go", Command.OK, 1);
-	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
-
 	/**
 	 * Listener for textbox.
 	 * 
@@ -680,7 +677,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	public void commandAction(Command c, Displayable d) {
 		TextBox tb = (TextBox) d;
 		NJTAIM.setScr(this);
-		if (c == goTo) {
+		if (c == MMenu.openCmd) {
 			try {
 				int n = Integer.parseInt(tb.getString());
 				if (n < 1) {
