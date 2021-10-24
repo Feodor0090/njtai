@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import njtai.m.NJTAIM;
 import njtai.models.WebAPIA;
 
 /**
@@ -163,9 +162,9 @@ public class NJTAI {
 		try {
 			String locale = System.getProperty("microedition.locale");
 			locale = locale.toLowerCase().substring(0, 2);
-			InputStream s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			InputStream s = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
 			if (s == null)
-				s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_en.txt");
+				s = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
 	
 			char[] buf = new char[32 * 1024];
 			InputStreamReader isr = new InputStreamReader(s, "UTF-8");
