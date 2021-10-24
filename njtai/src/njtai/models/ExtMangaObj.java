@@ -67,7 +67,6 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		// pages count
 		String pagesStr = StringUtil.range(StringUtil.range(meta, "Pages:", "</div", false), "<span class=\"name\">",
 				"</span", false);
-		System.out.println(pagesStr);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
 
@@ -86,9 +85,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			tags = "(error)";
 		}
 		try {
-			if (meta.indexOf("Languages:") == -1)
+			if (meta.indexOf("Languages:") == -1) {
 				lang = null;
-			else {
+			} else {
 				String lr = StringUtil.range(meta, "Languages:", "</div", false);
 				if (lr.indexOf("class=\"name\">") == -1)
 					lang = null;
@@ -104,11 +103,11 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			parody = null;
 		} else {
 			String pr = StringUtil.range(meta, "Parodies:", "</div", false);
-			// System.out.println("Parody span: " + pr);
-			if (pr.indexOf("class=\"name\">") == -1)
+			if (pr.indexOf("class=\"name\">") == -1) {
 				parody = null;
-			else
+			} else {
 				parody = StringUtil.range(pr, "<span class=\"name\">", "</span", false);
+			}
 		}
 
 		System.gc();
@@ -123,19 +122,23 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
-
+		
 		title = h.get("title").toString();
-		if (h.containsKey("tags"))
+		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
-		if (h.containsKey("parody"))
+		}
+		if (h.containsKey("parody")) {
 			parody = h.get("parody").toString();
-		if (h.containsKey("lang"))
+		}
+		if (h.containsKey("lang")) {
 			lang = h.get("lang").toString();
+		}
 		Object p = h.get("pages");
 		if (p instanceof Integer) {
 			pages = ((Integer) p).intValue();
-		} else
+		} else {
 			pages = Integer.parseInt(p.toString());
+		}
 	}
 
 	/**
@@ -149,7 +152,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (imgs == null) {
 			imgs = new String[pages];
 		}
-		String url;
+		String url = null;
 		try {
 			url = imgs[i];
 		} catch (RuntimeException e) {
@@ -243,15 +246,18 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	protected synchronized String loadUrl(int pageN, int attempt) throws InterruptedException {
 		// pauses in 429 case
-		if (attempt > 5)
+		if (attempt > 5) {
 			return null;
-		if (attempt > 0)
+		}
+		if (attempt > 0) {
 			Thread.sleep((attempt + 1) * 500);
-
-		if (imgs == null)
+		}
+		if (imgs == null) {
 			imgs = new String[pages];
-		if (imgs[pageN - 1] != null)
+		}
+		if (imgs[pageN - 1] != null) {
 			return imgs[pageN - 1];
+		}
 
 		try {
 			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);

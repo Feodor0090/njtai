@@ -208,102 +208,38 @@ public final class MMenu extends List implements CommandListener {
 		if (data == null)
 			throw new NullPointerException();
 		data = data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' ');
+		// URL encoding
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < data.length(); i++) {
-			switch (data.charAt(i)) {
-			case '!':
-				sb.append("%21");
-				break;
-			case '#':
-				sb.append("%23");
-				break;
-			case '$':
-				sb.append("%24");
-				break;
-			case '%':
-				sb.append("%25");
-				break;
-			case '&':
-				sb.append("%26");
-				break;
-			case '\'':
-				sb.append("%27");
-				break;
-			case '(':
-				sb.append("%28");
-				break;
-			case ')':
-				sb.append("%29");
-				break;
-			case '*':
-				sb.append("%2A");
-				break;
-			case '+':
-				sb.append("%2B");
-				break;
-			case ',':
-				sb.append("%2C");
-				break;
-			case '/':
-				sb.append("%2F");
-				break;
-			case ':':
-				sb.append("%3A");
-				break;
-			case ';':
-				sb.append("%3B");
-				break;
-			case '=':
-				sb.append("%3D");
-				break;
-			case '?':
-				sb.append("%3F");
-				break;
-			case '@':
-				sb.append("%40");
-				break;
-			case '[':
-				sb.append("%5B");
-				break;
-			case ']':
-				sb.append("%5D");
-				break;
-			case '{':
-				sb.append("%7B");
-				break;
-			case '|':
-				sb.append("%7C");
-				break;
-			case '}':
-				sb.append("%7D");
-				break;
-			case '\\':
-				sb.append("%5C");
-				break;
-			case '~':
-				sb.append("%7E");
-				break;
-			case '-':
-				sb.append("%2D");
-				break;
-			case '_':
-				sb.append("%5F");
-				break;
-			case '"':
-				sb.append("%22");
-				break;
-			case '.':
-				sb.append("%2E");
-				break;
-			case ' ':
+		int len = data.length();
+		for (int i = 0; i < len; i++) {
+			int c = data.charAt(i);
+			if (65 <= c && c <= 90) {
+				sb.append((char) c);
+			} else if (97 <= c && c <= 122) {
+				sb.append((char) c);
+			} else if (48 <= c && c <= 57) {
+				sb.append((char) c);
+			} else if (c == 32) {
 				sb.append("%20");
-				break;
-			default:
-				sb.append(data.charAt(i));
-				break;
+			} else if (c == 45 || c == 95 || c == 46 || c == 33 || c == 126 || c == 42 || c == 39 || c == 40 || c == 41) {
+				sb.append((char) c);
+			} else if (c <= 127) {
+				sb.append(hex(c));
+			} else if (c <= 2047) {
+				sb.append(hex(0xC0 | c >> 6));
+				sb.append(hex(0x80 | c & 0x3F));
+			} else {
+				sb.append(hex(0xE0 | c >> 12));
+				sb.append(hex(0x80 | c >> 6 & 0x3F));
+				sb.append(hex(0x80 | c & 0x3F));
 			}
 		}
 		return sb.toString();
+	}
+	
+	private String hex(int i) {
+		String s = Integer.toHexString(i);
+		return "%" + (s.length() < 2 ? "0" : "") + s;
 	}
 
 	private void search() {

@@ -31,9 +31,8 @@ public class MIDPWebAPIA extends WebAPIA {
 			if (r == 301) {
 				String redir = hc.getHeaderField("Location");
 				if (redir.startsWith("/")) {
-					String s2 = url.substring(url.indexOf("//") + 2);
-					String host = url.substring(0, url.indexOf("//")) + "//" + s2.substring(0, s2.indexOf("/"));
-					System.out.println("redir: " + redir + " | " + url + " | " + host + " | " + s2);
+					String tmp = url.substring(url.indexOf("//") + 2);
+					String host = url.substring(0, url.indexOf("//")) + "//" + tmp.substring(0, tmp.indexOf("/"));
 					redir = host + redir;
 				}
 				hc.close();
@@ -52,18 +51,15 @@ public class MIDPWebAPIA extends WebAPIA {
 			return o.toByteArray();
 		} finally {
 			try {
-				if (i != null)
-					i.close();
+				if (i != null) i.close();
 			} catch (IOException e) {
 			}
 			try {
-				if (hc != null)
-					hc.close();
+				if (hc != null) hc.close();
 			} catch (IOException e) {
 			}
 			try {
-				if (o != null)
-					o.close();
+				if (o != null) o.close();
 			} catch (IOException e) {
 			}
 		}

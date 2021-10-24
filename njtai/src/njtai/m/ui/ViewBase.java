@@ -120,14 +120,15 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 
 		try {
-			if (cache == null)
+			if (cache == null) {
 				cache = new ByteArrayOutputStream[emo.pages];
-
-			if (forceCacheIgnore)
+			}
+			if (forceCacheIgnore) {
 				cache[n] = null;
-			else if (cache[n] != null)
+			} else if (cache[n] != null) {
 				return cache[n];
-
+			}
+			
 			synchronized (cache) {
 				long ct = System.currentTimeMillis();
 				if (ct - lastTime < 350)
@@ -141,7 +142,6 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 						return null;
 					}
 					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
-
 					s.write(b);
 
 					cache[n] = s;
@@ -166,8 +166,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				cache = null;
 				return;
 			}
-			if (cache == null)
+			if (cache == null) {
 				return;
+			}
 			for (int i = 0; i < page - 1; i++) {
 				cache[i] = null;
 			}
@@ -202,8 +203,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 		free = free - (10 * 1024 * 1024);
 		int p = free / (300 * 1024);
-		if (p < 0)
-			p = 0;
+		if (p < 0) p = 0;
 		return p;
 	}
 
@@ -212,12 +212,14 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			cache = null;
 			return;
 		}
-		if (cache == null)
+		if (cache == null) {
 			return;
+		}
 		if (NJTAI.cachingPolicy == 0) {
 			for (int i = 0; i < cache.length; i++) {
-				if (i != page)
+				if (i != page) {
 					cache[i] = null;
+				}
 			}
 		} else {
 			if (canStorePages() <= 2) {
@@ -229,8 +231,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				for (int i = emo.pages - 1; i > page; i--) {
 					if (canStorePages() == 0) {
 						cache[i] = null;
-					} else
+					} else {
 						break;
+					}
 				}
 			} else if (NJTAI.cachingPolicy == 2) {
 				runPreloader();
@@ -295,8 +298,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			for (int i = 0; i < emo.pages; i++) {
 				try {
 					getImage(i);
-					if (preloadProgress != 100)
+					if (preloadProgress != 100) {
 						preloadProgress = i * 100 / emo.pages;
+					}
 					repaint();
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
@@ -317,11 +321,13 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			return;
 		}
 		for (int i = page; i < emo.pages; i++) {
-			if (cache == null)
+			if (cache == null) {
 				return;
+			}
 			try {
-				if (cache[i] != null)
+				if (cache[i] != null) {
 					continue;
+				}
 				if (canStorePages() < 1) {
 					preloadProgress = 102;
 					preloader = null;
@@ -329,8 +335,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				}
 				getImage(i);
 				Thread.sleep(300);
-				if (preloadProgress != 100)
+				if (preloadProgress != 100) {
 					preloadProgress = i * 100 / emo.pages;
+				}
 				repaint();
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
@@ -393,14 +400,16 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		if (k == -7 || k == KEY_NUM9) {
 			emo.cancelPrefetch();
 			try {
-				if (loader != null && loader.isAlive())
+				if (loader != null && loader.isAlive()) {
 					loader.interrupt();
+				}
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
 			try {
-				if (preloader != null && preloader.isAlive())
+				if (preloader != null && preloader.isAlive()) {
 					preloader.interrupt();
+				}
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
@@ -674,10 +683,11 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		if (c == goTo) {
 			try {
 				int n = Integer.parseInt(tb.getString());
-				if (n < 1)
+				if (n < 1) {
 					n = 1;
-				if (n > emo.pages)
+				} else if (n > emo.pages) {
 					n = emo.pages;
+				}
 				page = n - 1;
 				checkCacheAfterPageSwitch();
 				reload();
@@ -781,14 +791,16 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * @return Created view.
 	 */
 	public static ViewBase create(ExtMangaObj mo, Displayable d, int i) {
-		if (NJTAI.view == 1)
+		if (NJTAI.view == 1) {
 			return new ViewSWR(mo, d, i);
-		if (NJTAI.view == 2)
+		}
+		if (NJTAI.view == 2) {
 			return new ViewHWA(mo, d, i);
+		}
 		String vram = System.getProperty("com.nokia.gpu.memory.total");
-		if (vram != null && !vram.equals("0"))
+		if (vram != null && !vram.equals("0")) {
 			return new ViewHWA(mo, d, i);
-
+		}
 		return new ViewSWR(mo, d, i);
 	}
 }
