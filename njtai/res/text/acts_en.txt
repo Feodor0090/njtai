@@ -1,0 +1,18 @@
+Back
+Go
+Exit
+Search
+Search results
+Incorrect query
+Did you entered nothing?
+Failed to open
+Have you entered something URL-breaking? Is your proxy and network alive?
+Failed to go to page
+Have you entered correct number?
+Enter ID:
+About this software
+Controls
+Failed to connect. Check connection and proxy.
+Open
+close
+Page number
