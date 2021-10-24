@@ -1,0 +1,26 @@
+atrás
+Abrir la primera página
+Ingrese el número de página
+Reparar caché
+Descargar
+Seleccione
+Ir
+Volver a descargar
+Reparación completa
+Cargando datos
+Obteniendo página (1/3)
+¡Error de red! Verifique la conexión, regrese a la pantalla anterior y vuelva a intentarlo.
+Procesamiento de datos (2/3)
+Descargando portada (3/3)
+La carga de la portada se desactivó o se produjo un error.
+Título
+Paginas
+Idioma
+Parodia
+Etiquetas
+Ingrese el número de página:
+No se pudo ir a la página
+¿Ha introducido el número correcto?
+Reparación de caché
+Esta utilidad encontrará archivos rotos y los volverá a descargar. Advertencia: esto no funcionará en dispositivos <10mb-ram.
+¡No hay suficiente memoria para cargar!
