@@ -1,7 +1,6 @@
 package njtai.m.ui;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Vector;
 
 import javax.microedition.lcdui.*;
 import javax.microedition.m3g.*;
@@ -70,7 +69,7 @@ public class ViewHWA extends View {
 		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				w.addChild(new PagePart(this, i, ix, iy, (short) s).toNode());
+				w.addChild(createTile(i, ix, iy, (short) s));
 			}
 		}
 		x = iw / 2;
@@ -168,70 +167,55 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	static class PagePart {
-		int size;
-		Appearance ap;
+	protected Node createTile(Image i, int px, int py, short s) {
+
 		Transform t;
 		VertexBuffer vb;
-		IndexBuffer ind;
 
-		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
+		// cropping
+		Image part = Image.createImage(s, s);
+		Graphics pg = part.getGraphics();
+		pg.setColor(0);
+		pg.fillRect(0, 0, s, s);
+		pg.drawRegion(i, px, py, Math.min(s, i.getWidth() - px), Math.min(s, i.getHeight() - py), 0, 0, 0, 0);
+		System.gc();
 
-			size = s;
+		// appearance
+		Image2D image2D = new Image2D(Image2D.RGB, part);
+		Texture2D tex = new Texture2D(image2D);
+		tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
+		tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
+		tex.setBlending(Texture2D.FUNC_MODULATE);
 
-			// cropping
-			Image part = Image.createImage(s, s);
-			Graphics pg = part.getGraphics();
-			pg.setColor(0);
-			pg.fillRect(0, 0, s, s);
-			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0,
-					0, 0);
-			System.gc();
+		Appearance ap = new Appearance();
+		ap.setTexture(0, tex);
+		ap.setMaterial(_material);
+		ap.setCompositingMode(_compositing);
+		ap.setPolygonMode(_polMode);
 
-			// appearance
-			Image2D image2D = new Image2D(Image2D.RGB, part);
-			Texture2D tex = new Texture2D(image2D);
-			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
-			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
-			tex.setBlending(Texture2D.FUNC_MODULATE);
-			ap = new Appearance();
-			ap.setTexture(0, tex);
-			ap.setMaterial(base._material);
-			ap.setCompositingMode(base._compositing);
-			ap.setPolygonMode(base._polMode);
+		// transform
+		t = new Transform();
+		t.postTranslate(px, py, 0);
 
-			// transform
-			t = new Transform();
-			t.postTranslate(x, y, 0);
+		// quad
+		// RT, LT, RB, LB
+		short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
+		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
 
-			// quad
-			// RT, LT, RB, LB
-			short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
-			short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
+		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
+		vertArray.set(0, vert.length / 3, vert);
 
-			VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
-			vertArray.set(0, vert.length / 3, vert);
+		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
+		texArray.set(0, uv.length / 2, uv);
 
-			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
-			texArray.set(0, uv.length / 2, uv);
+		vb = new VertexBuffer();
+		vb.setPositions(vertArray, 1.0f, null);
+		vb.setTexCoords(0, texArray, 1.0f, null);
+		vb.setDefaultColor(-1);
 
-			ind = base._ind;
-
-			vb = new VertexBuffer();
-			vb.setPositions(vertArray, 1.0f, null);
-			vb.setTexCoords(0, texArray, 1.0f, null);
-			vb.setDefaultColor(-1);
-		}
-
-		public void paint(Graphics3D g) {
-			g.render(vb, ind, ap, t);
-		}
-
-		public Node toNode() {
-			Mesh m = new Mesh(vb, ind, ap);
-			m.setTransform(t);
-			return m;
-		}
+		Mesh m = new Mesh(vb, _ind, ap);
+		m.setTransform(t);
+		return m;
 	}
 
 	protected int panDeltaMul() {
