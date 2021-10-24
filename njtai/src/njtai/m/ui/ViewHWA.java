@@ -26,31 +26,50 @@ public class ViewHWA extends View {
 		super(emo, prev, page);
 
 		// material
-		_material = new Material();
-		_material.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
-		_material.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
-		_material.setShininess(128f);
-		_material.setVertexColorTrackingEnable(true);
+		mat = new Material();
+		mat.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
+		mat.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
+		mat.setShininess(128f);
+		mat.setVertexColorTrackingEnable(true);
 
 		// compositing
-		_compositing = new CompositingMode();
-		_compositing.setAlphaThreshold(0.0f);
-		_compositing.setBlending(CompositingMode.ALPHA);
+		comp = new CompositingMode();
+		comp.setAlphaThreshold(0.0f);
+		comp.setBlending(CompositingMode.ALPHA);
 
 		// pol mode
-		_polMode = new PolygonMode();
-		_polMode.setWinding(PolygonMode.WINDING_CW);
-		_polMode.setCulling(PolygonMode.CULL_NONE);
-		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
+		pm = new PolygonMode();
+		pm.setWinding(PolygonMode.WINDING_CW);
+		pm.setCulling(PolygonMode.CULL_NONE);
+		pm.setShading(PolygonMode.SHADE_SMOOTH);
 
 		// strip
-		_ind = new TriangleStripArray(0, new int[] { 4 });
+		ind = new TriangleStripArray(0, new int[] { 4 });
+
+		// quad
+		// RT, LT, RB, LB
+		short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
+		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
+
+		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
+		vertArray.set(0, vert.length / 3, vert);
+
+		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
+		texArray.set(0, uv.length / 2, uv);
+
+		vb = new VertexBuffer();
+		vb.setPositions(vertArray, 1.0f, null);
+		vb.setTexCoords(0, texArray, 1.0f, null);
+		vb.setDefaultColor(-1);
 	}
 
-	protected Material _material;
-	protected CompositingMode _compositing;
-	protected PolygonMode _polMode;
-	protected TriangleStripArray _ind;
+	private Material mat;
+	private CompositingMode comp;
+	private PolygonMode pm;
+	private TriangleStripArray ind;
+	private VertexBuffer vb;
+
+	private short s = 512;
 
 	World w = null;
 	int iw, ih;
@@ -61,17 +80,25 @@ public class ViewHWA extends View {
 
 	protected void prepare(ByteArrayOutputStream data) throws InterruptedException {
 		reset();
+		// m3g objs
+		World w1 = new World();
+		Background b = new Background();
+		b.setColorClearEnable(true);
+		b.setDepthClearEnable(true);
+		w1.setBackground(b);
+		// image reading
 		byte[] d = data.toByteArray();
 		Image i = Image.createImage(d, 0, d.length);
 		d = null;
+		// tiling
 		ih = i.getHeight();
 		iw = i.getWidth();
-		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				w.addChild(createTile(i, ix, iy, (short) s));
+				w1.addChild(createTile(i, ix, iy));
 			}
 		}
+		w = w1;
 		x = iw / 2;
 		y = ih / 2;
 	}
@@ -110,12 +137,8 @@ public class ViewHWA extends View {
 				Graphics3D g3 = Graphics3D.getInstance();
 				g3.bindTarget(g, false, Graphics3D.ANTIALIAS);
 				try {
-					Background b = new Background();
 					Transform id = new Transform();
 					id.setIdentity();
-					b.setColorClearEnable(true);
-					b.setDepthClearEnable(true);
-					g3.clear(b);
 					setupM3G(g3);
 					g3.render(w);
 				} catch (Throwable t) {
@@ -167,10 +190,9 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	protected Node createTile(Image i, int px, int py, short s) {
+	protected Node createTile(Image i, int px, int py) {
 
 		Transform t;
-		VertexBuffer vb;
 
 		// cropping
 		Image part = Image.createImage(s, s);
@@ -189,31 +211,15 @@ public class ViewHWA extends View {
 
 		Appearance ap = new Appearance();
 		ap.setTexture(0, tex);
-		ap.setMaterial(_material);
-		ap.setCompositingMode(_compositing);
-		ap.setPolygonMode(_polMode);
+		ap.setMaterial(mat);
+		ap.setCompositingMode(comp);
+		ap.setPolygonMode(pm);
 
 		// transform
 		t = new Transform();
 		t.postTranslate(px, py, 0);
 
-		// quad
-		// RT, LT, RB, LB
-		short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
-		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
-
-		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
-		vertArray.set(0, vert.length / 3, vert);
-
-		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
-		texArray.set(0, uv.length / 2, uv);
-
-		vb = new VertexBuffer();
-		vb.setPositions(vertArray, 1.0f, null);
-		vb.setTexCoords(0, texArray, 1.0f, null);
-		vb.setDefaultColor(-1);
-
-		Mesh m = new Mesh(vb, _ind, ap);
+		Mesh m = new Mesh(vb, ind, ap);
 		m.setTransform(t);
 		return m;
 	}
