@@ -89,7 +89,7 @@ public class JSONUtil {
 				Object e = en.nextElement();
 				r = r.concat("\"")
 				.concat(e.toString())
-				.concat("\"=")
+				.concat("\":")
 				.concat(build(ht.get(e)));
 				if (!en.hasMoreElements()) {
 					return r.concat("}");
