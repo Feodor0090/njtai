@@ -4,7 +4,6 @@ import java.util.Hashtable;
 
 import njtai.NJTAI;
 import njtai.StringUtil;
-import njtai.m.NJTAIM;
 
 /**
  * Extension for {@link MangaObj}. Contains data to show pages.
@@ -314,7 +313,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (list.length == 0)
 			return null;
 		StringBuffer sb = new StringBuffer();
-		String[] langs = NJTAIM.getStrings("langs");
+		String[] langs = NJTAI.getStrings("langs");
 		sb.append(translateLang(list[0], langs));
 		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");

@@ -1,7 +1,10 @@
 package njtai;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
+import njtai.m.NJTAIM;
 import njtai.models.WebAPIA;
 
 /**
@@ -148,5 +151,33 @@ public class NJTAI {
 		final int ag = (c2_AG_org + ((c1_AG - c2_AG) * v1)) & 0xFF00FF00;
 		return ag | rb;
 
+	}
+
+	/**
+	 * Loads localization file.
+	 * 
+	 * @param cat Category of strings.
+	 * @return List of strings to use.
+	 */
+	public static String[] getStrings(String cat) {
+		try {
+			String locale = System.getProperty("microedition.locale");
+			locale = locale.toLowerCase().substring(0, 2);
+			InputStream s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			if (s == null)
+				s = NJTAIM.class.getResourceAsStream("/text/" + cat + "_en.txt");
+	
+			char[] buf = new char[32 * 1024];
+			InputStreamReader isr = new InputStreamReader(s, "UTF-8");
+			int l = isr.read(buf);
+			isr.close();
+			String r = new String(buf, 0, l).replace('\r', ' ');
+			return StringUtil.splitFull(r, '\n');
+		} catch (Exception e) {
+			e.printStackTrace();
+			// null is returned to avoid massive try-catch constructions near every call.
+			// Normally, it always return english file.
+			return null;
+		}
 	}
 }
