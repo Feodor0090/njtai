@@ -7,6 +7,7 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.*;
 
+import cc.nnproject.utils.JSONUtil;
 import njtai.NJTAI;
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
