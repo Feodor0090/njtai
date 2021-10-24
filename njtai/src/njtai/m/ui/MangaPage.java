@@ -49,7 +49,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		if (getWidth() > 480) {
 			layout = Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_AFTER;
 		} else {
-			layout = 0;
+			layout = Item.LAYOUT_DEFAULT;
 		}
 		back = new Command(loc[0], Command.BACK, 1);
 		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
