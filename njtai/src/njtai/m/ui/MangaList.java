@@ -21,7 +21,6 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	private Displayable prev;
 	private MangaObjs objs;
 
-	private Command back = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 1);
 	private String title;
 
 	static boolean wasOom = false;
@@ -33,7 +32,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 		this.prev = prev;
 		objs = items;
 		this.setCommandListener(this);
-		this.addCommand(back);
+		this.addCommand(MMenu.backCmd);
 		loader = new Thread(this);
 		loader.start();
 	}
@@ -69,7 +68,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == back)
+		if (c == MMenu.backCmd)
 			NJTAIM.setScr(prev);
 	}
 

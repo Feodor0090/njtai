@@ -33,6 +33,7 @@ public final class MMenu extends List implements CommandListener {
 	public MMenu() {
 		super("NJTAI", List.IMPLICIT, NJTAIM.getStrings("main"), null);
 		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
+		openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
@@ -42,7 +43,7 @@ public final class MMenu extends List implements CommandListener {
 	 * Back command.
 	 */
 	public static Command backCmd;
-	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
+	public static Command openCmd;
 	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
 
 	/**
