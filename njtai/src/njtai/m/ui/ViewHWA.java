@@ -53,11 +53,11 @@ public class ViewHWA extends View {
 	protected PolygonMode _polMode;
 	protected TriangleStripArray _ind;
 
-	Node[] p = null;
+	World w = null;
 	int iw, ih;
 
 	protected void reset() {
-		p = null;
+		w = null;
 	}
 
 	protected void prepare(ByteArrayOutputStream data) throws InterruptedException {
@@ -67,17 +67,12 @@ public class ViewHWA extends View {
 		d = null;
 		ih = i.getHeight();
 		iw = i.getWidth();
-		Vector v = new Vector();
 		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				v.addElement(new PagePart(this, i, ix, iy, (short) s).toNode());
+				w.addChild(new PagePart(this, i, ix, iy, (short) s).toNode());
 			}
 		}
-		Node[] tmp = new Node[v.size()];
-		v.copyInto(tmp);
-		v = null;
-		p = tmp;
 		x = iw / 2;
 		y = ih / 2;
 	}
@@ -94,7 +89,7 @@ public class ViewHWA extends View {
 	}
 
 	public boolean canDraw() {
-		return p != null;
+		return w != null;
 	}
 
 	protected void paint(Graphics g) {
@@ -104,7 +99,7 @@ public class ViewHWA extends View {
 
 			// bg fill
 
-			if (p == null) {
+			if (w == null) {
 				g.setGrayScale(0);
 				g.fillRect(0, 0, getWidth(), getHeight());
 				paintNullImg(g, f);
@@ -123,9 +118,7 @@ public class ViewHWA extends View {
 					b.setDepthClearEnable(true);
 					g3.clear(b);
 					setupM3G(g3);
-					for (int i = 0; i < p.length; i++) {
-						g3.render(p[i], id);
-					}
+					g3.render(w);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
