@@ -316,7 +316,7 @@ public class SavedManager extends Thread implements CommandListener {
 
 		// restoring ExtMangaObj from loaded data
 		try {
-			Hashtable h = (Hashtable) cc.nnproject.lwjson.JSON.parseJSON(d);
+			Hashtable h = JSONUtil.object(d);
 			String n = item.substring(0, item.indexOf('-')).trim();
 			o = new ExtMangaObj(Integer.parseInt(n), h);
 			h = null;

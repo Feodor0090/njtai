@@ -2,6 +2,7 @@ package njtai.models;
 
 import java.util.Hashtable;
 
+import cc.nnproject.utils.JSONUtil;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -133,12 +134,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (h.containsKey("lang")) {
 			lang = h.get("lang").toString();
 		}
-		Object p = h.get("pages");
-		if (p instanceof Integer) {
-			pages = ((Integer) p).intValue();
-		} else {
-			pages = Integer.parseInt(p.toString());
-		}
+		pages = Integer.parseInt(h.get("pages").toString());
 	}
 
 	/**
@@ -353,7 +349,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		h.put("pages", new Integer(pages));
 
 		try {
-			return cc.nnproject.lwjson.JSON.buildJSON(h);
+			return JSONUtil.build(h);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
