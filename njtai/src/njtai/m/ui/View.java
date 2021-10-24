@@ -169,6 +169,8 @@ public abstract class View extends ViewBase {
 	protected void paintNullImg(Graphics g, Font f) {
 		String info;
 		if (error) {
+			g.setGrayScale(0);
+			g.fillRect(0, 0, getWidth(), getHeight());
 			info = NJTAI.rus ? "Не удалось загрузить." : "Failed to load image.";
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
