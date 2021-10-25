@@ -1,6 +1,8 @@
 # NJTAI
 An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
+![image](njtai/res/njtai.svg)
+
 ## Features
 - "Popular" list from site
 - "Recently uploaded" list from site
@@ -13,15 +15,19 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
 ## System requirements
 Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
+
 ### Memory
 - At least 2048 kb of heap to download titles (with disabled covers loading)
-- At least 16 mb to view online without preloading
-- ~100mb to preload ~50 pages on 240p screen
-- ~100mb to preload ~10 pages on 640p screen
+- At least 16 mb to view online
+- 16+ mb of VRAM to use HWA view
+
+### Processor units
+We don't use any special units. Everything is done on CPU, HWA view can use your GPU if device's M3G implementation supports it. Most Symbian 9.1/9.2 devices with ~300mHz CPUs are too weak to normally work with large images, so prepare to lags.
+
 ### JVM capabilities
 - MIDP 2.0/2.1
 - CLDC 1.1
-- Full LCDUI support on midp2 level
+- Full LCDUI support on MIDP2 level
 - JSR-75 to download titles
 - Nokia/SE keyboard layout (it's different from very old motorolla/siemens devices)
 
@@ -57,7 +63,7 @@ To build from command line, you need to compile all files with 1.3 java compabil
 ### Декодирование JPEG единожды
 Если отключить, картинка будет при каждом ремасштабировании заново декодироваться. Это немного уменьшит потребление памяти при сворачивании приложения.
 ### Предзагрузка URL
-Если включено, ускорит перелистывание почти на 50% - URL изображений запросится заранее.
+Если включено, ускорит перелистывание почти на 50% - URL изображений запросятся заранее.
 
 ### Оптимальные
 Настройка|Экономия памяти|Быстродействие и удобство
