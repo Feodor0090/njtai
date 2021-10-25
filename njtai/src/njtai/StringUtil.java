@@ -114,12 +114,12 @@ public class StringUtil {
 		str = replace(str, "&#39;", "'");
 		str = replace(str, "&#x27;", "'");
 		//str = replace(str, "&apos;", "'");
-		str = replace(str, "&amp;", "&");
 		str = replace(str, "&quot;", "\"");
 		//str = replace(str, "&lt;", "<");
 		//str = replace(str, "&gt;", ">");
 		//str = replace(str, "&nbsp;", " ");
 		str = replace(str, "&ndash;", "-");
+		str = replace(str, "&amp;", "&");
 		return str;
 	}
 	
