@@ -314,28 +314,21 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			return null;
 		StringBuffer sb = new StringBuffer();
 		String[] langs = NJTAI.getStrings("langs");
-		sb.append(translateLang(list[0], langs));
+		String[] langsO = NJTAI.getStrings("langs", "en");
+		sb.append(translateLang(list[0], langsO, langs));
 		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");
-			String s = translateLang(list[i], langs);
+			String s = translateLang(list[i], langsO, langs);
 			sb.append(s);
 		}
 		return sb.toString();
 	}
 
-	private static String translateLang(String s, String[] l) {
-		if (s.equals("japanese"))
-			return l[0];
-		if (s.equals("english"))
-			return l[1];
-		if (s.equals("chinese"))
-			return l[2];
-		if (s.equals("korean"))
-			return l[3];
-		if (s.equals("translated"))
-			return l[4];
-		if (s.equals("speechless"))
-			return l[5];
+	private static String translateLang(String s, String[] o, String[] l) {
+		for (int i = 0; i < l.length; i++) {
+			if (s.equals(o[i]))
+				return l[i];
+		}
 		return s;
 	}
 
