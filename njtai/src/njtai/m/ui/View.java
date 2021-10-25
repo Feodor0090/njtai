@@ -55,17 +55,8 @@ public abstract class View extends ViewBase {
 		} else {
 			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
 		}
-		/*
-		 * } else { if (preloadProgress < 100) prefetch = "preloading " +
-		 * preloadProgress + "%"; else if (preloadProgress == 104) { prefetch = "OOM"; }
-		 * else if (preloadProgress > 101) prefetch = "code " + (preloadProgress % 100);
-		 * }
-		 */
-		/*
-		 * String ram; { long used = Runtime.getRuntime().totalMemory() -
-		 * Runtime.getRuntime().freeMemory(); used /= 1024; if (used <= 4096) { ram =
-		 * used + "K"; } else { ram = (used / 1024) + "M"; } }
-		 */
+
+		// BGs
 		g.setGrayScale(0);
 		if (drawPages) {
 			g.fillRect(0, 0, f.stringWidth(pageNum), f.getHeight());
@@ -76,9 +67,8 @@ public abstract class View extends ViewBase {
 		if (prefetch != null) {
 			g.fillRect(0, getHeight() - f.getHeight(), f.stringWidth(prefetch), f.getHeight());
 		}
-		// g.fillRect(getWidth() - f.stringWidth(ram), getHeight() - f.getHeight(),
-		// f.stringWidth(ram), f.getHeight());
 
+		// texts
 		g.setGrayScale(255);
 		if (drawPages) {
 			g.drawString(pageNum, 0, 0, 0);
@@ -89,7 +79,7 @@ public abstract class View extends ViewBase {
 		if (prefetch != null) {
 			g.drawString(prefetch, 0, getHeight() - f.getHeight(), 0);
 		}
-		// g.drawString(ram, getWidth(), getHeight(), Graphics.BOTTOM | Graphics.RIGHT);
+
 	}
 
 	protected void drawTouchControls(Graphics g, Font f) {
@@ -169,6 +159,8 @@ public abstract class View extends ViewBase {
 	protected void paintNullImg(Graphics g, Font f) {
 		String info;
 		if (error) {
+			g.setGrayScale(0);
+			g.fillRect(0, 0, getWidth(), getHeight());
 			info = NJTAI.rus ? "Не удалось загрузить." : "Failed to load image.";
 		} else if (emo.infoReady == -1) {
 			info = "Failed to fetch pages.";
