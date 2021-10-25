@@ -51,7 +51,7 @@ Make sure it's accessible via pure http without cloudflare/etc. checks!
 
 ## Building
 Use Eclipse IDE with MTJ and S40v5 sdk or NetBeans with j2me sdk 3.0. 
-To build from command line, you need to compile all files with 1.3 java compability using 1.8 jdk, preverify them using `preverify.exe` from SDK and pack in JAR.
+To build from command line, you need to compile all classes using 1.8 jdk with 1.3 target, preverify them using `preverify.exe` from SDK and pack in JAR package.
 
 ## Settings explaining (rus)
 ### Поведение кэширования
