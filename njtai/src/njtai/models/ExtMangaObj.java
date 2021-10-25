@@ -74,8 +74,8 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		// img and title
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
-		title = StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
-				"<span class=\"pretty\">", "</span", false);
+		title = StringUtil.htmlString(StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
+				"<span class=\"pretty\">", "</span", false));
 
 		// metadata
 		try {
