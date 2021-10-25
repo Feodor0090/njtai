@@ -105,4 +105,41 @@ public class StringUtil {
 		v = null;
 		return a;
 	}
+
+	/**
+	 * @param str
+	 * @return String with parsed html escape codes
+	 */
+	public static String htmlString(String str) {
+		str = replace(str, "&#39;", "'");
+		str = replace(str, "&#x27;", "'");
+		//str = replace(str, "&apos;", "'");
+		str = replace(str, "&quot;", "\"");
+		str = replace(str, "&lt;", "<");
+		str = replace(str, "&gt;", ">");
+		//str = replace(str, "&nbsp;", " ");
+		str = replace(str, "&ndash;", "-");
+		str = replace(str, "&amp;", "&");
+		return str;
+	}
+	
+	/**
+	 * @param str original
+	 * @param from string to find
+	 * @param to string to replace with
+	 * @return replaced string
+	 */
+	public static String replace(String str, String from, String to) {
+		int j = str.indexOf(from);
+		if (j == -1)
+			return str;
+		final StringBuffer sb = new StringBuffer();
+		int k = 0;
+		for (int i = from.length(); j != -1; j = str.indexOf(from, k)) {
+			sb.append(str.substring(k, j)).append(to);
+			k = j + i;
+		}
+		sb.append(str.substring(k, str.length()));
+		return sb.toString();
+	}
 }
