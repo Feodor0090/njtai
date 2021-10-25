@@ -317,9 +317,10 @@ public class SavedManager extends Thread implements CommandListener {
 
 		// restoring ExtMangaObj from loaded data
 		try {
-			Hashtable h = JSONUtil.object(d);
+			Hashtable h = JSONUtil.object(d.substring(1, d.length() - 1));
 			String n = item.substring(0, item.indexOf('-')).trim();
 			o = new ExtMangaObj(Integer.parseInt(n), h);
+			d = null;
 			h = null;
 			Image cover = null;
 

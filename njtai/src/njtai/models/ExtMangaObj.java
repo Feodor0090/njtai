@@ -126,12 +126,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		if (h == null)
 			throw new NullPointerException();
-
-		if(h.containsKey("title")) {
-			title = h.get("title").toString();
-		} else {
-			title = "<MODEL PARSING ERROR!!!>";
-		}
+		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
 		}
