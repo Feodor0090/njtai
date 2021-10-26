@@ -75,7 +75,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	public static class OMBHdlr implements ItemCommandListener {
 		private int n;
 
-		public static Command o = new Command(NJTAI.rus ? "Открыть" : "Open", 8, 1);
+		public static Command o = new Command(NJTAI.getStrings("acts")[15], 8, 1);
 
 		private Displayable p;
 

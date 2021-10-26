@@ -36,6 +36,9 @@ public class NJTAI {
 	 */
 	private static String hp = null;
 
+	/**
+	 * Is the app already running?
+	 */
 	public static boolean running = false;
 
 	/**
@@ -47,19 +50,49 @@ public class NJTAI {
 	 * </ul>
 	 */
 	public static int cachingPolicy = 0;
+	/**
+	 * Load image on info page?
+	 */
 	public static boolean loadCoverAtPage = true;
+	/**
+	 * Keep existing lists when leaving?
+	 */
 	public static boolean keepLists = true;
+	/**
+	 * Load imags in lists?
+	 */
 	public static boolean loadCovers = true;
 	/**
 	 * Enable urls preloading?
 	 */
 	public static boolean preloadUrl = true;
+	/**
+	 * Keep decoded images in RAM?
+	 */
 	public static boolean keepBitmap = true;
+	/**
+	 * Auto, SWR or HWA.
+	 */
 	public static int view = 0;
+	/**
+	 * Use device's memory card?
+	 */
 	public static boolean files;
+	/**
+	 * Invert D-PAD directions?
+	 */
 	public static boolean invertPan;
+	/**
+	 * Not used yet.
+	 */
 	public static boolean _f1;
+	/**
+	 * Not used yet.
+	 */
 	public static boolean _f2;
+	/**
+	 * Not used yet.
+	 */
 	public static boolean _f3;
 
 	/**

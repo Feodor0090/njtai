@@ -46,7 +46,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 
 		int layout;
 		// число выбрано от балды
-		if (getWidth() > 480) {
+		if (getWidth() <= 480) {
 			layout = Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_AFTER;
 		} else {
 			layout = Item.LAYOUT_DEFAULT;

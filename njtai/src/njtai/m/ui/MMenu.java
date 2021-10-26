@@ -2,18 +2,7 @@ package njtai.m.ui;
 
 import java.io.IOException;
 
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Command;
-import javax.microedition.lcdui.CommandListener;
-import javax.microedition.lcdui.Displayable;
-import javax.microedition.lcdui.Font;
-import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.List;
-import javax.microedition.lcdui.Spacer;
-import javax.microedition.lcdui.StringItem;
-import javax.microedition.lcdui.TextBox;
+import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
 import njtai.m.NJTAIM;
@@ -32,19 +21,25 @@ public final class MMenu extends List implements CommandListener {
 	 */
 	public MMenu() {
 		super("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
-		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
-		openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
+		String[] l = NJTAI.getStrings("acts");
+		backCmd = new Command(l[0], Command.BACK, 2);
+		openCmd = new Command(l[1], Command.OK, 1);
+		exitCmd = new Command(l[2], Command.EXIT, 2);
+		searchCmd = new Command(l[3], Command.OK, 1);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
 
-	private Command exitCmd = new Command(NJTAI.rus ? "Выход" : "Exit", Command.EXIT, 2);
+	private Command exitCmd;
 	/**
-	 * Back command.
+	 * "Back" command.
 	 */
 	public static Command backCmd;
+	/**
+	 * "Go" command.
+	 */
 	public static Command openCmd;
-	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
+	private Command searchCmd;
 
 	/**
 	 * Main commands processor. For menu actions, see {@link #mainMenuLinks()}.
@@ -67,17 +62,18 @@ public final class MMenu extends List implements CommandListener {
 					if (r == null) {
 						return;
 					}
-					NJTAIM.setScr(new MangaList(NJTAI.rus ? "Результаты поиска" : "Search results", this, r));
+					NJTAIM.setScr(new MangaList(NJTAI.getStrings("acts")[4], this, r));
 				} catch (NullPointerException e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert("Incorrect query", "Did you entered nothing?", null, AlertType.WARNING));
+					String[] l = NJTAI.getStrings("acts");
+					NJTAIM.setScr(new Alert(l[5], l[6], null, AlertType.WARNING));
 				} catch (Exception e) {
 					e.printStackTrace();
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert("Failed to open",
-							"Have you entered something URL-breaking? Is your proxy and network alive?", null,
+					String[] l = NJTAI.getStrings("acts");
+					NJTAIM.setScr(new Alert(l[7], l[8], null,
 							AlertType.ERROR));
 				}
 				return;
@@ -88,7 +84,8 @@ public final class MMenu extends List implements CommandListener {
 				} catch (Exception e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert("Failed to go to page", "Have you entered correct number?", null,
+					String[] l = NJTAI.getStrings("acts");
+					NJTAIM.setScr(new Alert(l[9], l[10], null,
 							AlertType.ERROR));
 				}
 			}
@@ -107,8 +104,7 @@ public final class MMenu extends List implements CommandListener {
 			if (t instanceof OutOfMemoryError) {
 				info = "Not enough memory!";
 			} else if (t instanceof IOException) {
-				info = NJTAI.rus ? "Не удалось соедениться. Проверьте подключение и прокси."
-						: "Failed to connect. Check connection and proxy.";
+				info = NJTAI.getStrings("acts")[14];
 			} else if (t instanceof IllegalAccessException) {
 				info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
 			} else {
@@ -128,7 +124,7 @@ public final class MMenu extends List implements CommandListener {
 		switch (getSelectedIndex()) {
 		case 0:
 			// number;
-			final TextBox tb = new TextBox(NJTAI.rus ? "Введите номер:" : "Enter ID:", "", 7, 2);
+			final TextBox tb = new TextBox(NJTAI.getStrings("acts")[11], "", 7, 2);
 			tb.addCommand(openCmd);
 			tb.addCommand(backCmd);
 			tb.setCommandListener(this);
@@ -136,11 +132,11 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 1:
 			// popular
-			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Популярные" : "Popular", this, MangaObjs.getPopularList()));
+			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[1], this, MangaObjs.getPopularList()));
 			return;
 		case 2:
 			// new
-			NJTAIM.setScr(new MangaList(NJTAI.rus ? "Новые" : "Recently added", this, MangaObjs.getNewList()));
+			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[2], this, MangaObjs.getNewList()));
 			return;
 		case 3:
 			// search
@@ -164,7 +160,7 @@ public final class MMenu extends List implements CommandListener {
 			}
 			return;
 		case 7:
-			Form ab = new Form(NJTAI.rus ? "О программе" : "About this software");
+			Form ab = new Form(NJTAI.getStrings("acts")[12]);
 			ab.append(new StringItem("NJTAI v" + NJTAIM.ver(),
 					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
 							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
@@ -221,7 +217,8 @@ public final class MMenu extends List implements CommandListener {
 				sb.append((char) c);
 			} else if (c == 32) {
 				sb.append("%20");
-			} else if (c == 45 || c == 95 || c == 46 || c == 33 || c == 126 || c == 42 || c == 39 || c == 40 || c == 41) {
+			} else if (c == 45 || c == 95 || c == 46 || c == 33 || c == 126 || c == 42 || c == 39 || c == 40
+					|| c == 41) {
 				sb.append((char) c);
 			} else if (c <= 127) {
 				sb.append(hex(c));
@@ -236,14 +233,14 @@ public final class MMenu extends List implements CommandListener {
 		}
 		return sb.toString();
 	}
-	
+
 	private String hex(int i) {
 		String s = Integer.toHexString(i);
 		return "%" + (s.length() < 2 ? "0" : "") + s;
 	}
 
 	private void search() {
-		final TextBox tb = new TextBox(NJTAI.rus ? "Введите запрос:" : "Enter query:", "", 80, 0);
+		final TextBox tb = new TextBox(NJTAI.getStrings("acts")[3], "", 80, 0);
 		tb.addCommand(searchCmd);
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
@@ -258,7 +255,7 @@ public final class MMenu extends List implements CommandListener {
 	 */
 	public static Form generateControlsTipsScreen(MMenu m) {
 		try {
-			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
+			Form f = new Form(NJTAI.getStrings("acts")[13]);
 			f.setCommandListener(m);
 			f.addCommand(backCmd);
 			String[] items = NJTAI.getStrings("tips");

@@ -16,6 +16,12 @@ import njtai.StringUtil;
 import njtai.m.ui.MMenu;
 import njtai.models.WebAPIA;
 
+/**
+ * Main mobile class.
+ * 
+ * @author Feodor0090
+ *
+ */
 public class NJTAIM extends MIDlet implements IPlatform {
 
 	private static Display dsp;
@@ -40,6 +46,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		return (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1);
 	}
 
+	/**
+	 * @return Midlet version.
+	 */
 	public static String ver() {
 		return inst.getAppProperty("MIDlet-Version");
 	}
@@ -69,6 +78,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		}
 	}
 
+	/**
+	 * @return Height of display.
+	 */
 	public static int getHeight() {
 		return getScr().getHeight();
 	}
@@ -77,14 +89,28 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		inst.notifyDestroyed();
 	}
 
+	/**
+	 * @return Currently shown screen.
+	 */
 	public static Displayable getScr() {
 		return dsp.getCurrent();
 	}
 
+	/**
+	 * Sets current screen.
+	 * 
+	 * @param d Screen to activate.
+	 */
 	public static void setScr(Displayable d) {
 		dsp.setCurrent(d);
 	}
 
+	/**
+	 * Sets current screen.
+	 * 
+	 * @param a    Screen to activate.
+	 * @param prev Next screen.
+	 */
 	public static void setScr(Alert a, Displayable prev) {
 		dsp.setCurrent(a, prev);
 	}
@@ -322,10 +348,21 @@ public class NJTAIM extends MIDlet implements IPlatform {
 		}
 	}
 
+	/**
+	 * Are we running on KEmulator?
+	 * 
+	 * @return KEmulator detection status.
+	 */
 	public static boolean isKem() {
 		return isClsExists("emulator.custom.CustomMethod");
 	}
 
+	/**
+	 * Checks class' existing.
+	 * 
+	 * @param clsName Class to check.
+	 * @return Can the class be instantiated or not.
+	 */
 	public static boolean isClsExists(String clsName) {
 		try {
 			Class.forName(clsName);
