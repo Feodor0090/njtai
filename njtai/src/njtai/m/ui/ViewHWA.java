@@ -46,15 +46,34 @@ public class ViewHWA extends View {
 
 		// strip
 		_ind = new TriangleStripArray(0, new int[] { 4 });
+
+		// quad
+		// RT, LT, RB, LB
+		short[] vert = { tileSize, 0, 0, 0, 0, 0, tileSize, tileSize, 0, 0, tileSize, 0 };
+		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
+
+		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
+		vertArray.set(0, vert.length / 3, vert);
+
+		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
+		texArray.set(0, uv.length / 2, uv);
+
+		vb = new VertexBuffer();
+		vb.setPositions(vertArray, 1.0f, null);
+		vb.setTexCoords(0, texArray, 1.0f, null);
+		vb.setDefaultColor(-1);
 	}
 
+	protected VertexBuffer vb;
 	protected Material _material;
 	protected CompositingMode _compositing;
 	protected PolygonMode _polMode;
 	protected TriangleStripArray _ind;
 
-	PagePart[] p = null;
+	LegacyPagePart[] p = null;
 	int iw, ih;
+
+	public static final short tileSize = 512;
 
 	protected void reset() {
 		p = null;
@@ -71,10 +90,10 @@ public class ViewHWA extends View {
 		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				v.addElement(new PagePart(this, i, ix, iy, (short) s));
+				v.addElement(new LegacyPagePart(this, i, ix, iy, (short) s));
 			}
 		}
-		PagePart[] tmp = new PagePart[v.size()];
+		LegacyPagePart[] tmp = new LegacyPagePart[v.size()];
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
@@ -122,7 +141,7 @@ public class ViewHWA extends View {
 					g3.clear(b);
 					Transform it = new Transform();
 					it.setIdentity();
-					
+
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
 						g3.render(p[i].toNode(), p[i].t);
@@ -176,14 +195,14 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	static class PagePart {
+	static class LegacyPagePart {
 		int size;
 		Appearance ap;
 		Transform t;
 		VertexBuffer vb;
 		IndexBuffer ind;
 
-		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
+		public LegacyPagePart(ViewHWA base, Image page, int x, int y, short s) {
 			this.size = s;
 
 			// cropping
@@ -211,34 +230,30 @@ public class ViewHWA extends View {
 			t = new Transform();
 			t.postTranslate(x, y, 0);
 
-			// quad
-			// RT, LT, RB, LB
-			short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
-			short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
-
-			VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
-			vertArray.set(0, vert.length / 3, vert);
-
-			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
-			texArray.set(0, uv.length / 2, uv);
 
 			ind = base._ind;
 
-			vb = new VertexBuffer();
-			vb.setPositions(vertArray, 1.0f, null);
-			vb.setTexCoords(0, texArray, 1.0f, null);
-			vb.setDefaultColor(-1);
+			vb = base.vb;
 		}
 
 		public void paint(Graphics3D g) {
 			g.render(vb, ind, ap, t);
 		}
-		
+
 		public Node toNode() {
 			Mesh m = new Mesh(vb, ind, ap);
-			//m.setTransform(t);
+			// m.setTransform(t);
 			return m;
 		}
+	}
+
+	private PagePart getTile(Image i, int x, int y) {
+		return null;
+	}
+
+	class PagePart {
+		Node n;
+		Transform t;
 	}
 
 	protected float panDeltaMul() {
