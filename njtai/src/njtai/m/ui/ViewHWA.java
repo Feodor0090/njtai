@@ -27,34 +27,53 @@ public class ViewHWA extends View {
 		super(emo, prev, page);
 
 		// material
-		_material = new Material();
-		_material.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
-		_material.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
-		_material.setShininess(128f);
-		_material.setVertexColorTrackingEnable(true);
+		mat = new Material();
+		mat.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
+		mat.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
+		mat.setShininess(128f);
+		mat.setVertexColorTrackingEnable(true);
 
 		// compositing
-		_compositing = new CompositingMode();
-		_compositing.setAlphaThreshold(0.0f);
-		_compositing.setBlending(CompositingMode.ALPHA);
+		cmp = new CompositingMode();
+		cmp.setAlphaThreshold(0.0f);
+		cmp.setBlending(CompositingMode.ALPHA);
 
 		// pol mode
-		_polMode = new PolygonMode();
-		_polMode.setWinding(PolygonMode.WINDING_CW);
-		_polMode.setCulling(PolygonMode.CULL_NONE);
-		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
+		pm = new PolygonMode();
+		pm.setWinding(PolygonMode.WINDING_CW);
+		pm.setCulling(PolygonMode.CULL_NONE);
+		pm.setShading(PolygonMode.SHADE_SMOOTH);
 
 		// strip
 		_ind = new TriangleStripArray(0, new int[] { 4 });
+
+		// quad
+		// RT, LT, RB, LB
+		short[] vert = { tileSize, 0, 0, 0, 0, 0, tileSize, tileSize, 0, 0, tileSize, 0 };
+		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
+
+		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
+		vertArray.set(0, vert.length / 3, vert);
+
+		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
+		texArray.set(0, uv.length / 2, uv);
+
+		vb = new VertexBuffer();
+		vb.setPositions(vertArray, 1.0f, null);
+		vb.setTexCoords(0, texArray, 1.0f, null);
+		vb.setDefaultColor(-1);
 	}
 
-	protected Material _material;
-	protected CompositingMode _compositing;
-	protected PolygonMode _polMode;
+	protected VertexBuffer vb;
+	protected Material mat;
+	protected CompositingMode cmp;
+	protected PolygonMode pm;
 	protected TriangleStripArray _ind;
 
 	PagePart[] p = null;
 	int iw, ih;
+
+	public static final short tileSize = 512;
 
 	protected void reset() {
 		p = null;
@@ -68,10 +87,9 @@ public class ViewHWA extends View {
 		ih = i.getHeight();
 		iw = i.getWidth();
 		Vector v = new Vector();
-		int s = 512;
-		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
-			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				v.addElement(new PagePart(this, i, ix, iy, (short) s));
+		for (int ix = 0; ix < i.getWidth() + tileSize - 1; ix += tileSize) {
+			for (int iy = 0; iy < i.getHeight() + tileSize - 1; iy += tileSize) {
+				v.addElement(getTile(i, ix, iy));
 			}
 		}
 		PagePart[] tmp = new PagePart[v.size()];
@@ -114,15 +132,16 @@ public class ViewHWA extends View {
 			} else {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
-				g3.bindTarget(g);
+				g3.bindTarget(g, false, Graphics3D.ANTIALIAS);
 				try {
 					Background b = new Background();
 					b.setColorClearEnable(true);
-					b.setDepthClearEnable(true);
+					b.setDepthClearEnable(false);
 					g3.clear(b);
+
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						p[i].paint(g3);
+						g3.render(p[i].n, p[i].t);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -173,63 +192,44 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	static class PagePart {
-		int size;
-		Appearance ap;
+	
+
+	private PagePart getTile(Image i, int tx, int ty) {
+		PagePart pp = new PagePart();
+		// cropping
+		Image part = Image.createImage(tileSize, tileSize);
+		Graphics pg = part.getGraphics();
+		pg.setColor(0);
+		pg.fillRect(0, 0, tileSize, tileSize);
+		pg.drawRegion(i, tx, ty, Math.min(tileSize, i.getWidth() - tx), Math.min(tileSize, i.getHeight() - ty), 0, 0,
+				0, 0);
+		
+		System.gc();
+
+		// appearance
+		Image2D image2D = new Image2D(Image2D.RGB, part);
+		Texture2D tex = new Texture2D(image2D);
+		tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
+		tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
+		tex.setBlending(Texture2D.FUNC_MODULATE);
+		Appearance ap = new Appearance();
+		ap.setTexture(0, tex);
+		ap.setMaterial(mat);
+		ap.setCompositingMode(cmp);
+		ap.setPolygonMode(pm);
+
+		// transform
+		pp.t = new Transform();
+		pp.t.postTranslate(tx, ty, 0);
+		
+		pp.n = new Mesh(vb, _ind, ap);
+		
+		return pp;
+	}
+
+	class PagePart {
+		Node n;
 		Transform t;
-		VertexBuffer vb;
-		IndexBuffer ind;
-
-		public PagePart(ViewHWA base, Image page, int x, int y, short s) {
-			this.size = s;
-
-			// cropping
-			Image part = Image.createImage(s, s);
-			Graphics pg = part.getGraphics();
-			pg.setColor(0);
-			pg.fillRect(0, 0, s, s);
-			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0,
-					0, 0);
-			System.gc();
-
-			// appearance
-			Image2D image2D = new Image2D(Image2D.RGB, part);
-			Texture2D tex = new Texture2D(image2D);
-			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
-			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
-			tex.setBlending(Texture2D.FUNC_MODULATE);
-			ap = new Appearance();
-			ap.setTexture(0, tex);
-			ap.setMaterial(base._material);
-			ap.setCompositingMode(base._compositing);
-			ap.setPolygonMode(base._polMode);
-
-			// transform
-			t = new Transform();
-			t.postTranslate(x, y, 0);
-
-			// quad
-			// RT, LT, RB, LB
-			short[] vert = { s, 0, 0, 0, 0, 0, s, s, 0, 0, s, 0 };
-			short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
-
-			VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
-			vertArray.set(0, vert.length / 3, vert);
-
-			VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
-			texArray.set(0, uv.length / 2, uv);
-
-			ind = base._ind;
-
-			vb = new VertexBuffer();
-			vb.setPositions(vertArray, 1.0f, null);
-			vb.setTexCoords(0, texArray, 1.0f, null);
-			vb.setDefaultColor(-1);
-		}
-
-		public void paint(Graphics3D g) {
-			g.render(vb, ind, ap, t);
-		}
 	}
 
 	protected float panDeltaMul() {
