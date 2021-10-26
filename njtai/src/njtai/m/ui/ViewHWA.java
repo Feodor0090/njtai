@@ -87,9 +87,8 @@ public class ViewHWA extends View {
 		ih = i.getHeight();
 		iw = i.getWidth();
 		Vector v = new Vector();
-		int s = 512;
-		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
-			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
+		for (int ix = 0; ix < i.getWidth() + tileSize - 1; ix += tileSize) {
+			for (int iy = 0; iy < i.getHeight() + tileSize - 1; iy += tileSize) {
 				v.addElement(getTile(i, ix, iy));
 			}
 		}
@@ -137,10 +136,8 @@ public class ViewHWA extends View {
 				try {
 					Background b = new Background();
 					b.setColorClearEnable(true);
-					b.setDepthClearEnable(true);
+					b.setDepthClearEnable(false);
 					g3.clear(b);
-					Transform it = new Transform();
-					it.setIdentity();
 
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
@@ -195,66 +192,18 @@ public class ViewHWA extends View {
 		g3d.addLight(l, t);
 	}
 
-	static class LegacyPagePart {
-		int size;
-		Appearance ap;
-		Transform t;
-		VertexBuffer vb;
-		IndexBuffer ind;
+	
 
-		public LegacyPagePart(ViewHWA base, Image page, int x, int y, short s) {
-			this.size = s;
-
-			// cropping
-			Image part = Image.createImage(s, s);
-			Graphics pg = part.getGraphics();
-			pg.setColor(0);
-			pg.fillRect(0, 0, s, s);
-			pg.drawRegion(page, x, y, Math.min(size, page.getWidth() - x), Math.min(size, page.getHeight() - y), 0, 0,
-					0, 0);
-			System.gc();
-
-			// appearance
-			Image2D image2D = new Image2D(Image2D.RGB, part);
-			Texture2D tex = new Texture2D(image2D);
-			tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
-			tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
-			tex.setBlending(Texture2D.FUNC_MODULATE);
-			ap = new Appearance();
-			ap.setTexture(0, tex);
-			ap.setMaterial(base.mat);
-			ap.setCompositingMode(base.cmp);
-			ap.setPolygonMode(base.pm);
-
-			// transform
-			t = new Transform();
-			t.postTranslate(x, y, 0);
-
-			ind = base._ind;
-
-			vb = base.vb;
-		}
-
-		public void paint(Graphics3D g) {
-			g.render(vb, ind, ap, t);
-		}
-
-		public Node toNode() {
-			Mesh m = new Mesh(vb, ind, ap);
-			// m.setTransform(t);
-			return m;
-		}
-	}
-
-	private PagePart getTile(Image i, int x, int y) {
+	private PagePart getTile(Image i, int tx, int ty) {
 		PagePart pp = new PagePart();
 		// cropping
 		Image part = Image.createImage(tileSize, tileSize);
 		Graphics pg = part.getGraphics();
 		pg.setColor(0);
 		pg.fillRect(0, 0, tileSize, tileSize);
-		pg.drawRegion(i, x, y, Math.min(tileSize, getWidth() - x), Math.min(tileSize, getHeight() - y), 0, 0,
+		pg.drawRegion(i, tx, ty, Math.min(tileSize, i.getWidth() - tx), Math.min(tileSize, i.getHeight() - ty), 0, 0,
 				0, 0);
+		
 		System.gc();
 
 		// appearance
@@ -271,7 +220,10 @@ public class ViewHWA extends View {
 
 		// transform
 		pp.t = new Transform();
-		pp.t.postTranslate(x, y, 0);
+		pp.t.postTranslate(tx, ty, 0);
+		
+		pp.n = new Mesh(vb, _ind, ap);
+		
 		return pp;
 	}
 
