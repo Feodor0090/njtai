@@ -122,9 +122,10 @@ public class ViewHWA extends View {
 					g3.clear(b);
 					Transform it = new Transform();
 					it.setIdentity();
+					
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						g3.render(p[i].toNode(), it);
+						g3.render(p[i].toNode(), p[i].t);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -235,7 +236,7 @@ public class ViewHWA extends View {
 		
 		public Node toNode() {
 			Mesh m = new Mesh(vb, ind, ap);
-			m.setTransform(t);
+			//m.setTransform(t);
 			return m;
 		}
 	}
