@@ -44,11 +44,22 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	private void initForm() {
 		loc = NJTAI.getStrings("page");
 
+		int layout;
+		// число выбрано от балды
+		if (getWidth() > 480) {
+			layout = Item.LAYOUT_EXPAND | Item.LAYOUT_NEWLINE_AFTER;
+		} else {
+			layout = Item.LAYOUT_DEFAULT;
+		}
 		back = new Command(loc[0], Command.BACK, 1);
 		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
+		page1.setLayout(layout | Item.LAYOUT_NEWLINE_AFTER);
 		pageN = new StringItem(null, loc[2], StringItem.BUTTON);
+		pageN.setLayout(layout);
 		repair = new StringItem(null, loc[3], StringItem.BUTTON);
+		repair.setLayout(layout);
 		save = new StringItem(null, loc[4], StringItem.BUTTON);
+		save.setLayout(layout);
 		open = new Command(loc[5], Command.ITEM, 1);
 		goTo = new Command(loc[6], Command.OK, 1);
 		repairFull = new Command(loc[3], Command.SCREEN, 2);

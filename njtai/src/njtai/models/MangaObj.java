@@ -36,7 +36,7 @@ public class MangaObj {
 	public MangaObj(String html) {
 		num = Integer.parseInt(StringUtil.range(html, "<a href=\"/g/", "/\"", false));
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
-		title = StringUtil.range(html, "<div class=\"caption\">", "</div>", false);
+		title = StringUtil.htmlString(StringUtil.range(html, "<div class=\"caption\">", "</div>", false));
 	}
 
 	/**

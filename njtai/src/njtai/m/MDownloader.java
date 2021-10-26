@@ -21,6 +21,7 @@ import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
+import njtai.m.ui.MMenu;
 import njtai.m.ui.Prefs;
 
 /**
@@ -602,17 +603,17 @@ public class MDownloader extends Thread implements CommandListener {
 	 */
 	public static void reselectWD(final Displayable prev) {
 		List l = new List(NJTAI.rus ? "Выберите папку:" : "Choose folder:", List.IMPLICIT, getWDs(false), null);
+		l.addCommand(MMenu.backCmd);
 		l.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable d) {
 				if (c == List.SELECT_COMMAND) {
-
 					currentWD = ((List) d).getString(((List) d).getSelectedIndex());
 					if (prev instanceof Prefs) {
 						((Prefs) prev).wd.setText(currentWD);
 					}
-					NJTAIM.setScr(prev);
 				}
+				NJTAIM.setScr(prev);
 			}
 		});
 		NJTAIM.setScr(l);

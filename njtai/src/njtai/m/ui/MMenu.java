@@ -33,6 +33,7 @@ public final class MMenu extends List implements CommandListener {
 	public MMenu() {
 		super("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
 		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
+		openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 		this.addCommand(exitCmd);
 		this.setCommandListener(this);
 	}
@@ -42,7 +43,7 @@ public final class MMenu extends List implements CommandListener {
 	 * Back command.
 	 */
 	public static Command backCmd;
-	private Command openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
+	public static Command openCmd;
 	private Command searchCmd = new Command(NJTAI.rus ? "Поиск" : "Search", Command.OK, 1);
 
 	/**
@@ -176,15 +177,14 @@ public final class MMenu extends List implements CommandListener {
 			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
 			ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
 					"stacorp, ales_alte, mineshanya"));
-			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte"));
+			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
 			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-					"nnproject, SIStore, Jazmin Rocio, testers"));
+					"nnproject, SIStore, Symbian Zone, Jazmin Rocio"));
 			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
 					"2200 2404 4035 6554\ndonate.stream/f0090"));
 			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
 					"github.com/Feodor0090/njtai\nhttps://t.me/symnovel"));
-			ab.append(new Spacer(100, 300));
-			StringItem bottomJoke = new StringItem(null, "\nИ помните: порода Махо - чёрный пудель!");
+			StringItem bottomJoke = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!");
 			bottomJoke.setFont(Font.getFont(0, 0, 8));
 			ab.append(bottomJoke);
 
