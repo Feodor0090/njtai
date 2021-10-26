@@ -53,7 +53,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 		}
 		back = new Command(loc[0], Command.BACK, 1);
 		page1 = new StringItem(null, loc[1], StringItem.BUTTON);
-		page1.setLayout(layout | Item.LAYOUT_NEWLINE_AFTER);
+		page1.setLayout(layout);
 		pageN = new StringItem(null, loc[2], StringItem.BUTTON);
 		pageN.setLayout(layout);
 		repair = new StringItem(null, loc[3], StringItem.BUTTON);
@@ -134,7 +134,9 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 			append(new StringItem(loc[17], mo.lang));
 		if (mo.parody != null)
 			append(new StringItem(loc[18], mo.parody));
-		append(new StringItem(loc[19], mo.tags));
+		Item tg = new StringItem(loc[19], mo.tags);
+		tg.setLayout(Item.LAYOUT_NEWLINE_AFTER);
+		append(tg);
 		page1.setItemCommandListener(this);
 		page1.setDefaultCommand(open);
 		append(page1);

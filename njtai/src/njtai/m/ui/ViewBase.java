@@ -596,7 +596,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	/**
 	 * @return -1 if drag must be inverted, 1 overwise.
 	 */
-	protected int panDeltaMul() {
+	protected float panDeltaMul() {
 		return NJTAI.invertPan ? -1 : 1;
 	}
 
@@ -608,8 +608,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx) * panDeltaMul() * (useSmoothZoom() && NJTAIM.isKem() ? (5f / zoom) : 1);
-		y += (ty - ly) * panDeltaMul() * (useSmoothZoom() && NJTAIM.isKem() ? (5f / zoom) : 1);
+		x += (tx - lx) * panDeltaMul() / (useSmoothZoom() ? zoom : 1f);
+		y += (ty - ly) * panDeltaMul() / (useSmoothZoom() ? zoom : 1f);
 		lx = tx;
 		ly = ty;
 		repaint();
