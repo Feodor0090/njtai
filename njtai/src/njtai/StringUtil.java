@@ -2,15 +2,23 @@ package njtai;
 
 import java.util.Vector;
 
+/**
+ * Collection of various tools to extract data from text. Mostly copy-pasted
+ * from SymNovel, Pecorine Mobile and some other projects.
+ * 
+ * @author Feodor0090, Shinovon
+ *
+ */
 public class StringUtil {
-	
+
 	public static String from(String s, String f) {
 		return from(s, f, true);
 	}
 
 	public static String from(String s, String f, boolean incl) {
 		int si = s.indexOf(f);
-		if (si == -1) return "";
+		if (si == -1)
+			return "";
 		if (!incl) {
 			si += f.length();
 		}
@@ -22,7 +30,8 @@ public class StringUtil {
 	}
 
 	public static String range(String s, String f, String t, boolean incl) {
-		if (s.length() == 0) return "";
+		if (s.length() == 0)
+			return "";
 		int si = s.indexOf(f);
 		if (si == -1) {
 			si = 0;
@@ -107,27 +116,31 @@ public class StringUtil {
 	}
 
 	/**
-	 * @param str
+	 * Replaces some common html entities.
+	 * 
+	 * @param str String to process.
 	 * @return String with parsed html escape codes
+	 * @author Shinovon
 	 */
 	public static String htmlString(String str) {
 		str = replace(str, "&#39;", "'");
 		str = replace(str, "&#x27;", "'");
-		//str = replace(str, "&apos;", "'");
+		// str = replace(str, "&apos;", "'");
 		str = replace(str, "&quot;", "\"");
 		str = replace(str, "&lt;", "<");
 		str = replace(str, "&gt;", ">");
-		//str = replace(str, "&nbsp;", " ");
+		// str = replace(str, "&nbsp;", " ");
 		str = replace(str, "&ndash;", "-");
 		str = replace(str, "&amp;", "&");
 		return str;
 	}
-	
+
 	/**
-	 * @param str original
+	 * @param str  original
 	 * @param from string to find
-	 * @param to string to replace with
+	 * @param to   string to replace with
 	 * @return replaced string
+	 * @author Shinovon
 	 */
 	public static String replace(String str, String from, String to) {
 		int j = str.indexOf(from);

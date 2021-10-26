@@ -59,6 +59,9 @@ public class SavedManager extends Thread implements CommandListener {
 		list.setCommandListener(this);
 	}
 
+	/**
+	 * Fills the list with folder content.
+	 */
 	public void refresh() {
 		Enumeration e = null;
 		FileConnection fc = null;
