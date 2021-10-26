@@ -132,11 +132,11 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 1:
 			// popular
-			NJTAIM.setScr(new MangaList(NJTAI.getStrings("acts")[1], this, MangaObjs.getPopularList()));
+			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[1], this, MangaObjs.getPopularList()));
 			return;
 		case 2:
 			// new
-			NJTAIM.setScr(new MangaList(NJTAI.getStrings("acts")[2], this, MangaObjs.getNewList()));
+			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[2], this, MangaObjs.getNewList()));
 			return;
 		case 3:
 			// search
