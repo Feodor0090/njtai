@@ -126,6 +126,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		if (h == null)
 			throw new NullPointerException();
+    
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
@@ -311,25 +312,22 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (list.length == 0)
 			return null;
 		StringBuffer sb = new StringBuffer();
-		sb.append(translateLang(list[0]));
+		String[] langs = NJTAI.getStrings("langs");
+		String[] langsO = NJTAI.getStrings("langs", "en");
+		sb.append(translateLang(list[0], langsO, langs));
 		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");
-			String s = translateLang(list[i]);
+			String s = translateLang(list[i], langsO, langs);
 			sb.append(s);
 		}
 		return sb.toString();
 	}
 
-	private static String translateLang(String s) {
-		if (NJTAI.rus) {
-			if (s.equals("japanese"))
-				s = "японский";
-			else if (s.equals("english"))
-				s = "английский";
-			else if (s.equals("chinese"))
-				s = "китайский";
-			else if (s.equals("translated"))
-				s = "перевод";
+	private static String translateLang(String s, String[] o, String[] l) {
+		s = s.toLowerCase();
+		for (int i = 0; i < l.length; i++) {
+			if (s.equals(o[i]))
+				return l[i];
 		}
 		return s;
 	}

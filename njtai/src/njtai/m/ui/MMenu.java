@@ -31,7 +31,7 @@ public final class MMenu extends List implements CommandListener {
 	 * Creates menu screen.
 	 */
 	public MMenu() {
-		super("NJTAI", List.IMPLICIT, NJTAIM.getStrings("main"), null);
+		super("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
 		backCmd = new Command(NJTAI.rus ? "Назад" : "Back", Command.BACK, 2);
 		openCmd = new Command(NJTAI.rus ? "Открыть" : "Go", Command.OK, 1);
 		this.addCommand(exitCmd);
@@ -261,7 +261,7 @@ public final class MMenu extends List implements CommandListener {
 			Form f = new Form(NJTAI.rus ? "Управление" : "Controls");
 			f.setCommandListener(m);
 			f.addCommand(backCmd);
-			String[] items = NJTAIM.getStrings("tips");
+			String[] items = NJTAI.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
 				if (NJTAIM.isS60v3fp2()) {
 					f.append(new StringItem(null, items[i * 2 + 1]));

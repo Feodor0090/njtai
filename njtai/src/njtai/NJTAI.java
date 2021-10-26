@@ -1,6 +1,8 @@
 package njtai;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import njtai.models.WebAPIA;
 
@@ -115,6 +117,7 @@ public class NJTAI {
 
 	/**
 	 * Stops a thread, ignoring interruptions.
+	 * 
 	 * @param ms Ms to wait.
 	 */
 	public static void pause(int ms) {
@@ -127,6 +130,7 @@ public class NJTAI {
 
 	/**
 	 * Part of tube42 imagelib. Blends 2 colors.
+	 * 
 	 * @param c1
 	 * @param c2
 	 * @param value256
@@ -148,5 +152,46 @@ public class NJTAI {
 		final int ag = (c2_AG_org + ((c1_AG - c2_AG) * v1)) & 0xFF00FF00;
 		return ag | rb;
 
+	}
+
+	/**
+	 * Loads localization file.
+	 * 
+	 * @param cat    Category of strings.
+	 * @param locale Language code to use.
+	 * @return List of strings to use.
+	 */
+	public static String[] getStrings(String cat, String locale) {
+		try {
+			if (locale == null) {
+				locale = System.getProperty("microedition.locale");
+				locale = locale.toLowerCase().substring(0, 2);
+			}
+			InputStream s = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			if (s == null)
+				s = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
+
+			char[] buf = new char[32 * 1024];
+			InputStreamReader isr = new InputStreamReader(s, "UTF-8");
+			int l = isr.read(buf);
+			isr.close();
+			String r = new String(buf, 0, l).replace('\r', ' ');
+			return StringUtil.splitFull(r, '\n');
+		} catch (Exception e) {
+			e.printStackTrace();
+			// null is returned to avoid massive try-catch constructions near every call.
+			// Normally, it always return english file.
+			return null;
+		}
+	}
+
+	/**
+	 * Loads localization file.
+	 * 
+	 * @param cat Category of strings.
+	 * @return List of strings to use.
+	 */
+	public static String[] getStrings(String cat) {
+		return getStrings(cat, null);
 	}
 }
