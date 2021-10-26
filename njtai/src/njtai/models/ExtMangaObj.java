@@ -325,6 +325,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	}
 
 	private static String translateLang(String s, String[] o, String[] l) {
+		s = s.toLowerCase();
 		for (int i = 0; i < l.length; i++) {
 			if (s.equals(o[i]))
 				return l[i];
