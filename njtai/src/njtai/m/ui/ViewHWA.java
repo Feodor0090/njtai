@@ -230,6 +230,12 @@ public class ViewHWA extends View {
 		public void paint(Graphics3D g) {
 			g.render(vb, ind, ap, t);
 		}
+		
+		public Node toNode() {
+			Mesh m = new Mesh(vb, ind, ap);
+			m.setTransform(t);
+			return m;
+		}
 	}
 
 	protected float panDeltaMul() {
