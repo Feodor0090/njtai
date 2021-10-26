@@ -114,7 +114,7 @@ public class ViewHWA extends View {
 			} else {
 				limitOffset();
 				Graphics3D g3 = Graphics3D.getInstance();
-				g3.bindTarget(g);
+				g3.bindTarget(g, false, Graphics3D.ANTIALIAS);
 				try {
 					Background b = new Background();
 					b.setColorClearEnable(true);
