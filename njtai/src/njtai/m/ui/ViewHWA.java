@@ -27,22 +27,22 @@ public class ViewHWA extends View {
 		super(emo, prev, page);
 
 		// material
-		_material = new Material();
-		_material.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
-		_material.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
-		_material.setShininess(128f);
-		_material.setVertexColorTrackingEnable(true);
+		mat = new Material();
+		mat.setColor(Material.DIFFUSE, 0xFFFFFFFF); // white
+		mat.setColor(Material.SPECULAR, 0xFFFFFFFF); // white
+		mat.setShininess(128f);
+		mat.setVertexColorTrackingEnable(true);
 
 		// compositing
-		_compositing = new CompositingMode();
-		_compositing.setAlphaThreshold(0.0f);
-		_compositing.setBlending(CompositingMode.ALPHA);
+		cmp = new CompositingMode();
+		cmp.setAlphaThreshold(0.0f);
+		cmp.setBlending(CompositingMode.ALPHA);
 
 		// pol mode
-		_polMode = new PolygonMode();
-		_polMode.setWinding(PolygonMode.WINDING_CW);
-		_polMode.setCulling(PolygonMode.CULL_NONE);
-		_polMode.setShading(PolygonMode.SHADE_SMOOTH);
+		pm = new PolygonMode();
+		pm.setWinding(PolygonMode.WINDING_CW);
+		pm.setCulling(PolygonMode.CULL_NONE);
+		pm.setShading(PolygonMode.SHADE_SMOOTH);
 
 		// strip
 		_ind = new TriangleStripArray(0, new int[] { 4 });
@@ -65,12 +65,12 @@ public class ViewHWA extends View {
 	}
 
 	protected VertexBuffer vb;
-	protected Material _material;
-	protected CompositingMode _compositing;
-	protected PolygonMode _polMode;
+	protected Material mat;
+	protected CompositingMode cmp;
+	protected PolygonMode pm;
 	protected TriangleStripArray _ind;
 
-	LegacyPagePart[] p = null;
+	PagePart[] p = null;
 	int iw, ih;
 
 	public static final short tileSize = 512;
@@ -90,10 +90,10 @@ public class ViewHWA extends View {
 		int s = 512;
 		for (int ix = 0; ix < i.getWidth() + s - 1; ix += s) {
 			for (int iy = 0; iy < i.getHeight() + s - 1; iy += s) {
-				v.addElement(new LegacyPagePart(this, i, ix, iy, (short) s));
+				v.addElement(getTile(i, ix, iy));
 			}
 		}
-		LegacyPagePart[] tmp = new LegacyPagePart[v.size()];
+		PagePart[] tmp = new PagePart[v.size()];
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
@@ -144,7 +144,7 @@ public class ViewHWA extends View {
 
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						g3.render(p[i].toNode(), p[i].t);
+						g3.render(p[i].n, p[i].t);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -222,14 +222,13 @@ public class ViewHWA extends View {
 			tex.setBlending(Texture2D.FUNC_MODULATE);
 			ap = new Appearance();
 			ap.setTexture(0, tex);
-			ap.setMaterial(base._material);
-			ap.setCompositingMode(base._compositing);
-			ap.setPolygonMode(base._polMode);
+			ap.setMaterial(base.mat);
+			ap.setCompositingMode(base.cmp);
+			ap.setPolygonMode(base.pm);
 
 			// transform
 			t = new Transform();
 			t.postTranslate(x, y, 0);
-
 
 			ind = base._ind;
 
@@ -248,7 +247,32 @@ public class ViewHWA extends View {
 	}
 
 	private PagePart getTile(Image i, int x, int y) {
-		return null;
+		PagePart pp = new PagePart();
+		// cropping
+		Image part = Image.createImage(tileSize, tileSize);
+		Graphics pg = part.getGraphics();
+		pg.setColor(0);
+		pg.fillRect(0, 0, tileSize, tileSize);
+		pg.drawRegion(i, x, y, Math.min(tileSize, getWidth() - x), Math.min(tileSize, getHeight() - y), 0, 0,
+				0, 0);
+		System.gc();
+
+		// appearance
+		Image2D image2D = new Image2D(Image2D.RGB, part);
+		Texture2D tex = new Texture2D(image2D);
+		tex.setFiltering(Texture2D.FILTER_LINEAR, Texture2D.FILTER_LINEAR);
+		tex.setWrapping(Texture2D.WRAP_CLAMP, Texture2D.WRAP_CLAMP);
+		tex.setBlending(Texture2D.FUNC_MODULATE);
+		Appearance ap = new Appearance();
+		ap.setTexture(0, tex);
+		ap.setMaterial(mat);
+		ap.setCompositingMode(cmp);
+		ap.setPolygonMode(pm);
+
+		// transform
+		pp.t = new Transform();
+		pp.t.postTranslate(x, y, 0);
+		return pp;
 	}
 
 	class PagePart {
