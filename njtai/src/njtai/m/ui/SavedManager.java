@@ -7,6 +7,7 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.*;
 
+import cc.nnproject.utils.JSONUtil;
 import njtai.NJTAI;
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
@@ -316,9 +317,10 @@ public class SavedManager extends Thread implements CommandListener {
 
 		// restoring ExtMangaObj from loaded data
 		try {
-			Hashtable h = (Hashtable) cc.nnproject.lwjson.JSON.parseJSON(d);
+			Hashtable h = JSONUtil.object(d.substring(1, d.length() - 1));
 			String n = item.substring(0, item.indexOf('-')).trim();
 			o = new ExtMangaObj(Integer.parseInt(n), h);
+			d = null;
 			h = null;
 			Image cover = null;
 

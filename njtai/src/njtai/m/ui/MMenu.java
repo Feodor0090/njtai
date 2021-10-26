@@ -181,9 +181,9 @@ public final class MMenu extends List implements CommandListener {
 			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
 			ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
 					"stacorp, ales_alte, mineshanya"));
-			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte"));
+			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
 			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-					"nnproject, SIStore, Symbian Zone, Jazmin Rocio, other testers"));
+					"nnproject, SIStore, Symbian Zone, Jazmin Rocio"));
 			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
 					"2200 2404 4035 6554\ndonate.stream/f0090"));
 			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
@@ -266,7 +266,7 @@ public final class MMenu extends List implements CommandListener {
 			Form f = new Form(NJTAIM.getStrings("acts")[13]);
 			f.setCommandListener(m);
 			f.addCommand(backCmd);
-			String[] items = NJTAIM.getStrings("tips");
+			String[] items = NJTAI.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
 				if (NJTAIM.isS60v3fp2()) {
 					f.append(new StringItem(null, items[i * 2 + 1]));

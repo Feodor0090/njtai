@@ -2,6 +2,7 @@ package njtai.models;
 
 import java.util.Hashtable;
 
+import cc.nnproject.utils.JSONUtil;
 import njtai.NJTAI;
 import njtai.StringUtil;
 
@@ -74,8 +75,8 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		// img and title
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
-		title = StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
-				"<span class=\"pretty\">", "</span", false);
+		title = StringUtil.htmlString(StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
+				"<span class=\"pretty\">", "</span", false));
 
 		// metadata
 		try {
@@ -122,7 +123,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	public ExtMangaObj(int num, Hashtable h) {
 		this.num = num;
 		offline = true;
-		
+
+		if (h == null)
+			throw new NullPointerException();
+    
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
@@ -133,12 +137,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (h.containsKey("lang")) {
 			lang = h.get("lang").toString();
 		}
-		Object p = h.get("pages");
-		if (p instanceof Integer) {
-			pages = ((Integer) p).intValue();
-		} else {
-			pages = Integer.parseInt(p.toString());
-		}
+		pages = Integer.parseInt(h.get("pages").toString());
 	}
 
 	/**
@@ -313,25 +312,22 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (list.length == 0)
 			return null;
 		StringBuffer sb = new StringBuffer();
-		sb.append(translateLang(list[0]));
+		String[] langs = NJTAI.getStrings("langs");
+		String[] langsO = NJTAI.getStrings("langs", "en");
+		sb.append(translateLang(list[0], langsO, langs));
 		for (int i = 1; i < list.length; i++) {
 			sb.append(", ");
-			String s = translateLang(list[i]);
+			String s = translateLang(list[i], langsO, langs);
 			sb.append(s);
 		}
 		return sb.toString();
 	}
 
-	private static String translateLang(String s) {
-		if (NJTAI.rus) {
-			if (s.equals("japanese"))
-				s = "японский";
-			else if (s.equals("english"))
-				s = "английский";
-			else if (s.equals("chinese"))
-				s = "китайский";
-			else if (s.equals("translated"))
-				s = "перевод";
+	private static String translateLang(String s, String[] o, String[] l) {
+		s = s.toLowerCase();
+		for (int i = 0; i < l.length; i++) {
+			if (s.equals(o[i]))
+				return l[i];
 		}
 		return s;
 	}
@@ -353,7 +349,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		h.put("pages", new Integer(pages));
 
 		try {
-			return cc.nnproject.lwjson.JSON.buildJSON(h);
+			return JSONUtil.build(h);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -362,6 +358,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 	/**
 	 * Was this object decoded offline?
+	 * 
 	 * @return Value of {@link #offline}.
 	 */
 	public boolean isOffline() {

@@ -42,7 +42,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	}
 
 	private void initForm() {
-		loc = NJTAIM.getStrings("page");
+		loc = NJTAI.getStrings("page");
 
 		int layout;
 		// число выбрано от балды
