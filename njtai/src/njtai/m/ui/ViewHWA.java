@@ -120,9 +120,11 @@ public class ViewHWA extends View {
 					b.setColorClearEnable(true);
 					b.setDepthClearEnable(true);
 					g3.clear(b);
+					Transform it = new Transform();
+					it.setIdentity();
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						p[i].paint(g3);
+						g3.render(p[i].toNode(), it);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
