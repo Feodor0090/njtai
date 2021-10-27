@@ -45,30 +45,40 @@ public class ViewHWA extends View {
 		pm.setShading(PolygonMode.SHADE_SMOOTH);
 
 		// strip
-		_ind = new TriangleStripArray(0, new int[] { 4 });
+		ind = new TriangleStripArray(0, new int[] { 4 });
 
 		// quad
 		// RT, LT, RB, LB
 		short[] vert = { tileSize, 0, 0, 0, 0, 0, tileSize, tileSize, 0, 0, tileSize, 0 };
 		short[] uv = { 1, 0, 0, 0, 1, 1, 0, 1 };
-
 		VertexArray vertArray = new VertexArray(vert.length / 3, 3, 2);
 		vertArray.set(0, vert.length / 3, vert);
-
 		VertexArray texArray = new VertexArray(uv.length / 2, 2, 2);
 		texArray.set(0, uv.length / 2, uv);
-
 		vb = new VertexBuffer();
 		vb.setPositions(vertArray, 1.0f, null);
 		vb.setTexCoords(0, texArray, 1.0f, null);
 		vb.setDefaultColor(-1);
+		
+		// light
+		li = new Light();
+		li.setColor(0xffffff); // white light
+		li.setIntensity(1f);
+		li.setMode(Light.AMBIENT);
+		
+		// bg
+		bg = new Background();
+		bg.setColorClearEnable(true);
+		bg.setDepthClearEnable(false);
 	}
 
 	protected VertexBuffer vb;
 	protected Material mat;
 	protected CompositingMode cmp;
 	protected PolygonMode pm;
-	protected TriangleStripArray _ind;
+	protected TriangleStripArray ind;
+	protected Light li;
+	protected Background bg;
 
 	PagePart[] p = null;
 	int iw, ih;
@@ -117,7 +127,7 @@ public class ViewHWA extends View {
 
 	protected void paint(Graphics g) {
 		try {
-			Font f = Font.getFont(0, 0, 8);
+			final Font f = Font.getFont(0, 0, 8);
 			g.setFont(f);
 
 			// bg fill
@@ -131,13 +141,10 @@ public class ViewHWA extends View {
 				g.drawString(iw + "x" + ih, getWidth() / 2, 4, Graphics.TOP | Graphics.HCENTER);
 			} else {
 				limitOffset();
-				Graphics3D g3 = Graphics3D.getInstance();
+				final Graphics3D g3 = Graphics3D.getInstance();
 				g3.bindTarget(g, false, Graphics3D.ANTIALIAS);
 				try {
-					Background b = new Background();
-					b.setColorClearEnable(true);
-					b.setDepthClearEnable(false);
-					g3.clear(b);
+					g3.clear(bg);
 
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
@@ -182,20 +189,15 @@ public class ViewHWA extends View {
 		t.postTranslate(x, y, 100);
 		t.postRotate(180, 0, 0, -1);
 		t.postScale(-1, 1, 1);
-		Light l = new Light();
-		l.setColor(0xffffff); // white light
-		l.setIntensity(1f);
-		l.setMode(Light.AMBIENT);
 
 		g3d.setCamera(cam, t);
 		g3d.resetLights();
-		g3d.addLight(l, t);
+		g3d.addLight(li, t);
 	}
 
 	
 
 	private PagePart getTile(Image i, int tx, int ty) {
-		PagePart pp = new PagePart();
 		// cropping
 		Image part = Image.createImage(tileSize, tileSize);
 		Graphics pg = part.getGraphics();
@@ -219,17 +221,21 @@ public class ViewHWA extends View {
 		ap.setPolygonMode(pm);
 
 		// transform
-		pp.t = new Transform();
-		pp.t.postTranslate(tx, ty, 0);
+		Transform t = new Transform();
+		t.postTranslate(tx, ty, 0);
 		
-		pp.n = new Mesh(vb, _ind, ap);
-		
-		return pp;
+		return new PagePart(new Mesh(vb, ind, ap), t);
 	}
 
-	class PagePart {
-		Node n;
-		Transform t;
+	private final class PagePart {
+		
+		public PagePart(final Node n, final Transform t) {
+			super();
+			this.n = n;
+			this.t = t;
+		}
+		final Node n;
+		final Transform t;
 	}
 
 	protected float panDeltaMul() {
