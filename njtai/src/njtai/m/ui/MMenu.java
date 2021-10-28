@@ -63,6 +63,13 @@ public final class MMenu extends List implements CommandListener {
 						return;
 					}
 					NJTAIM.setScr(new MangaList(NJTAI.getStrings("acts")[4], this, r));
+				} catch (IOException e) {
+					e.printStackTrace();
+					NJTAIM.setScr(this);
+					NJTAI.pause(100);
+					String[] l = NJTAI.getStrings("acts");
+					NJTAIM.setScr(new Alert(l[7], l[14], null,
+							AlertType.ERROR));
 				} catch (NullPointerException e) {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
@@ -73,7 +80,7 @@ public final class MMenu extends List implements CommandListener {
 					NJTAIM.setScr(this);
 					NJTAI.pause(100);
 					String[] l = NJTAI.getStrings("acts");
-					NJTAIM.setScr(new Alert(l[7], l[8], null,
+					NJTAIM.setScr(new Alert(l[7], l[8].concat(" ").concat(e.toString()), null,
 							AlertType.ERROR));
 				}
 				return;
@@ -101,10 +108,17 @@ public final class MMenu extends List implements CommandListener {
 			NJTAIM.setScr(this);
 			NJTAI.pause(100);
 			String info;
+			String[] l = null;
+			try {
+				l = NJTAI.getStrings("acts");
+			} catch (Error e) {
+			}
 			if (t instanceof OutOfMemoryError) {
-				info = "Not enough memory!";
+				if(l == null) {
+					info = "Not enough memory!";
+				} else info = l[27];
 			} else if (t instanceof IOException) {
-				info = NJTAI.getStrings("acts")[14];
+				info = l[25];
 			} else if (t instanceof IllegalAccessException) {
 				info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
 			} else {
