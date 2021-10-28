@@ -108,9 +108,15 @@ public final class MMenu extends List implements CommandListener {
 			NJTAIM.setScr(this);
 			NJTAI.pause(100);
 			String info;
-			String[] l = NJTAI.getStrings("acts");
+			String[] l = null;
+			try {
+				l = NJTAI.getStrings("acts");
+			} catch (Error e) {
+			}
 			if (t instanceof OutOfMemoryError) {
-				info = l[27];
+				if(l == null) {
+					info = "Not enough memory!";
+				} else info = l[27];
 			} else if (t instanceof IOException) {
 				info = l[25];
 			} else if (t instanceof IllegalAccessException) {
