@@ -5,14 +5,14 @@ Search
 Search results
 Incorrect query
 Did you entered nothing?
-Failed to open
-Have you entered something URL-breaking? Is your proxy and network alive?
+Search failed
+Unknown error:
 Failed to go to page
 Have you entered correct number?
 Enter ID:
 About this software
 Controls
-Failed to connect. Check connection and proxy.
+Failed to connect. Check internet connection and proxy.
 Open
 close
 Page number
@@ -23,3 +23,4 @@ Downloader error
 There is no folder where we can write data. Try to manually create a folder on C:/Data/Images/ path.
 All pages were checked and repaired.
 All pages were downloaded.
+Not enough memory!

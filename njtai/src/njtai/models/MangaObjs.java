@@ -95,14 +95,15 @@ public class MangaObjs implements Enumeration {
 	 * @param query  Text to search.
 	 * @param caller Screen to work after.
 	 * @return Loaded list.
+	 * @throws IOException            Connection error.
 	 */
-	public static MangaObjs getSearchList(String query, Object caller) {
+	public static MangaObjs getSearchList(String query, Object caller) throws IOException {
 		String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + query;
-		String r = WebAPIA.inst.getUtfOrNull(q);
-		if (r == null) {
-			NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
-			return null;
-		}
+		String r = WebAPIA.inst.getUtf(q);
+		//if (r == null) {
+		//	NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
+		//	return null;
+		//}
 		String sec = StringUtil.range(r, NEW_DIV, PAGIN_SEC, false);
 		return new MangaObjs(sec);
 	}
