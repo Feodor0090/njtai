@@ -40,6 +40,7 @@ Example on PHP (url to set in application settngs will be `http://yourserver.com
 $url = urldecode($_SERVER['QUERY_STRING']);
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 if(isset($_SERVER['HTTP_USER_AGENT']))
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
 $res = curl_exec($ch);
