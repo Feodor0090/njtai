@@ -63,9 +63,10 @@ public class NJTAI {
 	 */
 	public static boolean loadCovers = true;
 	/**
-	 * Enable urls preloading?
+	 * Dirty field, must not be used anymore.
+	 * @deprecated
 	 */
-	public static boolean preloadUrl = true;
+	public static boolean _d1 = true;
 	/**
 	 * Keep decoded images in RAM?
 	 */
