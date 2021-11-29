@@ -31,10 +31,6 @@ public class ExtMangaObj extends MangaObj {
 	 */
 	public int pages;
 	/**
-	 * Preloaded list of images' urls.
-	 */
-	public String[] imgs;
-	/**
 	 * Remote folder where to look for images.
 	 */
 	public String location = null;
@@ -67,8 +63,6 @@ public class ExtMangaObj extends MangaObj {
 				"</span", false);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
-
-		imgs = new String[pages];
 
 		// img and title
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
@@ -176,12 +170,6 @@ public class ExtMangaObj extends MangaObj {
 		if (attempt > 0) {
 			Thread.sleep((attempt + 1) * 500);
 		}
-		if (imgs == null) {
-			imgs = new String[pages];
-		}
-		if (imgs[pageN - 1] != null) {
-			return imgs[pageN - 1];
-		}
 
 		try {
 			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
@@ -195,12 +183,9 @@ public class ExtMangaObj extends MangaObj {
 			body = null;
 			System.gc();
 			String url = StringUtil.range(span, "<img src=\"", "\"", false);
-			imgs[pageN - 1] = url;
 			return url;
 		} catch (OutOfMemoryError e) {
-			imgs = null;
 			System.gc();
-			imgs = new String[pages];
 			return null;
 		}
 	}
