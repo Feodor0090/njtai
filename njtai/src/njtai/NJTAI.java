@@ -63,11 +63,6 @@ public class NJTAI {
 	 */
 	public static boolean loadCovers = true;
 	/**
-	 * Dirty field, must not be used anymore.
-	 * @deprecated
-	 */
-	public static boolean _d1 = true;
-	/**
 	 * Keep decoded images in RAM?
 	 */
 	public static boolean keepBitmap = true;
