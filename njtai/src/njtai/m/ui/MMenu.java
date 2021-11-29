@@ -174,38 +174,42 @@ public final class MMenu extends List implements CommandListener {
 			}
 			return;
 		case 7:
-			Form ab = new Form(NJTAI.getStrings("acts")[12]);
-			ab.append(new StringItem("NJTAI v" + NJTAIM.ver(),
-					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
-							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
-			try {
-				ab.append(Image.createImage("/njtai.png"));
-			} catch (Throwable t) {
-				ab.append(new StringItem("Тут должна быть иконка", "но её сожрали неко"));
-			}
-			ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon"));
-			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
-			ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
-					"stacorp, ales_alte, mineshanya"));
-			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
-			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-					"nnproject, SIStore, Symbian Zone, Jazmin Rocio"));
-			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
-					"2200 2404 4035 6554\ndonate.stream/f0090"));
-			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
-					"github.com/Feodor0090/njtai\nhttps://t.me/symnovel"));
-			StringItem bottomJoke = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\nTWFob1BpZG9y");
-			bottomJoke.setFont(Font.getFont(0, 0, 8));
-			ab.append(bottomJoke);
-
-			// setting up
-			ab.setCommandListener(this);
-			ab.addCommand(backCmd);
-			NJTAIM.setScr(ab);
+			aboutScr();
 			return;
 		default:
 			return;
 		}
+	}
+	
+	private void aboutScr() {
+		Form ab = new Form(NJTAI.getStrings("acts")[12]);
+		ab.append(new StringItem("NJTAI v" + NJTAIM.ver(),
+				NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
+						: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
+		try {
+			ab.append(Image.createImage("/njtai.png"));
+		} catch (Throwable t) {
+			ab.append(new StringItem("Тут должна быть иконка", "но её сожрали неко"));
+		}
+		ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon"));
+		ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
+		ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
+				"stacorp, ales_alte, mineshanya"));
+		ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
+		ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
+				"nnproject, SIStore, Symbian Zone, Jazmin Rocio"));
+		ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
+				"2200 2404 4035 6554\ndonate.stream/f0090"));
+		ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
+				"github.com/Feodor0090/njtai\nhttps://t.me/symnovel"));
+		StringItem bottomJoke = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\nTWFob1BpZG9y");
+		bottomJoke.setFont(Font.getFont(0, 0, 8));
+		ab.append(bottomJoke);
+
+		// setting up
+		ab.setCommandListener(this);
+		ab.addCommand(backCmd);
+		NJTAIM.setScr(ab);
 	}
 
 	private Displayable generateDownloadedScreen() {
