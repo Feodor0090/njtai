@@ -159,37 +159,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (location == null) {
 			String u = loadUrl(1);
 			int sp = u.lastIndexOf('/');
-			location = u.substring(0, sp+1);
+			location = u.substring(0, sp + 1);
 			imgSuffix = u.substring(u.lastIndexOf('.'));
 		}
-		if (imgs == null) {
-			imgs = new String[pages];
-		}
-		String url = null;
-		try {
-			url = imgs[i];
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			url = loadUrl(i + 1);
-		}
-		if (url == null) {
-			url = loadUrl(i + 1);
-			if (NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
-				if (!prefetched) {
-					Thread.sleep(100);
-					prefetched = true;
-					urlFetcher = new Thread(this);
-					urlFetcher.setPriority(Thread.MAX_PRIORITY);
-					urlFetcher.start();
-					Thread.sleep(500);
-				}
-			} else {
-				infoReady = 100;
-			}
-		}
-		if (infoReady == -1) {
-			infoReady = 100;
-		}
+		
+		String url = location+(i+1)+imgSuffix;
+		
 		return WebAPIA.inst.getOrNull(NJTAI.proxyUrl(url));
 	}
 
