@@ -34,6 +34,14 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * Preloaded list of images' urls.
 	 */
 	public String[] imgs;
+	/**
+	 * Remote folder where to look for images.
+	 */
+	public String location = "http://ya.ru/";
+	/**
+	 * Suffix of image's URL, usually ".jpg".
+	 */
+	public String imgSuffix = ".jpg";
 
 	private Thread urlFetcher = null;
 
