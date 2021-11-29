@@ -398,7 +398,6 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	protected void keyPressed(int k) {
 		k = qwertyToNum(k);
 		if (k == -7 || k == KEY_NUM9) {
-			emo.cancelPrefetch();
 			try {
 				if (loader != null && loader.isAlive()) {
 					loader.interrupt();

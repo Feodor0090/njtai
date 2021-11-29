@@ -12,7 +12,7 @@ import njtai.StringUtil;
  * @author Feodor0090
  *
  */
-public class ExtMangaObj extends MangaObj implements Runnable {
+public class ExtMangaObj extends MangaObj {
 
 	/**
 	 * List of tags.
@@ -43,16 +43,10 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 */
 	public String imgSuffix = ".jpg";
 
-	private Thread urlFetcher = null;
-
 	/**
 	 * Filed, reflecting the state of internal prefetcher.
 	 */
 	public int infoReady = -2;
-	/**
-	 * Are URLs already prefetched?
-	 */
-	private boolean prefetched = false;
 
 	/**
 	 * Is this object decoded from FS?
@@ -166,59 +160,6 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		String url = location+(i+1)+imgSuffix;
 		
 		return WebAPIA.inst.getOrNull(NJTAI.proxyUrl(url));
-	}
-
-	/**
-	 * Loads all pages URLs into {@link #imgs}.
-	 * 
-	 * @throws InterruptedException If the operation was cancelled via
-	 *                              {@link #cancelPrefetch()}.
-	 * @see {@link #run()}
-	 */
-	private void loadUrls() throws InterruptedException {
-		if (offline) {
-			infoReady = 100;
-			return;
-		}
-		try {
-			for (int i = 1; i <= pages; i++) {
-				long t = System.currentTimeMillis();
-				loadUrl(i);
-				infoReady = i * 100 / pages;
-				NJTAI.pl.repaint();
-				t = System.currentTimeMillis() - t;
-				Thread.sleep(t > 2000 ? 100 : 500);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			infoReady = -1;
-		}
-	}
-
-	/**
-	 * Runs {@link #loadUrls() the prefetcher}.
-	 */
-	public void run() {
-		try {
-			loadUrls();
-			urlFetcher = null;
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Stops {@link #loadUrls() the prefetcher}.
-	 */
-	public void cancelPrefetch() {
-		try {
-			if (urlFetcher != null && urlFetcher.isAlive()) {
-				urlFetcher.interrupt();
-				urlFetcher = null;
-			}
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
