@@ -37,7 +37,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	/**
 	 * Remote folder where to look for images.
 	 */
-	public String location = "http://ya.ru/";
+	public String location = null;
 	/**
 	 * Suffix of image's URL, usually ".jpg".
 	 */
@@ -134,7 +134,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		if (h == null)
 			throw new NullPointerException();
-    
+
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
@@ -156,6 +156,12 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public byte[] getPage(int i) throws InterruptedException {
+		if (location == null) {
+			String u = loadUrl(1);
+			int sp = u.lastIndexOf('/');
+			location = u.substring(0, sp+1);
+			imgSuffix = u.substring(u.lastIndexOf('.'));
+		}
 		if (imgs == null) {
 			imgs = new String[pages];
 		}
