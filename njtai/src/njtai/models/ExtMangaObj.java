@@ -44,11 +44,6 @@ public class ExtMangaObj extends MangaObj {
 	public String imgSuffix = ".jpg";
 
 	/**
-	 * Filed, reflecting the state of internal prefetcher.
-	 */
-	public int infoReady = -2;
-
-	/**
 	 * Is this object decoded from FS?
 	 */
 	private boolean offline = false;
