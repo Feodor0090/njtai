@@ -52,8 +52,6 @@ public abstract class View extends ViewBase {
 			prefetch = (preloadProgress > 0 && preloadProgress < 100)
 					? ((NJTAI.files ? "downloading " : "caching ") + preloadProgress + "%")
 					: null;
-		} else {
-			prefetch = (emo.infoReady >= 0 && emo.infoReady < 100) ? ("fetching " + emo.infoReady + "%") : null;
 		}
 
 		// BGs
@@ -162,12 +160,8 @@ public abstract class View extends ViewBase {
 			g.setGrayScale(0);
 			g.fillRect(0, 0, getWidth(), getHeight());
 			info = NJTAI.rus ? "Не удалось загрузить." : "Failed to load image.";
-		} else if (emo.infoReady == -1) {
-			info = "Failed to fetch pages.";
-		} else if (emo.infoReady == -2 && NJTAI.preloadUrl && NJTAI.cachingPolicy != 2 && !emo.isOffline()) {
-			info = NJTAI.rus ? "Ожидание" : "Waiting";
 		} else {
-			info = (NJTAI.rus ? "Подготовка изображения" : "Image preparing");
+			info = (NJTAI.rus ? "Подготовка" : "Preparing");
 		}
 		g.setGrayScale(0);
 		int w = g.getFont().stringWidth(info);

@@ -12,7 +12,7 @@ import njtai.StringUtil;
  * @author Feodor0090
  *
  */
-public class ExtMangaObj extends MangaObj implements Runnable {
+public class ExtMangaObj extends MangaObj {
 
 	/**
 	 * List of tags.
@@ -31,20 +31,13 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 */
 	public int pages;
 	/**
-	 * Preloaded list of images' urls.
+	 * Remote folder where to look for images.
 	 */
-	public String[] imgs;
-
-	private Thread urlFetcher = null;
-
+	public String location = null;
 	/**
-	 * Filed, reflecting the state of internal prefetcher.
+	 * Suffix of image's URL, usually ".jpg".
 	 */
-	public int infoReady = -2;
-	/**
-	 * Are URLs already prefetched?
-	 */
-	private boolean prefetched = false;
+	public String imgSuffix = ".jpg";
 
 	/**
 	 * Is this object decoded from FS?
@@ -70,8 +63,6 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 				"</span", false);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
-
-		imgs = new String[pages];
 
 		// img and title
 		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
@@ -126,7 +117,7 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 
 		if (h == null)
 			throw new NullPointerException();
-    
+
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();
@@ -148,88 +139,16 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public byte[] getPage(int i) throws InterruptedException {
-		if (imgs == null) {
-			imgs = new String[pages];
+		if (location == null) {
+			String u = loadUrl(1);
+			int sp = u.lastIndexOf('/');
+			location = u.substring(0, sp + 1);
+			imgSuffix = u.substring(u.lastIndexOf('.'));
 		}
-		String url = null;
-		try {
-			url = imgs[i];
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			url = loadUrl(i + 1);
-		}
-		if (url == null) {
-			url = loadUrl(i + 1);
-			if (NJTAI.preloadUrl && NJTAI.cachingPolicy != 2) {
-				if (!prefetched) {
-					Thread.sleep(100);
-					prefetched = true;
-					urlFetcher = new Thread(this);
-					urlFetcher.setPriority(Thread.MAX_PRIORITY);
-					urlFetcher.start();
-					Thread.sleep(500);
-				}
-			} else {
-				infoReady = 100;
-			}
-		}
-		if (infoReady == -1) {
-			infoReady = 100;
-		}
+		
+		String url = location+(i+1)+imgSuffix;
+		
 		return WebAPIA.inst.getOrNull(NJTAI.proxyUrl(url));
-	}
-
-	/**
-	 * Loads all pages URLs into {@link #imgs}.
-	 * 
-	 * @throws InterruptedException If the operation was cancelled via
-	 *                              {@link #cancelPrefetch()}.
-	 * @see {@link #run()}
-	 */
-	private void loadUrls() throws InterruptedException {
-		if (offline) {
-			infoReady = 100;
-			return;
-		}
-		try {
-			for (int i = 1; i <= pages; i++) {
-				long t = System.currentTimeMillis();
-				loadUrl(i);
-				infoReady = i * 100 / pages;
-				NJTAI.pl.repaint();
-				t = System.currentTimeMillis() - t;
-				Thread.sleep(t > 2000 ? 100 : 500);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			infoReady = -1;
-		}
-	}
-
-	/**
-	 * Runs {@link #loadUrls() the prefetcher}.
-	 */
-	public void run() {
-		try {
-			loadUrls();
-			urlFetcher = null;
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Stops {@link #loadUrls() the prefetcher}.
-	 */
-	public void cancelPrefetch() {
-		try {
-			if (urlFetcher != null && urlFetcher.isAlive()) {
-				urlFetcher.interrupt();
-				urlFetcher = null;
-			}
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -251,12 +170,6 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 		if (attempt > 0) {
 			Thread.sleep((attempt + 1) * 500);
 		}
-		if (imgs == null) {
-			imgs = new String[pages];
-		}
-		if (imgs[pageN - 1] != null) {
-			return imgs[pageN - 1];
-		}
 
 		try {
 			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
@@ -270,12 +183,9 @@ public class ExtMangaObj extends MangaObj implements Runnable {
 			body = null;
 			System.gc();
 			String url = StringUtil.range(span, "<img src=\"", "\"", false);
-			imgs[pageN - 1] = url;
 			return url;
 		} catch (OutOfMemoryError e) {
-			imgs = null;
 			System.gc();
-			imgs = new String[pages];
 			return null;
 		}
 	}

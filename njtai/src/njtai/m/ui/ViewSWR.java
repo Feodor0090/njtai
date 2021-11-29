@@ -55,14 +55,7 @@ public class ViewSWR extends View {
 					System.gc();
 				} catch (RuntimeException e) {
 					e.printStackTrace();
-					String url = "null";
-					if (emo.imgs != null) {
-						url = emo.imgs[page];
-					}
-					if (url == null) {
-						url = "null";
-					}
-					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes, url=" + url);
+					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes");
 					origImg = null;
 					if (NJTAI.files) {
 						showBrokenNotify();
@@ -177,14 +170,7 @@ public class ViewSWR extends View {
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 				orig = null;
-				String url = "null";
-				if (emo.imgs != null) {
-					url = emo.imgs[page];
-				}
-				if (url == null) {
-					url = "null";
-				}
-				System.out.println("Failed to decode an image in preparing. Size=" + l + "bytes, url=" + url);
+				System.out.println("Failed to decode an image in preparing. Size=" + l + "bytes");
 				if (NJTAI.files) {
 					showBrokenNotify();
 					try {

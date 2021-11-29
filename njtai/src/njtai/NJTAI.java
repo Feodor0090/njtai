@@ -63,10 +63,6 @@ public class NJTAI {
 	 */
 	public static boolean loadCovers = true;
 	/**
-	 * Enable urls preloading?
-	 */
-	public static boolean preloadUrl = true;
-	/**
 	 * Keep decoded images in RAM?
 	 */
 	public static boolean keepBitmap = true;

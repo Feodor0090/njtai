@@ -57,8 +57,6 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			NJTAI.rus ? "Запоминать списки при открытии страницы" : "Keep lists when opening pages", 4, ynr, null);
 	private final ChoiceGroup bitmaps = new ChoiceGroup(NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)"
 			: "Decode JPEG only once (improves perfomance)", 4, ynr, null);
-	private final ChoiceGroup urls = new ChoiceGroup(NJTAI.rus ? "Предзагружать URL страниц" : "Preload image urls", 4,
-			yn, null);
 	protected final TextField proxy = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
 	private final StringItem aboutProxy = new StringItem(null,
 			NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
@@ -99,7 +97,6 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		covers.setSelectedIndex(0,NJTAI.loadCovers);
 		covers.setSelectedIndex(1,NJTAI.loadCoverAtPage);
 		bitmaps.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
-		urls.setSelectedIndex(NJTAI.preloadUrl ? 1 : 0, true);
 		files.setSelectedIndex(NJTAI.files ? 1 : 0, true);
 		view.setSelectedIndex(NJTAI.view, true);
 		invert.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
@@ -118,7 +115,6 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 		append(lists);
 		append(invert);
 		//append(bitmaps);
-		append(urls);
 		append(view);
 		append(proxy);
 		append(aboutProxy);
@@ -153,7 +149,6 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			NJTAI.loadCoverAtPage = covers.isSelected(1);
 			NJTAI.keepLists = lists.getSelectedIndex() == 1;
 			NJTAI.loadCovers = covers.isSelected(0);
-			NJTAI.preloadUrl = urls.getSelectedIndex() == 1;
 			NJTAI.keepBitmap = bitmaps.getSelectedIndex() == 1;
 			NJTAI.view = view.getSelectedIndex();
 			NJTAI.files = files.getSelectedIndex() == 1;

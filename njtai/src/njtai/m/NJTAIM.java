@@ -128,7 +128,9 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			s.append('`');
 			s.append(NJTAI.loadCovers ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI.preloadUrl ? "1" : "0");
+			// Keeping the value to avoid data breaking.
+			s.append('0');
+			//s.append(NJTAI._d1 ? "1" : "0");
 			s.append('`');
 			s.append(NJTAI.keepBitmap ? "1" : "0");
 			s.append('`');
@@ -176,7 +178,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.loadCoverAtPage = s[2].equals("1");
 			NJTAI.keepLists = s[3].equals("1");
 			NJTAI.loadCovers = s[4].equals("1");
-			NJTAI.preloadUrl = s[5].equals("1");
+			//NJTAI._d1 = s[5].equals("1");
 			NJTAI.keepBitmap = s[6].equals("1");
 			NJTAI.view = Integer.parseInt(s[7]);
 			NJTAI.invertPan = s[8].equals("1");
@@ -193,7 +195,6 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.keepLists = true;
 			NJTAI.loadCovers = true;
 			NJTAI.keepBitmap = true;
-			NJTAI.preloadUrl = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
 			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
