@@ -3,6 +3,13 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
 ![image](njtai/res/njtai.svg)
 
+## Releases
+R3 was planned, but isn't released. Compile yourself from `master` if you want fixed URL fetching.
+
+SiStore contains R1, consider updating.
+
+Links in the app are outdated, check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask me something.
+
 ## Features
 - "Popular" list from site
 - "Recently uploaded" list from site
@@ -11,7 +18,7 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 - Online view with zoom an optional preloading
 - Downloading titles to your phone memory
 - Both touchscreen/keys support
-- Working via bultin proxy (for blocks bypassing and avoiding HTTPS use) (configurable)
+- Working via bultin proxy (for bans bypassing and avoiding HTTPS use) (configurable)
 
 ## System requirements
 Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
@@ -34,7 +41,7 @@ We don't use any special units. Everything is done on CPU, HWA view can use your
 ## Setting your own proxy up
 You need an http server. Create a script that will take URL from request params, query it via curl or something else and return it's content.
 
-Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?`) (CURL is required):
+Example on PHP (url to set in application settngs will be `http://yourserver.com/proxy.php?` if this file is in the server's directory root) (CURL is required):
 ```
 <?php
 $url = urldecode($_SERVER['QUERY_STRING']);
@@ -51,8 +58,10 @@ curl_close($ch);
 Make sure it's accessible via pure http without cloudflare/etc. checks!
 
 ## Building
-Use Eclipse IDE with MTJ and S40v5 sdk or NetBeans with j2me sdk 3.0. 
+Use Eclipse IDE with MTJ and any j2me sdk (we use S40v5) or NetBeans with j2me sdk 3.0. 
 To build from command line, you need to compile all classes using 1.8 jdk with 1.3 target, preverify them using `preverify.exe` from SDK and pack in JAR package.
+
+I recommend you to find a j2me SDK for your own device and follow instructions in it's documentation (you want to build a midlet suite and export it as a package).
 
 ## Settings explaining (rus)
 ### Поведение кэширования
@@ -65,13 +74,3 @@ To build from command line, you need to compile all classes using 1.8 jdk with 1
 Если отключить, картинка будет при каждом ремасштабировании заново декодироваться. Это немного уменьшит потребление памяти при сворачивании приложения.
 ### Предзагрузка URL
 Если включено, ускорит перелистывание почти на 50% - URL изображений запросятся заранее.
-
-### Оптимальные
-Настройка|Экономия памяти|Быстродействие и удобство
----|---|---
-Поведение кэширования|`Отключено`|`Предзагружать`
-Загружать обложку на странице|`Нет`|`Да`
-Загружать обложку в списках|`Нет`|`Да`
-Запоминать списки при открытии страницы|`Нет`|`Да`
-Декодировать JPEG единожды|Не влияет|`Да`
-Предзагружать URL страниц|`Нет`|`Да`
