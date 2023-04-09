@@ -3,6 +3,10 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
 ![image](njtai/res/njtai.svg)
 
+## Project status
+
+This application works as parser (it downloads full page and extracts data from it). The site is under cloudflare now, so neither direct access or proxying won't work. There are some clones/mirrors without CF, but their CDNs (where the images stored) are under CF too. So, this project may be considered as dead.
+
 ## Releases
 R3 was planned, but isn't released. Compile yourself from `master` if you want fixed URL fetching.
 
@@ -21,7 +25,7 @@ Links in the app are outdated, check [nnproject chat in TG](https://t.me/nnmidle
 - Working via bultin proxy (for bans bypassing and avoiding HTTPS use) (configurable)
 
 ## System requirements
-Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
+Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other advanced 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
 
 ### Memory
 - At least 2048 kb of heap to download titles (with disabled covers loading)
@@ -29,7 +33,7 @@ Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 
 - 16+ mb of VRAM to use HWA view
 
 ### Processor units
-We don't use any special units. Everything is done on CPU, HWA view can use your GPU if device's M3G implementation supports it. Most Symbian 9.1/9.2 devices with ~300mHz CPUs are too weak to normally work with large images, so prepare to lags.
+We don't use any special units. Everything is done on CPU, HWA view can use your GPU if device's M3G implementation supports it. Most Symbian 9.1/9.2 devices with ~300mHz CPUs are too weak to normally work with large images, so you should be ready to face huge stutters.
 
 ### JVM capabilities
 - MIDP 2.0/2.1
@@ -63,13 +67,13 @@ To build from command line, you need to compile all classes using 1.8 jdk with 1
 
 I recommend you to find a j2me SDK for your own device and follow instructions in it's documentation (you want to build a midlet suite and export it as a package).
 
-## Settings explaining (rus)
+## Settings explanation (rus)
 ### Поведение кэширования
 Если отключено полностью - при каждом переключении страницы она будет скачиваться заново, даже если была только что закрыта. Если включено кэширование - несколько предыдущих страниц будут держаться в памяти (быстрее перелистывание). При включенной предзагрузке приложение будет пытаться скачать все страницы как можно раньше.
 ### Загрузка обложек
 На телефонах с малым количеством памяти её может не хватить даже на декодирование превьюшки - отключив их загрузку этими 2 пунктами, вы сможете "вслепую" добраться до кнопки скачивания.
 ### Запоминание списков
-Если отключить, то нажатие кнопки "назад" в манге вернёт вас в главное меню, а не список новых/популярных/поиска. Тоже экономит память, если отключить
+Если отключить, то нажатие кнопки "назад" в манге вернёт вас в главное меню, а не список новых/популярных/поиска. Тоже экономит память, если отключить.
 ### Декодирование JPEG единожды
 Если отключить, картинка будет при каждом ремасштабировании заново декодироваться. Это немного уменьшит потребление памяти при сворачивании приложения.
 ### Предзагрузка URL
