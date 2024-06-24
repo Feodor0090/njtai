@@ -337,7 +337,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				case 4:
 					files = true;
 					savedList = new List("Loading...", List.IMPLICIT);
-					(new SavedManager(savedList)).start();
+					start(RUN_SAVEDMANAGER);
 					setScr(savedList);
 					return;
 				case 5:
