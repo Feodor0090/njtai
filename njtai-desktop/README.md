@@ -1,3 +1,0 @@
-# NJTAI Desktop
-
-## Building
