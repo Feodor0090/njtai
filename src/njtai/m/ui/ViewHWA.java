@@ -164,7 +164,7 @@ public class ViewHWA extends View {
 			e.printStackTrace();
 
 			try {
-				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR), this);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

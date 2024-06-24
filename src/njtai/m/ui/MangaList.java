@@ -1,5 +1,9 @@
 package njtai.m.ui;
 
+import java.io.IOException;
+
+import javax.microedition.lcdui.Alert;
+import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
@@ -18,18 +22,20 @@ public final class MangaList extends Form implements Runnable, CommandListener {
 
 	private Thread loader;
 	private Displayable prev;
-	private MangaObjs objs;
+	private boolean popular;
+	private String query;
 
 	private String title;
 
 	static boolean wasOom = false;
 
-	public MangaList(String title, Displayable prev, MangaObjs items) {
+	public MangaList(String title, Displayable prev, String query, boolean popular) {
 		super(NJTAI.rus ? "Загрузка..." : "Loading...");
 		wasOom = false;
 		this.title = title;
 		this.prev = prev;
-		objs = items;
+		this.query = query;
+		this.popular = popular;
 		this.setCommandListener(this);
 		this.addCommand(NJTAI.backCmd);
 		loader = new Thread(this);
@@ -38,18 +44,31 @@ public final class MangaList extends Form implements Runnable, CommandListener {
 
 	public void run() {
 		try {
+			MangaObjs objs = null;
 			try {
+				setTitle(title);
+				try {
+					if (query != null) {
+						objs = MangaObjs.getSearchList(query, null);
+					} else if (popular) {
+						objs = MangaObjs.getPopularList();
+					} else {
+						objs = MangaObjs.getNewList();
+					}
+				} catch (Exception e) {
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[14], null, AlertType.ERROR), NJTAI.mmenu);
+					e.printStackTrace();
+					return;
+				}
 				while (objs.hasMoreElements()) {
 					MangaObj o = (MangaObj) objs.nextElement();
 					ImageItem img = new ImageItem(o.title, (Image) o.img, 3, null, Item.HYPERLINK);
 					OMBHdlr h = new OMBHdlr(o.num, NJTAI.keepLists ? this : prev);
 					h.attach(img);
 					this.append(img);
-					setTitle(title);
 				}
 				objs = null;
 				loader = null;
-				setTitle(title);
 			} catch (OutOfMemoryError e) {
 				wasOom = true;
 				objs = null;

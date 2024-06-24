@@ -19,7 +19,6 @@ import njtai.m.ui.MangaList;
 import njtai.m.ui.MangaPage;
 import njtai.m.ui.Prefs;
 import njtai.m.ui.SavedManager;
-import njtai.models.MangaObjs;
 
 /**
  * Main class of the application. Contains basic data and settings.
@@ -246,20 +245,12 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					// getting text
 					String st = ((TextBox) d).getString();
 					// Isn't it empty?
-					if (st.length() == 0)
-						throw new NullPointerException();
-
-					MangaObjs r = MangaObjs.getSearchList(processSearchQuery(st), this);
-					if (r == null) {
+					if (st.length() == 0) {
+						setScr(new Alert(L_ACTS[5], L_ACTS[6], null, AlertType.WARNING));
 						return;
 					}
-					setScr(new MangaList(L_ACTS[4], mmenu, r));
-				} catch (IOException e) {
-					e.printStackTrace();
-					setScr(new Alert(L_ACTS[7], L_ACTS[14], null,
-							AlertType.ERROR), mmenu);
-				} catch (NullPointerException e) {
-					setScr(new Alert(L_ACTS[5], L_ACTS[6], null, AlertType.WARNING));
+
+					setScr(new MangaList(L_ACTS[4], mmenu, st = processSearchQuery(st), false));
 				} catch (Exception e) {
 					setScr(new Alert(L_ACTS[7], L_ACTS[8].concat(" ").concat(e.toString()), null,
 							AlertType.ERROR), mmenu);
@@ -292,7 +283,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				case 1: {
 					// popular
 					try {
-						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[1], mmenu, MangaObjs.getPopularList()));
+						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[1], mmenu, null, true));
 					} catch (Throwable t) {
 						String info;
 						if (t instanceof OutOfMemoryError) {
@@ -311,7 +302,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				case 2: {
 					// new
 					try {
-						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[2], mmenu, MangaObjs.getNewList()));
+						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[2], mmenu, null, false));
 					} catch (Throwable t) {
 						String info;
 						if (t instanceof OutOfMemoryError) {
@@ -445,14 +436,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 */
 	public static void setScr(Alert a, Displayable prev) {
 		display.setCurrent(a, prev);
-	}
-	
-	private static Alert errorAlert(String text) {
-		Alert a = new Alert("");
-		a.setType(AlertType.ERROR);
-		a.setString(text);
-		a.setTimeout(3000);
-		return a;
 	}
 	
 	private static Alert errorAlert(int title, int text) {

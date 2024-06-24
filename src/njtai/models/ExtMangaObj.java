@@ -137,8 +137,8 @@ public class ExtMangaObj extends MangaObj {
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public byte[] getPage(int i) throws InterruptedException {
-		if (location == null) {
-			String u = loadUrl(1);
+		if (location == null || true) { // TODO
+			String u = loadUrl(i+1);
 			int sp = u.lastIndexOf('/');
 			location = u.substring(0, sp + 1);
 			imgSuffix = u.substring(u.lastIndexOf('.'));
