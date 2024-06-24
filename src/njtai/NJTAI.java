@@ -16,8 +16,8 @@ import javax.microedition.rms.RecordStore;
 
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
+import njtai.m.Prefs;
 import njtai.m.ui.MangaPage;
-import njtai.m.ui.Prefs;
 import njtai.models.ExtMangaObj;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
@@ -44,7 +44,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
 	 * method} to see how it works.
 	 * 
-	 * @see {@link #loadPrefs()}, {@link njtai.ui.Prefs#proxy}
+	 * @see {@link #loadPrefs()}, {@link njtai.ui.Prefs#proxyField}
 	 */
 	public static String proxy;
 
@@ -117,6 +117,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static List mmenu;
 	public static Form mangaList;
 	public static List savedList;
+	public static Form prefs;
 
 	public static Command backCmd;
 	public static Command openCmd;
@@ -139,6 +140,37 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	private static boolean wasOom;
 	
 	private static String savedPath;
+	
+	// Prefs
+	private static Command bkC;
+	private static Command cnclC;
+	private static Command prC;
+	private static Command changeC;
+
+	private static String[] yn;
+	private static String[] ynr;
+
+	private StringItem ramWarn;
+	private StringItem s40Warn;
+
+	private ChoiceGroup cacheChoice;
+	private ChoiceGroup coversChoice;
+	private ChoiceGroup invertChoice;
+	private ChoiceGroup listsChoice;
+	private ChoiceGroup bitmapsChoice;
+	protected TextField proxyField;
+	private StringItem aboutProxyBtn;
+
+	/**
+	 * Working folder switcher button.
+	 */
+	public static StringItem wdBtn;
+
+	private ChoiceGroup viewChoice;
+	private ChoiceGroup filesChoice;
+
+	private Command dfC = new Command("Use E:/NJTAI", 8, 1);
+	private Command ccC = new Command("Choose", 8, 2);
 	
 	static {
 		// localizations
@@ -169,6 +201,15 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 			cancelDelC = new Command(NJTAI.rus ? "Отмена" : "Cancel", Command.CANCEL, 1);
 			confirmDelC = new Command(NJTAI.rus ? "Продолжить" : "Continue", Command.OK, 1);
+			
+			bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
+			cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 3);
+			prC = new Command("Proxy setup", 8, 1);
+			changeC = new Command(NJTAI.rus ? "Изменить" : "Change", Command.OK, 1);
+
+			yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
+			ynr = new String[] { NJTAI.rus ? "Нет (экономит память)" : "No (saves RAM)",
+					NJTAI.rus ? "Да" : "Yes" };
 		} catch (Exception ignored) {}
 	}
 	
@@ -287,7 +328,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			return;
 		}
+		
+		commandAction(c, getScr());
 	}
 
 	public void commandAction(Command c, Displayable d) {
@@ -339,11 +383,86 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					start(RUN_SAVEDMANAGER);
 					setScr(savedList);
 					return;
-				case 5:
+				case 5: {
 					// sets
-					setScr(new Prefs());
+					Form f = new Form("NJTAI Settings");
+					f.setCommandListener(this);
+					f.addCommand(bkC);
+					f.addCommand(cnclC);
+					
+					// XXX
+					ramWarn = new StringItem(NJTAI.rus ? "Предупреждение" : "Warning",
+							NJTAI.rus ? "Включение предзагрузки или кэширования приведёт к ошибкам на устройствах с небольшой памятью."
+									: "Enabling preloading/caching will cause crash on low memory devices.");
+					s40Warn = new StringItem(NJTAI.rus ? "Работа на S40" : "Working on S40", NJTAI.rus
+							? ("Памяти S40 не хватит для просмотра, но хватит для скачивания. Отключите загрузку обложек в списках и на "
+									+ "странице, сохранение списков и кэш для работы. Рекомендовано использовать поиск по ID, а не по названию.")
+							: ("S40's memory is enough for downloading, but not for viewing. "
+									+ "Disable covers and lists keeping to make it work. Using ID input (not search) is recommended."));
+					
+					cacheChoice = new ChoiceGroup(NJTAI.rus ? "Поведение кэширования" : "Caching behaviour", 4,
+							new String[] { NJTAI.rus ? "Отключено" : "Disabled",
+									NJTAI.rus ? "Сохранять уже загруженное" : "Keep already loaded",
+									NJTAI.rus ? "Предзагружать" : "Preload" },
+							null);
+					coversChoice = new ChoiceGroup(NJTAI.rus ? "Загрузка обложек" : "Covers loading", Choice.MULTIPLE,
+							new String[] { NJTAI.rus ? "В списках" : "In lists",NJTAI.rus ? "На странице" : "On page" }, null);
+					invertChoice = new ChoiceGroup(NJTAI.rus ? "Инвертировать прокрутку" : "Invert panning", 4, yn,
+							null);
+					listsChoice = new ChoiceGroup(
+							NJTAI.rus ? "Запоминать списки при открытии страницы" : "Keep lists when opening pages", 4, ynr, null);
+					bitmapsChoice = new ChoiceGroup(NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)"
+							: "Decode JPEG only once (improves perfomance)", 4, ynr, null);
+					proxyField = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
+					aboutProxyBtn = new StringItem(null,
+							NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
+					
+					wdBtn = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
+							MDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
+									: MDownloader.currentWD,
+							StringItem.HYPERLINK);
+					
+					viewChoice = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
+					filesChoice = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
+							4, yn, null);
+
+					String vendor = System.getProperty("java.vendor");
+					if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
+						f.append(new StringItem("J2MEL-specific bugs",
+								"On j2me loader 1.7.4 and lower switches on this screen won't reflect actual settings states due "
+										+ "to emulator's bug. Don't forget to set them all as you need before returning!"));
+					}
+
+					cacheChoice.setSelectedIndex(NJTAI.cachingPolicy, true);
+					listsChoice.setSelectedIndex(NJTAI.keepLists ? 1 : 0, true);
+					coversChoice.setSelectedIndex(0,NJTAI.loadCovers);
+					coversChoice.setSelectedIndex(1,NJTAI.loadCoverAtPage);
+					bitmapsChoice.setSelectedIndex(NJTAI.keepBitmap ? 1 : 0, true);
+					filesChoice.setSelectedIndex(NJTAI.files ? 1 : 0, true);
+					viewChoice.setSelectedIndex(NJTAI.view, true);
+					invertChoice.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
+					aboutProxyBtn.setDefaultCommand(prC);
+					aboutProxyBtn.setItemCommandListener(this);
+					wdBtn.setDefaultCommand(changeC);
+					wdBtn.setItemCommandListener(this);
+
+					f.append(ramWarn);
+					if (Runtime.getRuntime().totalMemory() == 2048 * 1024)
+						f.append(s40Warn);
+					f.append(cacheChoice);
+					f.append(filesChoice);
+					f.append(wdBtn);
+					f.append(coversChoice);
+					f.append(listsChoice);
+					f.append(invertChoice);
+					//append(bitmaps);
+					f.append(viewChoice);
+					f.append(proxyField);
+					f.append(aboutProxyBtn);
+					setScr(f);
 					return;
-				case 6:
+				}
+				case 6: {
 					// controls
 					try {
 						Form f = new Form(L_ACTS[13]);
@@ -365,6 +484,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 								AlertType.ERROR));
 					}
 					return;
+				}
 				case 7:
 					// about
 					Form ab = new Form(L_ACTS[12]);
@@ -414,10 +534,24 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		if (d == savedList) {
 			if (c == NJTAI.backCmd) {
 				NJTAI.setScr(NJTAI.mmenu);
+				savedList = null;
 				return;
 			}
 			if (c == switchC) {
-				MDownloader.reselectWD(NJTAI.mmenu);
+				List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, MDownloader.getWDs(false), null);
+				l.addCommand(NJTAI.backCmd);
+				l.setCommandListener(this);
+				l.setCommandListener(new CommandListener() {
+
+					public void commandAction(Command c, Displayable d) {
+						if (c == List.SELECT_COMMAND) {
+							MDownloader.currentWD = ((List) d).getString(((List) d).getSelectedIndex());
+							if(wdBtn != null) wdBtn.setText(MDownloader.currentWD);
+						}
+						NJTAI.setScr(prefs);
+					}
+				});
+				NJTAI.setScr(l);
 				return;
 			}
 			if (c == repairC) {
@@ -583,6 +717,64 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			return;
 		}
 		
+		if (d == prefs) {
+			if (c == dfC) {
+				MDownloader.useE_NJTAI();
+				NJTAI.setScr(prefs);
+			} else if (c == ccC) {
+				MDownloader.reselectWD(prefs);
+			} else if (c == changeC) {
+				Alert a = new Alert("", "Working folder", null, AlertType.INFO);
+				a.addCommand(dfC);
+				a.addCommand(ccC);
+				a.setCommandListener(this);
+				a.setTimeout(Alert.FOREVER);
+				NJTAI.setScr(a);
+			} else if (c == bkC) {
+				NJTAI.cachingPolicy = cacheChoice.getSelectedIndex();
+				NJTAI.loadCoverAtPage = coversChoice.isSelected(1);
+				NJTAI.keepLists = listsChoice.getSelectedIndex() == 1;
+				NJTAI.loadCovers = coversChoice.isSelected(0);
+				NJTAI.keepBitmap = bitmapsChoice.getSelectedIndex() == 1;
+				NJTAI.view = viewChoice.getSelectedIndex();
+				NJTAI.files = filesChoice.getSelectedIndex() == 1;
+				NJTAI.proxy = proxyField.getString();
+				NJTAI.invertPan = invertChoice.getSelectedIndex() == 1;
+				if (NJTAI.proxy.length() == 0) {
+					NJTAI.proxy = "";
+				} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
+						&& NJTAI.proxy.indexOf('.') != 0) {
+
+					NJTAI.setScr(NJTAI.mmenu);
+					if (!NJTAI.savePrefs()) {
+						Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
+								AlertType.ERROR);
+						a.setTimeout(Alert.FOREVER);
+						NJTAI.setScr(a, NJTAI.mmenu);
+					}
+				} else {
+					Alert a = new Alert("Settings",
+							"Incorrect proxy URL. Leave the field empty if you don't want to use it.", null,
+							AlertType.ERROR);
+					a.setTimeout(Alert.FOREVER);
+					NJTAI.setScr(a);
+				}
+			} else if (c == prC) {
+				Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
+						+ "To setup your own server, just create a PHP script that will take URL from query params, "
+						+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
+						null, AlertType.INFO);
+				a.setTimeout(Alert.FOREVER);
+				NJTAI.setScr(a);
+			} else if (c == cnclC) {
+				Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
+						NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
+				a.setTimeout(1500);
+				NJTAI.setScr(a, NJTAI.mmenu);
+			}
+			return;
+		}
+		
 		if (d instanceof TextBox) {
 			// Search dialog
 			if (c == searchCmd) {
@@ -611,6 +803,12 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				}
 				return;
 			}
+		}
+		
+		// WD selected
+		if (c == List.SELECT_COMMAND) {
+			MDownloader.currentWD = ((List) d).getString(((List) d).getSelectedIndex());
+			if(wdBtn != null) wdBtn.setText(MDownloader.currentWD);
 		}
 		
 		// common

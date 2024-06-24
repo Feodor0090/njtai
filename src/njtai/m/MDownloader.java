@@ -595,34 +595,11 @@ public class MDownloader extends Thread implements CommandListener {
 	}
 
 	/**
-	 * Opens the menu for user to select another WD.
-	 * 
-	 * @param prev Calling screen.
-	 */
-	public static void reselectWD(final Displayable prev) {
-		List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, getWDs(false), null);
-		l.addCommand(NJTAI.backCmd);
-		l.setCommandListener(new CommandListener() {
-
-			public void commandAction(Command c, Displayable d) {
-				if (c == List.SELECT_COMMAND) {
-					currentWD = ((List) d).getString(((List) d).getSelectedIndex());
-					if (prev instanceof Prefs) {
-						((Prefs) prev).wd.setText(currentWD);
-					}
-				}
-				NJTAI.setScr(prev);
-			}
-		});
-		NJTAI.setScr(l);
-	}
-
-	/**
 	 * Sets working directory to file:///E:/NJTAI/ and creates it.
 	 * 
 	 * @param scr Screen from what this call was made.
 	 */
-	public static void useE_NJTAI(Prefs scr) {
+	public static void useE_NJTAI() {
 		FileConnection fc = null;
 		try {
 			String d = "file:///E:/NJTAI/";
@@ -631,11 +608,11 @@ public class MDownloader extends Thread implements CommandListener {
 				fc.mkdir();
 			fc.close();
 			currentWD = d;
-			if (scr != null)
-				scr.wd.setText(d);
+			if (NJTAI.wdBtn != null)
+				NJTAI.wdBtn.setText(d);
 		} catch (Throwable t) {
-			if (scr != null)
-				scr.wd.setText("Error. Try to reselect.");
+			if (NJTAI.wdBtn != null)
+				NJTAI.wdBtn.setText("Error. Try to reselect.");
 			try {
 				if (fc != null)
 					fc.close();
