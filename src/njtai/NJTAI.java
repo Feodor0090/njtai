@@ -267,22 +267,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		// TODO global command handler
 		
 		if (d == mmenu) {
-			if (c == backCmd) {
-				setScr(mmenu);
-				return;
-			}
-			if (c == openCmd) {
-				try {
-					setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), mmenu, null, null));
-				} catch (Exception e) {
-					setScr(errorAlert(9, 10), mmenu);
-				}
-				return;
-			}
-			if (c == exitCmd) {
-				exit();
-				return;
-			}
 			if (c == List.SELECT_COMMAND) {
 				switch (mmenu.getSelectedIndex()) {
 				case -1: 
@@ -362,7 +346,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						ab.append(img);
 					} catch (Throwable ignored) {}
 					StringItem s;
-					s = new StringItem(null, "MahoRasp v" + NJTAI.midlet.getAppProperty("MIDlet-Version"));
+					s = new StringItem(null, "NJTAI v" + NJTAI.midlet.getAppProperty("MIDlet-Version"));
 					s.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
 					s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_VCENTER);
 					ab.append(s);
@@ -376,13 +360,13 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon\n"));
 					ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
 							"stacorp, ales_alte, mineshanya\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
+					ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio\n"));
 					ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-							"nnproject, SIStore, Symbian Zone, Jazmin Rocio\n"));
+							"SIStore, Symbian Zone, Jazmin Rocio\n"));
 					ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
 							"donate.stream/f0090\nboosty.to/nnproject/donate\n"));
 					ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
-							"github.com/Feodor0090/njtai\nhttps://t.me/nnmidletschat"));
+							"github.com/Feodor0090/njtai\nhttps://t.me/nnmidletschat\n"));
 					
 					s = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\n292 labs (tm)");
 					s.setFont(Font.getFont(0, 0, 8));
@@ -399,7 +383,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 			return;
 		}
+		
 		if (d instanceof TextBox) {
+			// Search dialog
 			if (c == searchCmd) {
 				// getting text
 				String st = ((TextBox) d).getString().trim();
@@ -416,9 +402,25 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				start(RUN_MANGALIST);
 				return;
 			}
+
+			// ID dialog
+			if (c == openCmd) {
+				try {
+					setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), mmenu, null, null));
+				} catch (Exception e) {
+					setScr(errorAlert(9, 10), mmenu);
+				}
+				return;
+			}
 		}
+		
+		// common
 		if (c == backCmd) {
 			setScr(mmenu);
+			return;
+		}
+		if (c == exitCmd) {
+			exit();
 			return;
 		}
 	}
@@ -432,7 +434,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		running = true;
 		switch (run) {
 		case RUN_MANGALIST: 
-		case RUN_MANGALIST_NEW: {
+		case RUN_MANGALIST_NEW: { // MangaList
 			wasOom = false;
 			if (mangaList == null) break;
 			try {

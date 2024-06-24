@@ -75,7 +75,64 @@ public final class MangaPage extends Form implements Runnable, CommandListener, 
 
 	public void run() {
 		try {
-			loadPage();
+			// loadPage() inlined
+			if (mo == null) {
+				status(loc[10]);
+				String html = NJTAI.getUtfOrNull(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + id + "/"));
+				if (html == null) {
+					status(loc[11]);
+					return;
+				}
+
+				status(loc[12]);
+				if (stop) return;
+				mo = new ExtMangaObj(id, html);
+			}
+
+			if (coverImg == null) {
+				status(loc[13]);
+				if (stop) return;
+				if (NJTAI.loadCoverAtPage) {
+					mo.loadCover();
+				}
+				if (stop) return;
+			} else {
+				if (NJTAI.loadCoverAtPage) {
+					mo.img = coverImg;
+				}
+				coverImg = null;
+			}
+
+			deleteAll();
+			ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
+			cover.setItemCommandListener(this);
+			cover.setDefaultCommand(open);
+			append(cover);
+
+			setTitle(mo.title);
+
+			append(new StringItem(loc[15], mo.title));
+			append(new StringItem("ID", "#" + id));
+			append(new StringItem(loc[16], "" + mo.pages));
+			if (mo.lang != null)
+				append(new StringItem(loc[17], mo.lang));
+			if (mo.parody != null)
+				append(new StringItem(loc[18], mo.parody));
+			Item tg = new StringItem(loc[19], mo.tags);
+			tg.setLayout(Item.LAYOUT_NEWLINE_AFTER);
+			append(tg);
+			page1.setItemCommandListener(this);
+			page1.setDefaultCommand(open);
+			append(page1);
+			pageN.setItemCommandListener(this);
+			pageN.setDefaultCommand(open);
+			append(pageN);
+			save.setItemCommandListener(this);
+			save.setDefaultCommand(open);
+			append(save);
+			repair.setItemCommandListener(this);
+			repair.setDefaultCommand(open);
+			append(repair);
 		} catch (OutOfMemoryError e) {
 			System.gc();
 			deleteAll();
@@ -87,66 +144,6 @@ public final class MangaPage extends Form implements Runnable, CommandListener, 
 			append(prgrs);
 			status(t.toString());
 		}
-	}
-
-	private void loadPage() {
-		if (mo == null) {
-			status(loc[10]);
-			String html = NJTAI.getUtfOrNull(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + id + "/"));
-			if (html == null) {
-				status(loc[11]);
-				return;
-			}
-
-			status(loc[12]);
-			if (stop) return;
-			mo = new ExtMangaObj(id, html);
-		}
-
-		if (coverImg == null) {
-			status(loc[13]);
-			if (stop) return;
-			if (NJTAI.loadCoverAtPage) {
-				mo.loadCover();
-			}
-			if (stop) return;
-		} else {
-			if (NJTAI.loadCoverAtPage) {
-				mo.img = coverImg;
-			}
-			coverImg = null;
-		}
-
-		deleteAll();
-		ImageItem cover = new ImageItem(mo.img == null ? loc[14] : null, (Image) mo.img, 0, null);
-		cover.setItemCommandListener(this);
-		cover.setDefaultCommand(open);
-		append(cover);
-
-		setTitle(mo.title);
-
-		append(new StringItem(loc[15], mo.title));
-		append(new StringItem("ID", "#" + id));
-		append(new StringItem(loc[16], "" + mo.pages));
-		if (mo.lang != null)
-			append(new StringItem(loc[17], mo.lang));
-		if (mo.parody != null)
-			append(new StringItem(loc[18], mo.parody));
-		Item tg = new StringItem(loc[19], mo.tags);
-		tg.setLayout(Item.LAYOUT_NEWLINE_AFTER);
-		append(tg);
-		page1.setItemCommandListener(this);
-		page1.setDefaultCommand(open);
-		append(page1);
-		pageN.setItemCommandListener(this);
-		pageN.setDefaultCommand(open);
-		append(pageN);
-		save.setItemCommandListener(this);
-		save.setDefaultCommand(open);
-		append(save);
-		repair.setItemCommandListener(this);
-		repair.setDefaultCommand(open);
-		append(repair);
 	}
 
 	private void status(String string) {
