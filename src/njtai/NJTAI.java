@@ -415,7 +415,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			InputStream in = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
 			if (in == null)
 				in = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
-			String[] l = new String[50];
+			String[] l = new String["main".equals(cat) ? 8 : 50];
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			StringBuffer s = new StringBuffer();
 			int c;
@@ -432,6 +432,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					continue;
 				}
 				s.append((char) c);
+			}
+			if(s.length() > 0) {
+				l[i++] = s.toString();
 			}
 			r.close();
 			return l;
