@@ -268,7 +268,7 @@ public class SavedManager extends Thread implements CommandListener {
 		// loading EMO from the site
 		String item = list.getString(list.getSelectedIndex());
 		String n = item.substring(0, item.indexOf('-')).trim();
-		String html = NJTAI.getUtfOrNull(NJTAI.baseUrl + "/g/" + n + "/");
+		String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + n + "/");
 		if (html == null) {
 			Alert a = new Alert(item, NJTAI.rus ? "Сетевая ошибка." : "Network error.", null, AlertType.ERROR);
 			a.setTimeout(Alert.FOREVER);
