@@ -14,7 +14,7 @@ import njtai.models.ExtMangaObj;
  * 
  * @author Feodor0090
  */
-public class ViewHWA extends View {
+public class ViewHWA extends ViewBase {
 
 	/**
 	 * Creates the view.

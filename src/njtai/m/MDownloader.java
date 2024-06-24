@@ -450,7 +450,7 @@ public class MDownloader extends Thread implements CommandListener {
 			g.setValue(100);
 			done = true;
 			if (ioError) {
-				a.setString("IO error has occurped. Check, are all the files valid.");
+				a.setString("IO error has occurred. Check, are all the files valid.");
 			} else if (modelExc != null) {
 				a.setString("Model was not writed due to " + modelExc.toString());
 			} else if (outOfMem) {
@@ -466,7 +466,7 @@ public class MDownloader extends Thread implements CommandListener {
 			try {
 				Alert b;
 				if (ioError) {
-					b = new Alert("NJTAI", "IO error has occurped. Check, are all the files valid.", null,
+					b = new Alert("NJTAI", "IO error has occurred. Check, are all the files valid.", null,
 							AlertType.ERROR);
 				} else if (modelExc != null) {
 					b = new Alert("NJTAI", "Model was not writed due to " + modelExc.toString(), null,
