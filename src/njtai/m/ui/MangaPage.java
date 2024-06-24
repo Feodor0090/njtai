@@ -6,7 +6,7 @@ import njtai.NJTAI;
 import njtai.m.MDownloader;
 import njtai.models.ExtMangaObj;
 
-final class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
+public final class MangaPage extends Form implements Runnable, CommandListener, ItemCommandListener {
 
 	private int id;
 	private ExtMangaObj mo;
@@ -156,7 +156,7 @@ final class MangaPage extends Form implements Runnable, CommandListener, ItemCom
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
 			stop = true;
-			NJTAI.setScr(p == null ? new MMenu() : p);
+			NJTAI.setScr(p == null ? NJTAI.mmenu : p);
 		}
 	}
 

@@ -22,7 +22,6 @@ import njtai.models.ExtMangaObj;
 public class SavedManager extends Thread implements CommandListener {
 
 	private List list;
-	private MMenu mm;
 	private String path;
 
 	private final Command delC = new Command(NJTAI.rus ? "Удалить" : "Delete", Command.SCREEN, 3);
@@ -38,9 +37,8 @@ public class SavedManager extends Thread implements CommandListener {
 	 * @param l List, where we will work.
 	 * @param b Main menu screen.
 	 */
-	public SavedManager(List l, MMenu b) {
+	public SavedManager(List l) {
 		list = l;
-		mm = b;
 	}
 
 	public void run() {
@@ -49,7 +47,7 @@ public class SavedManager extends Thread implements CommandListener {
 		refresh();
 
 		list.setTitle(path);
-		list.addCommand(MMenu.backCmd);
+		list.addCommand(NJTAI.backCmd);
 		list.addCommand(delC);
 		list.addCommand(repairC);
 		list.addCommand(switchC);
@@ -107,12 +105,12 @@ public class SavedManager extends Thread implements CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable arg1) {
-		if (c == MMenu.backCmd) {
-			NJTAI.setScr(mm);
+		if (c == NJTAI.backCmd) {
+			NJTAI.setScr(NJTAI.mmenu);
 			return;
 		}
 		if (c == switchC) {
-			MDownloader.reselectWD(mm);
+			MDownloader.reselectWD(NJTAI.mmenu);
 			return;
 		}
 		if (c == repairC) {

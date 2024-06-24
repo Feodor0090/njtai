@@ -14,7 +14,7 @@ import njtai.NJTAI;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 
-final class MangaList extends Form implements Runnable, CommandListener {
+public final class MangaList extends Form implements Runnable, CommandListener {
 
 	private Thread loader;
 	private Displayable prev;
@@ -31,7 +31,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 		this.prev = prev;
 		objs = items;
 		this.setCommandListener(this);
-		this.addCommand(MMenu.backCmd);
+		this.addCommand(NJTAI.backCmd);
 		loader = new Thread(this);
 		loader.start();
 	}
@@ -67,8 +67,8 @@ final class MangaList extends Form implements Runnable, CommandListener {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		if (c == MMenu.backCmd)
-			NJTAI.setScr(prev);
+		if (c == NJTAI.backCmd)
+			NJTAI.setScr(prev == null ? NJTAI.mmenu : prev);
 	}
 
 	public static class OMBHdlr implements ItemCommandListener {

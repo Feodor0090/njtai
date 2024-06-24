@@ -24,7 +24,6 @@ import njtai.m.MDownloader;
  */
 public final class Prefs extends Form implements ItemCommandListener, CommandListener {
 
-	private MMenu menu;
 	private final Command bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
 	private final Command cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 3);
 	private final Command prC = new Command("Proxy setup", 8, 1);
@@ -76,9 +75,8 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 	 * Creates prefs screen.
 	 * @param menu Main menu screen.
 	 */
-	public Prefs(MMenu menu) {
+	public Prefs() {
 		super("NJTAI settings");
-		this.menu = menu;
 
 		setCommandListener(this);
 		addCommand(bkC);
@@ -158,12 +156,12 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
 					&& NJTAI.proxy.indexOf('.') != 0) {
 
-				NJTAI.setScr(menu);
+				NJTAI.setScr(NJTAI.mmenu);
 				if (!NJTAI.savePrefs()) {
 					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);
-					NJTAI.setScr(a, menu);
+					NJTAI.setScr(a, NJTAI.mmenu);
 				}
 			} else {
 				Alert a = new Alert("Settings",
@@ -183,7 +181,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
 					NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
 			a.setTimeout(1500);
-			NJTAI.setScr(a, menu);
+			NJTAI.setScr(a, NJTAI.mmenu);
 		}
 	}
 

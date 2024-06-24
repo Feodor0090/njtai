@@ -411,7 +411,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
-			NJTAI.setScr(prev == null ? new MMenu() : prev);
+			NJTAI.setScr(prev == null ? NJTAI.mmenu : prev);
 
 			cache = null;
 			return;
@@ -423,8 +423,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 		if (k == KEY_NUM7 || k == -10 || k == 8) {
 			TextBox tb = new TextBox(NJTAI.L_ACTS[17], "", 7, 2);
-			tb.addCommand(MMenu.openCmd);
-			tb.addCommand(MMenu.openCmd);
+			tb.addCommand(NJTAI.openCmd);
+			tb.addCommand(NJTAI.backCmd);
 			tb.setCommandListener(this);
 			NJTAI.setScr(tb);
 		}
@@ -675,7 +675,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	public void commandAction(Command c, Displayable d) {
 		TextBox tb = (TextBox) d;
 		NJTAI.setScr(this);
-		if (c == MMenu.openCmd) {
+		if (c == NJTAI.openCmd) {
 			try {
 				int n = Integer.parseInt(tb.getString());
 				if (n < 1) {

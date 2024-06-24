@@ -15,7 +15,11 @@ import javax.microedition.rms.RecordStore;
 
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
-import njtai.m.ui.MMenu;
+import njtai.m.ui.MangaList;
+import njtai.m.ui.MangaPage;
+import njtai.m.ui.Prefs;
+import njtai.m.ui.SavedManager;
+import njtai.models.MangaObjs;
 
 /**
  * Main class of the application. Contains basic data and settings.
@@ -50,7 +54,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	/**
 	 * Is the app already running?
 	 */
-	public static boolean running = false;
+	public static boolean started = false;
 
 	/**
 	 * Should images be kept or preloaded?
@@ -102,9 +106,19 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	
 	public static Display display;
 	
+	// UI
+	
+	public static List mmenu;
+
+	public static Command backCmd;
+	public static Command openCmd;
+	public static Command exitCmd;
+	private static Command searchCmd;
+	
 	public static void startApp() {
-		if (NJTAI.running) return;
-		NJTAI.running = true;
+		if (NJTAI.started) return;
+		NJTAI.started = true;
+		display = Display.getDisplay(midlet);
 		String loc = System.getProperty("microedition.locale");
 		if (loc != null) {
 			loc = loc.toLowerCase();
@@ -112,13 +126,60 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					|| loc.indexOf("by") != -1);
 		}
 		inst = new NJTAI();
-		display = Display.getDisplay(midlet);
 		
-		loadPrefs();
+		// loadPrefs() inlined
+		try {
+			RecordStore r = RecordStore.openRecordStore("njtai", true);
+
+			if (r.getNumRecords() < 1) {
+				r.closeRecordStore();
+				throw new RuntimeException();
+			}
+			byte[] d = r.getRecord(1);
+			r.closeRecordStore();
+			String[] s = NJTAI.splitFull(new String(d), '`');
+			NJTAI.files = s[0].equals("1");
+			NJTAI.cachingPolicy = Integer.parseInt(s[1]);
+			NJTAI.loadCoverAtPage = s[2].equals("1");
+			NJTAI.keepLists = s[3].equals("1");
+			NJTAI.loadCovers = s[4].equals("1");
+			//NJTAI._d1 = s[5].equals("1");
+			NJTAI.keepBitmap = s[6].equals("1");
+			NJTAI.view = Integer.parseInt(s[7]);
+			NJTAI.invertPan = s[8].equals("1");
+			NJTAI.proxy = s[12];
+			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
+		} catch (Exception e) {
+			System.out.println("There is no saved settings or they are broken.");
+			NJTAI.files = false;
+			NJTAI.cachingPolicy = 1;
+			NJTAI.loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
+			NJTAI.keepLists = true;
+			NJTAI.loadCovers = true;
+			NJTAI.keepBitmap = true;
+			NJTAI.proxy = "http://nnp.nnchan.ru/hproxy.php?";
+			NJTAI.view = 0;
+			NJTAI.invertPan = false;
+			MDownloader.currentWD = null;
+		}
+		
+		// localizations
+		
 		L_ACTS = getStrings("acts");
 		L_PAGE = getStrings("page");
 		
-		setScr(new MMenu());
+		// main menu
+
+		backCmd = new Command(NJTAI.L_ACTS[0], Command.BACK, 2);
+		openCmd = new Command(NJTAI.L_ACTS[1], Command.OK, 1);
+		exitCmd = new Command(NJTAI.L_ACTS[2], Command.EXIT, 2);
+		searchCmd = new Command(NJTAI.L_ACTS[3], Command.OK, 1);
+		
+		mmenu = new List("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
+		mmenu.addCommand(exitCmd);
+		mmenu.setCommandListener(inst);
+		
+		setScr(mmenu);
 	}
 
 	public static boolean savePrefs() {
@@ -168,54 +229,197 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		}
 	}
 
-	public static void loadPrefs() {
-		try {
-			RecordStore r = RecordStore.openRecordStore("njtai", true);
-
-			if (r.getNumRecords() < 1) {
-				r.closeRecordStore();
-				throw new RuntimeException();
-			}
-			byte[] d = r.getRecord(1);
-			r.closeRecordStore();
-			String[] s = NJTAI.splitFull(new String(d), '`');
-			NJTAI.files = s[0].equals("1");
-			NJTAI.cachingPolicy = Integer.parseInt(s[1]);
-			NJTAI.loadCoverAtPage = s[2].equals("1");
-			NJTAI.keepLists = s[3].equals("1");
-			NJTAI.loadCovers = s[4].equals("1");
-			//NJTAI._d1 = s[5].equals("1");
-			NJTAI.keepBitmap = s[6].equals("1");
-			NJTAI.view = Integer.parseInt(s[7]);
-			NJTAI.invertPan = s[8].equals("1");
-			NJTAI.proxy = s[12];
-			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
-		} catch (Exception e) {
-			System.out.println("There is no saved settings or they are broken.");
-			NJTAI.files = false;
-			NJTAI.cachingPolicy = 1;
-			NJTAI.loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
-			NJTAI.keepLists = true;
-			NJTAI.loadCovers = true;
-			NJTAI.keepBitmap = true;
-			NJTAI.proxy = "http://nnp.nnchan.ru/hproxy.php?";
-			NJTAI.view = 0;
-			NJTAI.invertPan = false;
-			MDownloader.currentWD = null;
-		}
-	}
-
 	public void commandAction(Command c, Item item) {
 		// TODO global command handler
 	}
 
 	public void commandAction(Command c, Displayable d) {
 		// TODO global command handler
+		
+		if (d == mmenu) {
+			if (c == backCmd) {
+				setScr(mmenu);
+				return;
+			}
+			if (c == searchCmd) {
+				try {
+					// getting text
+					String st = ((TextBox) d).getString();
+					// Isn't it empty?
+					if (st.length() == 0)
+						throw new NullPointerException();
+
+					MangaObjs r = MangaObjs.getSearchList(processSearchQuery(st), this);
+					if (r == null) {
+						return;
+					}
+					setScr(new MangaList(L_ACTS[4], mmenu, r));
+				} catch (IOException e) {
+					e.printStackTrace();
+					setScr(new Alert(L_ACTS[7], L_ACTS[14], null,
+							AlertType.ERROR), mmenu);
+				} catch (NullPointerException e) {
+					setScr(new Alert(L_ACTS[5], L_ACTS[6], null, AlertType.WARNING));
+				} catch (Exception e) {
+					setScr(new Alert(L_ACTS[7], L_ACTS[8].concat(" ").concat(e.toString()), null,
+							AlertType.ERROR), mmenu);
+				}
+				return;
+			}
+			if (c == openCmd) {
+				try {
+					setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), mmenu, null, null));
+				} catch (Exception e) {
+					setScr(errorAlert(9, 10), mmenu);
+				}
+				return;
+			}
+			if (c == exitCmd) {
+				exit();
+				return;
+			}
+			if (c == List.SELECT_COMMAND) {
+				switch (mmenu.getSelectedIndex()) {
+				case 0: {
+					// number;
+					final TextBox tb = new TextBox(NJTAI.L_ACTS[11], "", 7, 2);
+					tb.addCommand(openCmd);
+					tb.addCommand(backCmd);
+					tb.setCommandListener(this);
+					NJTAI.setScr(tb);
+					return;
+				}
+				case 1: {
+					// popular
+					try {
+						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[1], mmenu, MangaObjs.getPopularList()));
+					} catch (Throwable t) {
+						String info;
+						if (t instanceof OutOfMemoryError) {
+							info = NJTAI.L_ACTS[27];
+						} else if (t instanceof IOException) {
+							info = NJTAI.L_ACTS[25];
+						} else if (t instanceof IllegalAccessException) {
+							info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
+						} else {
+							info = t.toString();
+						}
+						NJTAI.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
+					}
+					return;
+				}
+				case 2: {
+					// new
+					try {
+						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[2], mmenu, MangaObjs.getNewList()));
+					} catch (Throwable t) {
+						String info;
+						if (t instanceof OutOfMemoryError) {
+							info = NJTAI.L_ACTS[27];
+						} else if (t instanceof IOException) {
+							info = NJTAI.L_ACTS[25];
+						} else if (t instanceof IllegalAccessException) {
+							info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
+						} else {
+							info = t.toString();
+						}
+						NJTAI.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
+					}
+					return;
+				}
+				case 3: {
+					// search
+					final TextBox tb = new TextBox(NJTAI.L_ACTS[3], "", 80, 0);
+					tb.addCommand(searchCmd);
+					tb.addCommand(backCmd);
+					tb.setCommandListener(this);
+					NJTAI.setScr(tb);
+					return;
+				}
+				case 4:
+					NJTAI.files = true;
+					List l = new List("Loading...", List.IMPLICIT);
+					(new SavedManager(l)).start();
+					NJTAI.setScr(l);
+					return;
+				case 5:
+					// sets
+					NJTAI.setScr(new Prefs());
+					return;
+				case 6:
+					try {
+						Form f = new Form(NJTAI.L_ACTS[13]);
+						f.setCommandListener(this);
+						f.addCommand(backCmd);
+						String[] items = NJTAI.getStrings("tips");
+						for (int i = 0; i < items.length / 2; i++) {
+							if (NJTAI.isS60v3fp2()) {
+								f.append(new StringItem(null, items[i * 2 + 1]));
+								f.append(new StringItem(items[i * 2], null));
+							} else {
+								StringItem s = new StringItem(null, "[" + items[i * 2] + "] " + items[i * 2 + 1] + "\n");
+								s.setFont(Font.getFont(0, 0, 8));
+								f.append(s);
+							}
+						}
+					} catch (RuntimeException e) {
+						NJTAI.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
+								AlertType.ERROR));
+					}
+					return;
+				case 7:
+					Form ab = new Form(NJTAI.L_ACTS[12]);
+					try {
+						ImageItem img = new ImageItem(null, Image.createImage("/njtai.png"), Item.LAYOUT_LEFT, null);
+						ab.append(img);
+					} catch (Throwable ignored) {}
+					StringItem s;
+					s = new StringItem(null, "MahoRasp v" + NJTAI.midlet.getAppProperty("MIDlet-Version"));
+					s.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
+					s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_VCENTER);
+					ab.append(s);
+					
+					s = new StringItem(null, NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
+									: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support.");
+					s.setFont(Font.getDefaultFont());
+					s.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_LEFT);
+					ab.append(s);
+					ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon\n"));
+					ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon\n"));
+					ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
+							"stacorp, ales_alte, mineshanya\n"));
+					ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
+					ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
+							"nnproject, SIStore, Symbian Zone, Jazmin Rocio\n"));
+					ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
+							"donate.stream/f0090\nboosty.to/nnproject/donate\n"));
+					ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
+							"github.com/Feodor0090/njtai\nhttps://t.me/nnmidletschat"));
+					
+					s = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\n292 labs (tm)");
+					s.setFont(Font.getFont(0, 0, 8));
+					ab.append(s);
+
+					// setting up
+					ab.setCommandListener(this);
+					ab.addCommand(backCmd);
+					NJTAI.setScr(ab);
+					return;
+				}
+			}
+			return;
+		}
+		if (c == backCmd) {
+			setScr(mmenu);
+			return;
+		}
 	}
 	
 	public void run() {
 		// TODO threading
 	}
+	
+	
 
 	/**
 	 * @return Currently shown screen.
@@ -241,6 +445,20 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 */
 	public static void setScr(Alert a, Displayable prev) {
 		display.setCurrent(a, prev);
+	}
+	
+	private static Alert errorAlert(String text) {
+		Alert a = new Alert("");
+		a.setType(AlertType.ERROR);
+		a.setString(text);
+		a.setTimeout(3000);
+		return a;
+	}
+	
+	private static Alert errorAlert(int title, int text) {
+		Alert a = new Alert(L_ACTS[title], L_ACTS[text], null, AlertType.ERROR);
+		a.setTimeout(3000);
+		return a;
 	}
 
 	public static void showNotification(String title, String text, int type, Object prev) {
@@ -546,6 +764,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	public static String toSingleLine(String s) {
 		return s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
+	}
+
+	private static String processSearchQuery(String data) {
+		return NJTAI.url(data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
 	}
 
 	// SN

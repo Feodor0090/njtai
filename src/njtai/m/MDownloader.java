@@ -21,7 +21,6 @@ import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
-import njtai.m.ui.MMenu;
 import njtai.m.ui.Prefs;
 
 /**
@@ -602,7 +601,7 @@ public class MDownloader extends Thread implements CommandListener {
 	 */
 	public static void reselectWD(final Displayable prev) {
 		List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, getWDs(false), null);
-		l.addCommand(MMenu.backCmd);
+		l.addCommand(NJTAI.backCmd);
 		l.setCommandListener(new CommandListener() {
 
 			public void commandAction(Command c, Displayable d) {
