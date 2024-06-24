@@ -18,7 +18,6 @@ import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.m.ui.MangaPage;
 import njtai.m.ui.Prefs;
-import njtai.m.ui.SavedManager;
 import njtai.models.ExtMangaObj;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
