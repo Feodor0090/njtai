@@ -203,42 +203,7 @@ public final class MMenu extends List implements CommandListener {
 	}
 
 	private String processSearchQuery(String data) {
-		if (data == null)
-			throw new NullPointerException();
-		data = data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' ');
-		// URL encoding
-		StringBuffer sb = new StringBuffer();
-		int len = data.length();
-		for (int i = 0; i < len; i++) {
-			int c = data.charAt(i);
-			if (65 <= c && c <= 90) {
-				sb.append((char) c);
-			} else if (97 <= c && c <= 122) {
-				sb.append((char) c);
-			} else if (48 <= c && c <= 57) {
-				sb.append((char) c);
-			} else if (c == 32) {
-				sb.append("%20");
-			} else if (c == 45 || c == 95 || c == 46 || c == 33 || c == 126 || c == 42 || c == 39 || c == 40
-					|| c == 41) {
-				sb.append((char) c);
-			} else if (c <= 127) {
-				sb.append(hex(c));
-			} else if (c <= 2047) {
-				sb.append(hex(0xC0 | c >> 6));
-				sb.append(hex(0x80 | c & 0x3F));
-			} else {
-				sb.append(hex(0xE0 | c >> 12));
-				sb.append(hex(0x80 | c >> 6 & 0x3F));
-				sb.append(hex(0x80 | c & 0x3F));
-			}
-		}
-		return sb.toString();
-	}
-
-	private String hex(int i) {
-		String s = Integer.toHexString(i);
-		return "%" + (s.length() < 2 ? "0" : "") + s;
+		return NJTAI.url(data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
 	}
 
 	private void search() {
