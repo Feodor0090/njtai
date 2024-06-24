@@ -80,7 +80,7 @@ public class ViewHWA extends ViewBase {
 	protected Light li;
 	protected Background bg;
 
-	PagePart[] p = null;
+	Object[][] p = null;
 	int iw, ih;
 
 	public static final short tileSize = 512;
@@ -102,7 +102,7 @@ public class ViewHWA extends ViewBase {
 				v.addElement(getTile(i, ix, iy));
 			}
 		}
-		PagePart[] tmp = new PagePart[v.size()];
+		Object[][] tmp = new Object[v.size()][];
 		v.copyInto(tmp);
 		v = null;
 		p = tmp;
@@ -148,7 +148,7 @@ public class ViewHWA extends ViewBase {
 
 					setupM3G(g3);
 					for (int i = 0; i < p.length; i++) {
-						g3.render(p[i].n, p[i].t);
+						g3.render((Node) p[i][0], (Transform) p[i][1]);
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -197,7 +197,7 @@ public class ViewHWA extends ViewBase {
 
 	
 
-	private PagePart getTile(Image i, int tx, int ty) {
+	private Object[] getTile(Image i, int tx, int ty) {
 		// cropping
 		Image part = Image.createImage(tileSize, tileSize);
 		Graphics pg = part.getGraphics();
@@ -224,18 +224,7 @@ public class ViewHWA extends ViewBase {
 		Transform t = new Transform();
 		t.postTranslate(tx, ty, 0);
 		
-		return new PagePart(new Mesh(vb, ind, ap), t);
-	}
-
-	private final class PagePart {
-		
-		public PagePart(final Node n, final Transform t) {
-			super();
-			this.n = n;
-			this.t = t;
-		}
-		final Node n;
-		final Transform t;
+		return new Object[] {new Mesh(vb, ind, ap), t};
 	}
 
 	protected float panDeltaMul() {

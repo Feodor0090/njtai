@@ -286,22 +286,13 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	private void runPreloader() {
 		if (preloader == null && NJTAI.cachingPolicy == 2) {
-			preloader = new Thread() {
-				public void run() {
-					try {
-						preload();
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
-				}
-			};
-			preloader.start();
+			preloader = NJTAI.inst.start(NJTAI.RUN_PRELOADER);
 		}
 	}
 
 	int preloadProgress = 101;
 
-	void preload() throws InterruptedException {
+	public void preload() throws InterruptedException {
 		Thread.sleep(1000);
 		if (NJTAI.files) {
 			for (int i = 0; i < emo.pages; i++) {

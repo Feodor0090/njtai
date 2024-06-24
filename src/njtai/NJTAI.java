@@ -17,6 +17,7 @@ import javax.microedition.rms.RecordStore;
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.m.ui.MangaPage;
+import njtai.m.ui.ViewBase;
 import njtai.models.ExtMangaObj;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
@@ -38,6 +39,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static final int RUN_MANGALIST_NEW = 2;
 	public static final int RUN_SAVEDMANAGER = 3;
 	public static final int RUN_SAVEDMANAGER_DELETE = 4;
+	public static final int RUN_PRELOADER = 5;
 
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
@@ -820,7 +822,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			run = this.run;
 			notify();
 		}
-		running = true;
+		running = run != RUN_PRELOADER;
 		switch (run) {
 		case RUN_MANGALIST: 
 		case RUN_MANGALIST_NEW: { // MangaList
@@ -842,7 +844,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					} catch (Exception e) {
 						e.printStackTrace();
 						setScr(new Alert(L_ACTS[7], L_ACTS[14].concat(" ").concat(e.toString()), null, AlertType.ERROR), mmenu);
-						return;
+						break;
 					}
 					boolean show = true;
 					while (objs.hasMoreElements()) {
@@ -978,19 +980,27 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			refresh();
 			break;
 		}
+		case RUN_PRELOADER: {
+			try {
+				((ViewBase) getScr()).preload();
+			} catch (Exception ignored) {}
+			return;
+		}
 		}
 		running = false;
 	}
 
-	private void start(int i) {
+	public Thread start(int i) {
+		Thread t = null;
 		try {
 			synchronized(this) {
 				run = i;
-				new Thread(this).start();
+				(t = new Thread(this)).start();
 				wait();
 				run = 0;
 			}
 		} catch (Exception e) {}
+		return t;
 	}
 	
 	/**
