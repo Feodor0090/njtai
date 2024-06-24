@@ -8,11 +8,9 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 This application works as parser (it downloads full page and extracts data from it). 
 
 ## Releases
-Latest releases can be found at https://nnp.nnchan.ru/arch/nj
+[Latest releases on nnchan](https://nnp.nnchan.ru/nj)
 
-SiStore contains R1, consider updating.
-
-Check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask me something.
+Check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask us something.
 
 ## Features
 - "Popular" list from site
