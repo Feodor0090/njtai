@@ -1,5 +1,6 @@
 package njtai;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,6 +10,7 @@ import java.util.Vector;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.io.file.FileConnection;
 import javax.microedition.lcdui.*;
 import javax.microedition.rms.RecordStore;
 
@@ -17,6 +19,7 @@ import njtai.m.NJTAIM;
 import njtai.m.ui.MangaPage;
 import njtai.m.ui.Prefs;
 import njtai.m.ui.SavedManager;
+import njtai.models.ExtMangaObj;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 
@@ -35,6 +38,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	// Threading constants
 	public static final int RUN_MANGALIST = 1;
 	public static final int RUN_MANGALIST_NEW = 2;
+	public static final int RUN_SAVEDMANAGER = 3;
+	public static final int RUN_SAVEDMANAGER_DELETE = 4;
 
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
@@ -112,12 +117,20 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	// UI
 	public static List mmenu;
 	public static Form mangaList;
+	public static List savedList;
 
 	public static Command backCmd;
 	public static Command openCmd;
 	public static Command exitCmd;
 	private static Command searchCmd;
 	public static Command mangaItemCmd;
+
+	private static Command delC;
+	private static Command repairC;
+	private static Command switchC;
+
+	private static Command cancelDelC;
+	private static Command confirmDelC;
 	
 	// Threading
 	private int run;
@@ -125,6 +138,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	private static String query;
 
 	private static boolean wasOom;
+	
+	private static String savedPath;
 	
 	static {
 		// localizations
@@ -148,6 +163,13 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			searchCmd = new Command(L_ACTS[3], Command.OK, 1);
 			
 			mangaItemCmd = new Command(L_ACTS[15], 8, 1);
+			
+			delC = new Command(NJTAI.rus ? "Удалить" : "Delete", Command.SCREEN, 3);
+			repairC = new Command(NJTAI.rus ? "Восстановить" : "Repair", Command.SCREEN, 2);
+			switchC = new Command(NJTAI.rus ? "Другая папка" : "Another folder", Command.SCREEN, 4);
+
+			cancelDelC = new Command(NJTAI.rus ? "Отмена" : "Cancel", Command.CANCEL, 1);
+			confirmDelC = new Command(NJTAI.rus ? "Продолжить" : "Continue", Command.OK, 1);
 		} catch (Exception ignored) {}
 	}
 	
@@ -250,7 +272,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	}
 
 	public void commandAction(Command c, Item item) {
-		// TODO global command handler
 		if (c == mangaItemCmd) {
 			try {
 				int n = Integer.parseInt(((ImageItem) item).getAltText());
@@ -271,8 +292,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	}
 
 	public void commandAction(Command c, Displayable d) {
-		// TODO global command handler
-		
 		if (d == mmenu) {
 			if (c == List.SELECT_COMMAND) {
 				switch (mmenu.getSelectedIndex()) {
@@ -317,15 +336,16 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				}
 				case 4:
 					files = true;
-					List l = new List("Loading...", List.IMPLICIT);
-					(new SavedManager(l)).start();
-					setScr(l);
+					savedList = new List("Loading...", List.IMPLICIT);
+					(new SavedManager(savedList)).start();
+					setScr(savedList);
 					return;
 				case 5:
 					// sets
 					setScr(new Prefs());
 					return;
 				case 6:
+					// controls
 					try {
 						Form f = new Form(L_ACTS[13]);
 						f.setCommandListener(this);
@@ -347,6 +367,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					}
 					return;
 				case 7:
+					// about
 					Form ab = new Form(L_ACTS[12]);
 					try {
 						ImageItem img = new ImageItem(null, Image.createImage("/njtai.png"), Item.LAYOUT_LEFT, null);
@@ -387,6 +408,178 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				default:
 					return;
 				}
+			}
+			return;
+		}
+		
+		if (d == savedList) {
+			if (c == NJTAI.backCmd) {
+				NJTAI.setScr(NJTAI.mmenu);
+				return;
+			}
+			if (c == switchC) {
+				MDownloader.reselectWD(NJTAI.mmenu);
+				return;
+			}
+			if (c == repairC) {
+				// is the list empty?
+				if (savedList.size() == 0) {
+					Alert a = new Alert("NJTAI", NJTAI.rus ? "Папка не выбрана." : "No folder is selected.", null,
+							AlertType.WARNING);
+					a.setTimeout(Alert.FOREVER);
+					NJTAI.setScr(a, savedList);
+					return;
+				}
+				// loading EMO from the site
+				String item = savedList.getString(savedList.getSelectedIndex());
+				String n = item.substring(0, item.indexOf('-')).trim();
+				String html = NJTAI.getUtfOrNull(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + n + "/"));
+				if (html == null) {
+					Alert a = new Alert(item, NJTAI.rus ? "Сетевая ошибка." : "Network error.", null, AlertType.ERROR);
+					a.setTimeout(Alert.FOREVER);
+					NJTAI.setScr(a, savedList);
+					return;
+				}
+				ExtMangaObj emo = new ExtMangaObj(Integer.parseInt(n), html);
+				// running downloader
+				MDownloader md = new MDownloader(emo, savedList);
+				md.repair = true;
+				md.start();
+				return;
+			}
+			if (c == delC) {
+				// is the list empty?
+				if (savedList.size() == 0) {
+					Alert a = new Alert("NJTAI", NJTAI.rus ? "Папка не выбрана." : "No folder is selected.", null,
+							AlertType.WARNING);
+					a.setTimeout(Alert.FOREVER);
+					NJTAI.setScr(a, savedList);
+					return;
+				}
+
+				String item = savedList.getString(savedList.getSelectedIndex());
+				Alert a = new Alert(item, NJTAI.rus
+						? "Папка и её содержимое будет удалено. Если вы храните в ней свои данные, они могут быть повреждены."
+						: "The folder and it's content will be deleted. If you keep you data there, it may be damaged.",
+						null, AlertType.WARNING);
+				a.setTimeout(Alert.FOREVER);
+				a.setCommandListener(this);
+				a.addCommand(cancelDelC);
+				a.addCommand(confirmDelC);
+				NJTAI.setScr(a);
+				return;
+			}
+			if (c == cancelDelC) {
+				NJTAI.setScr(savedList);
+				return;
+			}
+			if (c == confirmDelC) {
+				start(RUN_SAVEDMANAGER_DELETE);
+				return;
+			}
+
+			if (c == List.SELECT_COMMAND) {
+				// vars
+				MangaPage mp;
+				ExtMangaObj o;
+				String data = null;
+				FileConnection fc = null;
+
+				// path of folder where we will work
+				final String item = savedList.getString(savedList.getSelectedIndex()) + "/";
+
+				// reading metadata
+				try {
+					String fn = savedPath + item + "model.json";
+					fc = (FileConnection) Connector.open(fn, Connector.READ);
+					if (fc.exists()) {
+						DataInputStream s = fc.openDataInputStream();
+						byte[] buf = new byte[(int) (fc.fileSize() + 1)];
+						int len = s.read(buf);
+						s.close();
+						data = new String(buf, 0, len, "UTF-8");
+					}
+					fc.close();
+					fc = null;
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					cfc(fc);
+				}
+				if (data == null) {
+					NJTAI.setScr(new Alert(item, "Metadata file is missed!", null, AlertType.ERROR));
+					return;
+				}
+
+				// restoring ExtMangaObj from loaded data
+				try {
+					Hashtable h = NJTAI.object(data.substring(1, data.length() - 1));
+					String n = item.substring(0, item.indexOf('-')).trim();
+					o = new ExtMangaObj(Integer.parseInt(n), h);
+					data = null;
+					h = null;
+					Image cover = null;
+
+					// cover loading
+					if (NJTAI.loadCoverAtPage) {
+						try {
+							String fn = savedPath + item + n + "_cover.jpg";
+							fc = (FileConnection) Connector.open(fn, Connector.READ);
+							InputStream s = null;
+							if (fc.exists()) {
+								s = fc.openInputStream();
+								try {
+									cover = Image.createImage(s);
+								} catch (Throwable t) {
+									t.printStackTrace();
+									cover = null;
+								}
+								s.close();
+							} else {
+								fc.close();
+								fc = (FileConnection) Connector.open(savedPath + item + n + "_001.jpg", Connector.READ);
+								if (fc.exists()) {
+									s = fc.openInputStream();
+									try {
+										cover = Image.createImage(s);
+									} catch (Throwable t) {
+										t.printStackTrace();
+										cover = null;
+									}
+									s.close();
+								}
+							}
+							fc.close();
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							cfc(fc);
+						}
+
+						if (cover != null) {
+							cover = (Image) NJTAI.prescaleCover(cover);
+						}
+					}
+
+					// creating the screen
+					mp = new MangaPage(Integer.parseInt(n), savedList, o, cover);
+					if (cover == null && NJTAI.loadCoverAtPage) {
+						Alert a1 = new Alert(item,
+								NJTAI.rus ? "Ни одного изображения не скачано." : "No images are downloaded.", null,
+								AlertType.WARNING);
+						a1.setTimeout(Alert.FOREVER);
+						NJTAI.setScr(a1, mp);
+					} else {
+						NJTAI.setScr(mp);
+					}
+				} catch (Throwable t) {
+					t.printStackTrace();
+					NJTAI.setScr(new Alert(item,
+							(NJTAI.rus ? "Файл метаданных повреждён: " : "Metadata file is corrupted: ") + t.toString(), null,
+							AlertType.ERROR));
+					return;
+				}
+				return;
 			}
 			return;
 		}
@@ -491,6 +684,111 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 			break;
 		}
+		case RUN_SAVEDMANAGER: {
+			savedPath = MDownloader.getWD();
+
+			refresh();
+
+			savedList.setTitle(savedPath);
+			savedList.addCommand(NJTAI.backCmd);
+			savedList.addCommand(delC);
+			savedList.addCommand(repairC);
+			savedList.addCommand(switchC);
+			savedList.setCommandListener(this);
+			break;
+		}
+		case RUN_SAVEDMANAGER_DELETE: {
+			String item = savedList.getString(savedList.getSelectedIndex());
+
+			// alert
+			{
+				NJTAI.setScr(savedList);
+				NJTAI.pause(100);
+				Alert a = new Alert(item, NJTAI.rus ? "Удаление" : "Deleting", null, AlertType.INFO);
+				a.setTimeout(Alert.FOREVER);
+				Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
+				a.setIndicator(g);
+				a.setCommandListener(this);
+				NJTAI.setScr(a);
+			}
+
+			// path of folder where we will work
+			item = item + "/";
+
+			String id = item.substring(0, item.indexOf('-')).trim();
+
+			FileConnection fc = null;
+
+			// model
+			try {
+				String fn = savedPath + item + "model.json";
+				fc = (FileConnection) Connector.open(fn, Connector.WRITE);
+				fc.delete();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				cfc(fc);
+			}
+
+			Enumeration e = null;
+
+			try {
+				fc = (FileConnection) Connector.open(savedPath + item, Connector.READ);
+				e = fc.list();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				cfc(fc);
+			}
+
+			if (e == null)
+				break;
+
+			while (e.hasMoreElements()) {
+
+				String name = e.nextElement().toString();
+
+				if (!name.endsWith(".jpg"))
+					continue;
+				if (!name.startsWith(id))
+					continue;
+				if (name.indexOf('_') == -1)
+					continue;
+				try {
+					String fn = savedPath + item + name;
+					fc = (FileConnection) Connector.open(fn, Connector.WRITE);
+					fc.delete();
+				} catch (Exception ex) {
+				} finally {
+					cfc(fc);
+				}
+			}
+
+			try {
+				fc = (FileConnection) Connector.open(savedPath + item, Connector.WRITE);
+				fc.delete();
+				fc.close();
+				NJTAI.setScr(savedList);
+				NJTAI.pause(100);
+				Alert a = new Alert("NJTAI", NJTAI.rus ? "Удалено." : "Deleted.", null, AlertType.CONFIRMATION);
+				a.setTimeout(Alert.FOREVER);
+				NJTAI.setScr(a, savedList);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				NJTAI.setScr(savedList);
+				NJTAI.pause(100);
+				Alert a = new Alert("NJTAI",
+						NJTAI.rus ? "В папке остались посторонние файлы." : "There are third files in the folder.",
+						null, AlertType.WARNING);
+				a.setTimeout(Alert.FOREVER);
+				NJTAI.setScr(a, savedList);
+			} finally {
+				cfc(fc);
+			}
+
+			refresh();
+			break;
+		}
 		}
 		running = false;
 	}
@@ -504,6 +802,63 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				run = 0;
 			}
 		} catch (Exception e) {}
+	}
+	
+	/**
+	 * Fills the list with folder content.
+	 */
+	public static void refresh() {
+		Enumeration e = null;
+		FileConnection fc = null;
+
+		// reading folder's list
+		try {
+			fc = (FileConnection) Connector.open(savedPath, Connector.READ);
+			e = fc.list();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				if (fc != null) fc.close();
+			} catch (Exception exx) {
+				exx.printStackTrace();
+			}
+		}
+
+		savedList.deleteAll();
+
+		if (e != null) {
+			while (e.hasMoreElements()) {
+				String s = e.nextElement().toString();
+				try {
+					if (s.length() < 4) {
+						continue;
+					}
+					// trying to parse folder's name
+					if (s.charAt(s.length() - 1) != '/') {
+						continue;
+					}
+					int i = s.indexOf('-');
+					if (i == -1) {
+						continue;
+					}
+					String n = s.substring(0, i).trim();
+					Integer.parseInt(n);
+
+					// push
+					savedList.append(s.substring(0, s.length() - 1), null);
+				} catch (Exception ex) {
+					// skipping
+				}
+			}
+		}
+	}
+
+	private void cfc(FileConnection c) {
+		try {
+			if (c != null) c.close();
+		} catch (Exception e) {
+		}
 	}
 	
 
