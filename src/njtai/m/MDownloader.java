@@ -386,8 +386,7 @@ public class MDownloader extends Thread implements CommandListener {
 				}
 
 				a.setString("Downloading " + percs + "%");
-				if (NJTAI.proxy.length() > 0 && !"https://".equals(NJTAI.proxy))
-					url = NJTAI.proxy.concat(NJTAI.url(url));
+				url = NJTAI.proxyUrl(url);
 				System.out.println("Loading from " + url);
 
 				httpCon = (HttpConnection) Connector.open(url);
