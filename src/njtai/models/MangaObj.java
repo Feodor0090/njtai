@@ -1,7 +1,6 @@
 package njtai.models;
 
 import njtai.NJTAI;
-import njtai.StringUtil;
 
 /**
  * Compact object, representing basic data about manga/dojisini.
@@ -34,9 +33,9 @@ public class MangaObj {
 	 * @param html HTML content of "gallery" block from main/search/similar page.
 	 */
 	public MangaObj(String html) {
-		num = Integer.parseInt(StringUtil.range(html, "<a href=\"/g/", "/\"", false));
-		imgUrl = StringUtil.range(StringUtil.range(html, "<noscript>", "</noscript>", false), "<img src=\"", "\"", false);
-		title = StringUtil.htmlString(StringUtil.range(html, "<div class=\"caption\">", "</div>", false));
+		num = Integer.parseInt(NJTAI.range(html, "<a href=\"/g/", "/\"", false));
+		imgUrl = NJTAI.range(NJTAI.range(html, "<noscript>", "</noscript>", false), "<img src=\"", "\"", false);
+		title = NJTAI.htmlString(NJTAI.range(html, "<div class=\"caption\">", "</div>", false));
 	}
 
 	/**
@@ -85,7 +84,7 @@ public class MangaObj {
 	 */
 	public void loadCover() {
 		try {
-			byte[] d = WebAPIA.inst.getOrNull(NJTAI.proxyUrl(imgUrl));
+			byte[] d = NJTAI.getOrNull(NJTAI.proxyUrl(imgUrl));
 			Object i = NJTAI.pl.decodeImage(d);
 			d = null;
 			System.gc();

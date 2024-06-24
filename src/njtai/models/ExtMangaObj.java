@@ -4,7 +4,6 @@ import java.util.Hashtable;
 
 import cc.nnproject.utils.*;
 import njtai.NJTAI;
-import njtai.StringUtil;
 
 /**
  * Extension for {@link MangaObj}. Contains data to show pages.
@@ -56,22 +55,22 @@ public class ExtMangaObj extends MangaObj {
 		this.num = num;
 		offline = false;
 
-		String meta = StringUtil.range(html, "<section id=\"tags\">", "</sect");
+		String meta = NJTAI.range(html, "<section id=\"tags\">", "</sect");
 
 		// pages count
-		String pagesStr = StringUtil.range(StringUtil.range(meta, "Pages:", "</div", false), "<span class=\"name\">",
+		String pagesStr = NJTAI.range(NJTAI.range(meta, "Pages:", "</div", false), "<span class=\"name\">",
 				"</span", false);
 		// this fails on 404
 		pages = Integer.parseInt(pagesStr);
 
 		// img and title
-		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
-		title = StringUtil.htmlString(StringUtil.range(StringUtil.range(html, "<h1 class=\"title\">", "</h1", false),
+		imgUrl = NJTAI.range(html, "<noscript><img src=\"", "\"", false);
+		title = NJTAI.htmlString(NJTAI.range(NJTAI.range(html, "<h1 class=\"title\">", "</h1", false),
 				"<span class=\"pretty\">", "</span", false));
 
 		// metadata
 		try {
-			tags = listTags(StringUtil.splitRanges(StringUtil.range(meta, "Tags:", "</div", true),
+			tags = listTags(NJTAI.splitRanges(NJTAI.range(meta, "Tags:", "</div", true),
 					"<span class=\"name\">", "</span", false));
 		} catch (Exception e) {
 			tags = "(error)";
@@ -80,11 +79,11 @@ public class ExtMangaObj extends MangaObj {
 			if (meta.indexOf("Languages:") == -1) {
 				lang = null;
 			} else {
-				String lr = StringUtil.range(meta, "Languages:", "</div", false);
+				String lr = NJTAI.range(meta, "Languages:", "</div", false);
 				if (lr.indexOf("class=\"name\">") == -1)
 					lang = null;
 				else
-					lang = listLangs(StringUtil.splitRanges(lr, "<span class=\"name\">", "</span", false));
+					lang = listLangs(NJTAI.splitRanges(lr, "<span class=\"name\">", "</span", false));
 			}
 
 		} catch (Exception e) {
@@ -94,11 +93,11 @@ public class ExtMangaObj extends MangaObj {
 		if (meta.indexOf("Parodies:") == -1) {
 			parody = null;
 		} else {
-			String pr = StringUtil.range(meta, "Parodies:", "</div", false);
+			String pr = NJTAI.range(meta, "Parodies:", "</div", false);
 			if (pr.indexOf("class=\"name\">") == -1) {
 				parody = null;
 			} else {
-				parody = StringUtil.range(pr, "<span class=\"name\">", "</span", false);
+				parody = NJTAI.range(pr, "<span class=\"name\">", "</span", false);
 			}
 		}
 
@@ -148,7 +147,7 @@ public class ExtMangaObj extends MangaObj {
 		
 		String url = location+(i+1)+imgSuffix;
 		
-		return WebAPIA.inst.getOrNull(NJTAI.proxyUrl(url));
+		return NJTAI.getOrNull(NJTAI.proxyUrl(url));
 	}
 
 	/**
@@ -172,17 +171,17 @@ public class ExtMangaObj extends MangaObj {
 		}
 
 		try {
-			String html = WebAPIA.inst.getUtfOrNull(NJTAI.baseUrl + "/g/" + num + "/" + pageN);
+			String html = NJTAI.getUtfOrNull(NJTAI.baseUrl + "/g/" + num + "/" + pageN);
 			String body = html.substring(html.indexOf("<bo"));
 			html = null;
 			if (body.length() < 200 && body.indexOf("429") != -1) {
 				return loadUrl(pageN, attempt + 1);
 			}
 			// looking for URL
-			String span = StringUtil.range(body, "<section id=\"image-container", "</sect", false);
+			String span = NJTAI.range(body, "<section id=\"image-container", "</sect", false);
 			body = null;
 			System.gc();
-			String url = StringUtil.range(span, "<img src=\"", "\"", false);
+			String url = NJTAI.range(span, "<img src=\"", "\"", false);
 			return url;
 		} catch (OutOfMemoryError e) {
 			System.gc();

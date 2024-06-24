@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import njtai.NJTAI;
-import njtai.StringUtil;
 
 /**
  * List of {@link MangaObj}ects. Parses form page blocks and intended to be
@@ -22,7 +21,7 @@ public class MangaObjs implements Enumeration {
 	 * @param html HTML content of container with a few gallery blocks.
 	 */
 	public MangaObjs(String html) {
-		String[] items = StringUtil.split(html, "<div class=\"gallery\"");
+		String[] items = NJTAI.split(html, "<div class=\"gallery\"");
 		if (items.length == 1 && items[0].length() < 3) {
 			list = new MangaObj[0];
 			return;
@@ -73,7 +72,8 @@ public class MangaObjs implements Enumeration {
 	 * @throws IllegalAccessException Proxy is broken.
 	 */
 	public static MangaObjs getPopularList() throws IOException, IllegalAccessException {
-		String sec = StringUtil.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
+		String sec = NJTAI.range(NJTAI.getHP(), POPULAR_DIV, NEW_DIV, false);
+		System.out.println(sec);
 		return new MangaObjs(sec);
 	}
 
@@ -85,7 +85,8 @@ public class MangaObjs implements Enumeration {
 	 * @throws IllegalAccessException Proxy is broken.
 	 */
 	public static MangaObjs getNewList() throws IOException, IllegalAccessException {
-		String sec = StringUtil.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
+		String sec = NJTAI.range(NJTAI.getHP(), NEW_DIV, PAGIN_SEC, false);
+		System.out.println(sec);
 		return new MangaObjs(sec);
 	}
 
@@ -99,12 +100,12 @@ public class MangaObjs implements Enumeration {
 	 */
 	public static MangaObjs getSearchList(String query, Object caller) throws IOException {
 		String q = NJTAI.baseUrl + SEARCH_Q + query;
-		String r = WebAPIA.inst.getUtf(q);
+		String r = NJTAI.getUtf(q);
 		//if (r == null) {
 		//	NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
 		//	return null;
 		//}
-		String sec = StringUtil.range(r, NEW_DIV, PAGIN_SEC, false);
+		String sec = NJTAI.range(r, NEW_DIV, PAGIN_SEC, false);
 		return new MangaObjs(sec);
 	}
 }

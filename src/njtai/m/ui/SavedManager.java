@@ -12,7 +12,6 @@ import njtai.NJTAI;
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
-import njtai.models.WebAPIA;
 
 /**
  * Class, responsible for loading a list of downloaded titles and opening an
@@ -271,7 +270,7 @@ public class SavedManager extends Thread implements CommandListener {
 		// loading EMO from the site
 		String item = list.getString(list.getSelectedIndex());
 		String n = item.substring(0, item.indexOf('-')).trim();
-		String html = WebAPIA.inst.getUtfOrNull(NJTAI.baseUrl + "/g/" + n + "/");
+		String html = NJTAI.getUtfOrNull(NJTAI.baseUrl + "/g/" + n + "/");
 		if (html == null) {
 			Alert a = new Alert(item, NJTAI.rus ? "Сетевая ошибка." : "Network error.", null, AlertType.ERROR);
 			a.setTimeout(Alert.FOREVER);
