@@ -164,28 +164,36 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 7:
 			Form ab = new Form(NJTAI.L_ACTS[12]);
-			ab.append(new StringItem("NJTAI v" + NJTAI.ver() + " (r3)",
-					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
-							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
 			try {
-				ab.append(Image.createImage("/njtai.png"));
-			} catch (Throwable t) {
-				ab.append(new StringItem("Тут должна быть иконка", "но её сожрали неко"));
-			}
-			ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon"));
-			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon"));
+				ImageItem img = new ImageItem(null, Image.createImage("/njtai.png"), Item.LAYOUT_LEFT, null);
+				ab.append(img);
+			} catch (Throwable ignored) {}
+			StringItem s;
+			s = new StringItem(null, "MahoRasp v" + NJTAI.midlet.getAppProperty("MIDlet-Version"));
+			s.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
+			s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_VCENTER);
+			ab.append(s);
+			
+			s = new StringItem(null, NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
+							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support.");
+			s.setFont(Font.getDefaultFont());
+			s.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_LEFT);
+			ab.append(s);
+			ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon\n"));
+			ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon\n"));
 			ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
-					"stacorp, ales_alte, mineshanya"));
+					"stacorp, ales_alte, mineshanya\n"));
 			ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio"));
 			ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
-					"nnproject, SIStore, Symbian Zone, Jazmin Rocio"));
+					"nnproject, SIStore, Symbian Zone, Jazmin Rocio\n"));
 			ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
-					"2200 2404 4035 6554\ndonate.stream/f0090"));
+					"donate.stream/f0090\nboosty.to/nnproject/donate\n"));
 			ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
-					"github.com/Feodor0090/njtai\nhttps://t.me/symnovel"));
-			StringItem bottomJoke = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\n292 labs (tm)");
-			bottomJoke.setFont(Font.getFont(0, 0, 8));
-			ab.append(bottomJoke);
+					"github.com/Feodor0090/njtai\nhttps://t.me/nnmidletschat"));
+			
+			s = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\n292 labs (tm)");
+			s.setFont(Font.getFont(0, 0, 8));
+			ab.append(s);
 
 			// setting up
 			ab.setCommandListener(this);
