@@ -84,18 +84,6 @@ public class NJTAI {
 	 * Invert D-PAD directions?
 	 */
 	public static boolean invertPan;
-	/**
-	 * Not used yet.
-	 */
-	public static boolean _f1;
-	/**
-	 * Not used yet.
-	 */
-	public static boolean _f2;
-	/**
-	 * Not used yet.
-	 */
-	public static boolean _f3;
 
 	/**
 	 * Use russian localization?
@@ -206,19 +194,32 @@ public class NJTAI {
 	public static String[] getStrings(String cat, String locale) {
 		try {
 			if (locale == null) {
-				locale = System.getProperty("microedition.locale");
-				locale = locale.toLowerCase().substring(0, 2);
+				if ((locale = System.getProperty("microedition.locale")) != null)
+					locale = locale.toLowerCase().substring(0, 2);
 			}
-			InputStream s = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
-			if (s == null)
-				s = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
-
-			char[] buf = new char[32 * 1024];
-			InputStreamReader isr = new InputStreamReader(s, "UTF-8");
-			int l = isr.read(buf);
-			isr.close();
-			String r = new String(buf, 0, l).replace('\r', ' ');
-			return splitFull(r, '\n');
+			InputStream in = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			if (in == null)
+				in = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
+			String[] l = new String[50];
+			InputStreamReader r = new InputStreamReader(in, "UTF-8");
+			StringBuffer s = new StringBuffer();
+			int c;
+			int i = 1;
+			while((c = r.read()) > 0) {
+				if(c == '\r') continue;
+				if(c == '\\') {
+					s.append((c = r.read()) == 'n' ? '\n' : (char) c);
+					continue;
+				}
+				if(c == '\n') {
+					l[i++] = s.toString();
+					s.setLength(0);
+					continue;
+				}
+				s.append((char) c);
+			}
+			r.close();
+			return l;
 		} catch (Exception e) {
 			e.printStackTrace();
 			// null is returned to avoid massive try-catch constructions near every call.
@@ -337,9 +338,6 @@ public class NJTAI {
 		}
 		String[] a = new String[v.size()];
 		v.copyInto(a);
-		v.removeAllElements();
-		v.trimToSize();
-		v = null;
 		return a;
 	}
 

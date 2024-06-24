@@ -134,11 +134,11 @@ public class NJTAIM extends MIDlet {
 			s.append('`');
 			s.append(NJTAI.invertPan ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI._f1 ? "1" : "0");
+//			s.append(NJTAI._f1 ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI._f2 ? "1" : "0");
+//			s.append(NJTAI._f2 ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI._f3 ? "1" : "0");
+//			s.append(NJTAI._f3 ? "1" : "0");
 			s.append('`');
 			s.append(NJTAI.proxy);
 			s.append('`');
@@ -178,9 +178,6 @@ public class NJTAIM extends MIDlet {
 			NJTAI.keepBitmap = s[6].equals("1");
 			NJTAI.view = Integer.parseInt(s[7]);
 			NJTAI.invertPan = s[8].equals("1");
-			NJTAI._f1 = s[9].equals("1");
-			NJTAI._f2 = s[10].equals("1");
-			NJTAI._f3 = s[11].equals("1");
 			NJTAI.proxy = s[12];
 			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 		} catch (Exception e) {
