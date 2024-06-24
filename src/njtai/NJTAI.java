@@ -15,10 +15,11 @@ import javax.microedition.rms.RecordStore;
 
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
-import njtai.m.ui.MangaList;
 import njtai.m.ui.MangaPage;
 import njtai.m.ui.Prefs;
 import njtai.m.ui.SavedManager;
+import njtai.models.MangaObj;
+import njtai.models.MangaObjs;
 
 /**
  * Main class of the application. Contains basic data and settings.
@@ -27,6 +28,14 @@ import njtai.m.ui.SavedManager;
  *
  */
 public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
+	/**
+	 * Base site URL.
+	 */
+	public static final String baseUrl = "https://nhentai.net";
+	
+	// Threading constants
+	public static final int RUN_MANGALIST = 1;
+	public static final int RUN_MANGALIST_NEW = 2;
 
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
@@ -35,10 +44,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 * @see {@link #loadPrefs()}, {@link njtai.ui.Prefs#proxy}
 	 */
 	public static String proxy;
-	/**
-	 * Base site URL.
-	 */
-	public static final String baseUrl = "https://nhentai.net";
 
 	/**
 	 * Instance of currently active platform.
@@ -98,21 +103,29 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 */
 	public static boolean rus = false;
 	
+	// localizations
 	public static String[] L_ACTS;
 	public static String[] L_PAGE;
 	
 	public static NJTAI inst;
-	
 	public static Display display;
 	
 	// UI
-	
 	public static List mmenu;
+	public static Form mangaList;
 
 	public static Command backCmd;
 	public static Command openCmd;
 	public static Command exitCmd;
 	private static Command searchCmd;
+	public static Command mangaItemCmd;
+	
+	// Threading
+	private int run;
+	private static boolean running;
+	private static String query;
+
+	private static boolean wasOom;
 	
 	public static void startApp() {
 		if (NJTAI.started) return;
@@ -166,13 +179,15 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		
 		L_ACTS = getStrings("acts");
 		L_PAGE = getStrings("page");
-		
-		// main menu
 
 		backCmd = new Command(NJTAI.L_ACTS[0], Command.BACK, 2);
 		openCmd = new Command(NJTAI.L_ACTS[1], Command.OK, 1);
 		exitCmd = new Command(NJTAI.L_ACTS[2], Command.EXIT, 2);
 		searchCmd = new Command(NJTAI.L_ACTS[3], Command.OK, 1);
+		
+		mangaItemCmd = new Command(NJTAI.L_ACTS[15], 8, 1);
+		
+		// main menu
 		
 		mmenu = new List("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
 		mmenu.addCommand(exitCmd);
@@ -230,6 +245,23 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	public void commandAction(Command c, Item item) {
 		// TODO global command handler
+		if (c == mangaItemCmd) {
+			try {
+				int n = Integer.parseInt(((ImageItem) item).getAltText());
+				if (wasOom) {
+					if (NJTAI.getScr() instanceof Form) {
+						((Form) NJTAI.getScr()).deleteAll();
+					}
+					NJTAI.setScr(loadingForm());
+					System.gc();
+					Thread.yield();
+				}
+				NJTAI.setScr(new MangaPage(n, wasOom ? null : mangaList, null, ((ImageItem) item).getImage()));
+				mangaList = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void commandAction(Command c, Displayable d) {
@@ -238,23 +270,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		if (d == mmenu) {
 			if (c == backCmd) {
 				setScr(mmenu);
-				return;
-			}
-			if (c == searchCmd) {
-				try {
-					// getting text
-					String st = ((TextBox) d).getString();
-					// Isn't it empty?
-					if (st.length() == 0) {
-						setScr(new Alert(L_ACTS[5], L_ACTS[6], null, AlertType.WARNING));
-						return;
-					}
-
-					setScr(new MangaList(L_ACTS[4], mmenu, st = processSearchQuery(st), false));
-				} catch (Exception e) {
-					setScr(new Alert(L_ACTS[7], L_ACTS[8].concat(" ").concat(e.toString()), null,
-							AlertType.ERROR), mmenu);
-				}
 				return;
 			}
 			if (c == openCmd) {
@@ -271,6 +286,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 			if (c == List.SELECT_COMMAND) {
 				switch (mmenu.getSelectedIndex()) {
+				case -1: 
+					return;
 				case 0: {
 					// number;
 					final TextBox tb = new TextBox(NJTAI.L_ACTS[11], "", 7, 2);
@@ -282,40 +299,21 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				}
 				case 1: {
 					// popular
-					try {
-						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[1], mmenu, null, true));
-					} catch (Throwable t) {
-						String info;
-						if (t instanceof OutOfMemoryError) {
-							info = NJTAI.L_ACTS[27];
-						} else if (t instanceof IOException) {
-							info = NJTAI.L_ACTS[25];
-						} else if (t instanceof IllegalAccessException) {
-							info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
-						} else {
-							info = t.toString();
-						}
-						NJTAI.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
-					}
+					if (running) return;
+					mangaList = new Form(NJTAI.getStrings("main")[1]);
+					mangaList.setCommandListener(this);
+					mangaList.addCommand(NJTAI.backCmd);
+					NJTAI.setScr(mangaList);
+					start(RUN_MANGALIST);
 					return;
 				}
 				case 2: {
 					// new
-					try {
-						NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[2], mmenu, null, false));
-					} catch (Throwable t) {
-						String info;
-						if (t instanceof OutOfMemoryError) {
-							info = NJTAI.L_ACTS[27];
-						} else if (t instanceof IOException) {
-							info = NJTAI.L_ACTS[25];
-						} else if (t instanceof IllegalAccessException) {
-							info = "Proxy returned nothing. Does it work from a country, where the site is banned?";
-						} else {
-							info = t.toString();
-						}
-						NJTAI.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
-					}
+					if (running) return;
+					mangaList = new Form(NJTAI.getStrings("main")[2]);
+					mangaList.setCommandListener(this);
+					mangaList.addCommand(NJTAI.backCmd);
+					start(RUN_MANGALIST_NEW);
 					return;
 				}
 				case 3: {
@@ -396,9 +394,29 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					ab.addCommand(backCmd);
 					NJTAI.setScr(ab);
 					return;
+				default:
+					return;
 				}
 			}
 			return;
+		}
+		if (d instanceof TextBox) {
+			if (c == searchCmd) {
+				// getting text
+				String st = ((TextBox) d).getString().trim();
+				// Isn't it empty?
+				if (st.length() == 0) {
+					setScr(new Alert(L_ACTS[5], L_ACTS[6], null, AlertType.WARNING));
+					return;
+				}
+	
+				query = NJTAI.url(st.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
+				mangaList = new Form(L_ACTS[4]);
+				mangaList.setCommandListener(this);
+				mangaList.addCommand(NJTAI.backCmd);
+				start(RUN_MANGALIST);
+				return;
+			}
 		}
 		if (c == backCmd) {
 			setScr(mmenu);
@@ -407,9 +425,78 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	}
 	
 	public void run() {
-		// TODO threading
+		int run;
+		synchronized(this) {
+			run = this.run;
+			notify();
+		}
+		running = true;
+		switch (run) {
+		case RUN_MANGALIST: 
+		case RUN_MANGALIST_NEW: {
+			wasOom = false;
+			if (mangaList == null) break;
+			try {
+				MangaObjs objs = null;
+				try {
+					NJTAI.setScr(NJTAI.loadingAlert(), mangaList);
+					try {
+						if (query != null) {
+							objs = MangaObjs.getSearchList(query, null);
+							query = null;
+						} else if (run == RUN_MANGALIST_NEW) {
+							objs = MangaObjs.getNewList();
+						} else {
+							objs = MangaObjs.getPopularList();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						NJTAI.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[14].concat(" ").concat(e.toString()), null, AlertType.ERROR), NJTAI.mmenu);
+						return;
+					}
+					boolean show = true;
+					while (objs.hasMoreElements()) {
+						MangaObj o = (MangaObj) objs.nextElement();
+						ImageItem img = new ImageItem(o.title, (Image) o.img, 3, Integer.toString(o.num), Item.HYPERLINK);
+						img.addCommand(mangaItemCmd);
+						img.setDefaultCommand(mangaItemCmd);
+						img.setItemCommandListener(this);
+						mangaList.append(img);
+						if (show) {
+							NJTAI.setScr(mangaList);
+							show = false;
+						}
+					}
+					objs = null;
+				} catch (OutOfMemoryError e) {
+					wasOom = true;
+					objs = null;
+					System.gc();
+					NJTAI.keepLists = false;
+					NJTAI.savePrefs();
+					mangaList.append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
+							NJTAI.rus ? "Не хватило памяти для отображения полного списка"
+									: "Not enough memory to show full list"));
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+			break;
+		}
+		}
+		running = false;
 	}
-	
+
+	private void start(int i) {
+		try {
+			synchronized(this) {
+				run = i;
+				new Thread(this).start();
+				wait();
+				run = 0;
+			}
+		} catch (Exception e) {}
+	}
 	
 
 	/**
@@ -442,6 +529,17 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		Alert a = new Alert(L_ACTS[title], L_ACTS[text], null, AlertType.ERROR);
 		a.setTimeout(3000);
 		return a;
+	}
+	
+	public static Alert loadingAlert() {
+		Alert a = new Alert(" ", NJTAI.rus ? "Загрузка..." : "Loading...", null, null);
+		a.setIndicator(new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
+		a.setTimeout(30000);
+		return a;
+	}
+	
+	public static Form loadingForm() {
+		return new Form(NJTAI.rus ? "Загрузка..." : "Loading...");
 	}
 
 	public static void showNotification(String title, String text, int type, Object prev) {
@@ -748,11 +846,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static String toSingleLine(String s) {
 		return s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
 	}
-
-	private static String processSearchQuery(String data) {
-		return NJTAI.url(data.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
-	}
-
+	
 	// SN
 	public static String[] splitFull(String str, char c) {
 		Vector v = new Vector(32, 16);
