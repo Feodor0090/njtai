@@ -819,7 +819,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		}
 		String[] a = new String[v.size()];
 		v.copyInto(a);
-		v.removeAllElements();
 		v = null;
 		return a;
 	}
@@ -838,8 +837,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		}
 		String[] a = new String[v.size()];
 		v.copyInto(a);
-		v.removeAllElements();
-		v.trimToSize();
 		v = null;
 		return a;
 	}

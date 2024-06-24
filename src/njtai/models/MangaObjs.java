@@ -39,8 +39,6 @@ public class MangaObjs implements Enumeration {
 		}
 		list = new MangaObj[v.size()];
 		v.copyInto(list);
-		v.removeAllElements();
-		v = null;
 	}
 
 	MangaObj[] list;
