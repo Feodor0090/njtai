@@ -6,6 +6,7 @@ An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 ## Project status
 
 This application works as parser (it downloads full page and extracts data from it). 
+Cloudflare was recently disabled on the site, so application works again.
 
 ## Releases
 [Latest releases on nnchan](https://nnp.nnchan.ru/nj)
