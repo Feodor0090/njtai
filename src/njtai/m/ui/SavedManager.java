@@ -9,7 +9,6 @@ import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
 import njtai.m.MDownloader;
-import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -109,7 +108,7 @@ public class SavedManager extends Thread implements CommandListener {
 
 	public void commandAction(Command c, Displayable arg1) {
 		if (c == MMenu.backCmd) {
-			NJTAIM.setScr(mm);
+			NJTAI.setScr(mm);
 			return;
 		}
 		if (c == switchC) {
@@ -126,7 +125,7 @@ public class SavedManager extends Thread implements CommandListener {
 				Alert a = new Alert("NJTAI", NJTAI.rus ? "Папка не выбрана." : "No folder is selected.", null,
 						AlertType.WARNING);
 				a.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a, list);
+				NJTAI.setScr(a, list);
 				return;
 			}
 
@@ -139,11 +138,11 @@ public class SavedManager extends Thread implements CommandListener {
 			a.setCommandListener(this);
 			a.addCommand(cancelDelC);
 			a.addCommand(confirmDelC);
-			NJTAIM.setScr(a);
+			NJTAI.setScr(a);
 			return;
 		}
 		if (c == cancelDelC) {
-			NJTAIM.setScr(list);
+			NJTAI.setScr(list);
 			return;
 		}
 		if (c == confirmDelC) {
@@ -166,14 +165,14 @@ public class SavedManager extends Thread implements CommandListener {
 
 				// alert
 				{
-					NJTAIM.setScr(list);
+					NJTAI.setScr(list);
 					NJTAI.pause(100);
 					Alert a = new Alert(item, NJTAI.rus ? "Удаление" : "Deleting", null, AlertType.INFO);
 					a.setTimeout(Alert.FOREVER);
 					Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
 					a.setIndicator(g);
 					a.setCommandListener(listener);
-					NJTAIM.setScr(a);
+					NJTAI.setScr(a);
 				}
 
 				// path of folder where we will work
@@ -232,20 +231,20 @@ public class SavedManager extends Thread implements CommandListener {
 					fc = (FileConnection) Connector.open(path + item, Connector.WRITE);
 					fc.delete();
 					fc.close();
-					NJTAIM.setScr(list);
+					NJTAI.setScr(list);
 					NJTAI.pause(100);
 					Alert a = new Alert("NJTAI", NJTAI.rus ? "Удалено." : "Deleted.", null, AlertType.CONFIRMATION);
 					a.setTimeout(Alert.FOREVER);
-					NJTAIM.setScr(a, list);
+					NJTAI.setScr(a, list);
 				} catch (Exception ex) {
 					ex.printStackTrace();
-					NJTAIM.setScr(list);
+					NJTAI.setScr(list);
 					NJTAI.pause(100);
 					Alert a = new Alert("NJTAI",
 							NJTAI.rus ? "В папке остались посторонние файлы." : "There are third files in the folder.",
 							null, AlertType.WARNING);
 					a.setTimeout(Alert.FOREVER);
-					NJTAIM.setScr(a, list);
+					NJTAI.setScr(a, list);
 				} finally {
 					cfc(fc);
 				}
@@ -263,7 +262,7 @@ public class SavedManager extends Thread implements CommandListener {
 			Alert a = new Alert("NJTAI", NJTAI.rus ? "Папка не выбрана." : "No folder is selected.", null,
 					AlertType.WARNING);
 			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a, list);
+			NJTAI.setScr(a, list);
 			return;
 		}
 		// loading EMO from the site
@@ -273,7 +272,7 @@ public class SavedManager extends Thread implements CommandListener {
 		if (html == null) {
 			Alert a = new Alert(item, NJTAI.rus ? "Сетевая ошибка." : "Network error.", null, AlertType.ERROR);
 			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a, list);
+			NJTAI.setScr(a, list);
 			return;
 		}
 		ExtMangaObj emo = new ExtMangaObj(Integer.parseInt(n), html);
@@ -312,7 +311,7 @@ public class SavedManager extends Thread implements CommandListener {
 			cfc(fc);
 		}
 		if (d == null) {
-			NJTAIM.setScr(new Alert(item, "Metadata file is missed!", null, AlertType.ERROR));
+			NJTAI.setScr(new Alert(item, "Metadata file is missed!", null, AlertType.ERROR));
 			return;
 		}
 
@@ -362,7 +361,7 @@ public class SavedManager extends Thread implements CommandListener {
 				}
 
 				if (cover != null) {
-					cover = (Image) NJTAI.pl.prescaleCover(cover);
+					cover = (Image) NJTAI.prescaleCover(cover);
 				}
 			}
 
@@ -373,13 +372,13 @@ public class SavedManager extends Thread implements CommandListener {
 						NJTAI.rus ? "Ни одного изображения не скачано." : "No images are downloaded.", null,
 						AlertType.WARNING);
 				a1.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a1, mp);
+				NJTAI.setScr(a1, mp);
 			} else {
-				NJTAIM.setScr(mp);
+				NJTAI.setScr(mp);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
-			NJTAIM.setScr(new Alert(item,
+			NJTAI.setScr(new Alert(item,
 					(NJTAI.rus ? "Файл метаданных повреждён: " : "Metadata file is corrupted: ") + t.toString(), null,
 					AlertType.ERROR));
 			return;

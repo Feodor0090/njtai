@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.microedition.lcdui.*;
 
 import njtai.NJTAI;
-import njtai.m.NJTAIM;
 import njtai.models.MangaObjs;
 
 /**
@@ -46,7 +45,7 @@ public final class MMenu extends List implements CommandListener {
 	public void commandAction(Command c, Displayable d) {
 		try {
 			if (c == backCmd) {
-				NJTAIM.setScr(this);
+				NJTAI.setScr(this);
 				return;
 			}
 			if (c == searchCmd) {
@@ -61,38 +60,40 @@ public final class MMenu extends List implements CommandListener {
 					if (r == null) {
 						return;
 					}
-					NJTAIM.setScr(new MangaList(NJTAI.L_ACTS[4], this, r));
+					NJTAI.setScr(new MangaList(NJTAI.L_ACTS[4], this, r));
 				} catch (IOException e) {
 					e.printStackTrace();
-					NJTAIM.setScr(this);
+					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[14], null,
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[14], null,
 							AlertType.ERROR));
 				} catch (NullPointerException e) {
-					NJTAIM.setScr(this);
+					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[5], NJTAI.L_ACTS[6], null, AlertType.WARNING));
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[5], NJTAI.L_ACTS[6], null, AlertType.WARNING));
 				} catch (Exception e) {
 					e.printStackTrace();
-					NJTAIM.setScr(this);
+					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[8].concat(" ").concat(e.toString()), null,
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[8].concat(" ").concat(e.toString()), null,
 							AlertType.ERROR));
 				}
 				return;
 			}
 			if (c == openCmd) {
 				try {
-					NJTAIM.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this, null, null));
+					NJTAI.setScr(new MangaPage(Integer.parseInt(((TextBox) d).getString()), this, null, null));
 				} catch (Exception e) {
-					NJTAIM.setScr(this);
+					NJTAI.setScr(this);
 					NJTAI.pause(100);
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[9], NJTAI.L_ACTS[10], null,
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[9], NJTAI.L_ACTS[10], null,
 							AlertType.ERROR));
 				}
+				return;
 			}
 			if (c == exitCmd) {
-				NJTAI.pl.exit();
+				NJTAI.exit();
+				return;
 			}
 			if (c == List.SELECT_COMMAND) {
 				mainMenuLinks();
@@ -100,7 +101,7 @@ public final class MMenu extends List implements CommandListener {
 		} catch (Throwable t) {
 			System.gc();
 			t.printStackTrace();
-			NJTAIM.setScr(this);
+			NJTAI.setScr(this);
 			NJTAI.pause(100);
 			String info;
 			if (t instanceof OutOfMemoryError) {
@@ -112,7 +113,7 @@ public final class MMenu extends List implements CommandListener {
 			} else {
 				info = t.toString();
 			}
-			NJTAIM.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
+			NJTAI.setScr(new Alert(NJTAI.rus ? "Ошибка приложения" : "App error", info, null, AlertType.ERROR));
 		}
 	}
 
@@ -130,15 +131,15 @@ public final class MMenu extends List implements CommandListener {
 			tb.addCommand(openCmd);
 			tb.addCommand(backCmd);
 			tb.setCommandListener(this);
-			NJTAIM.setScr(tb);
+			NJTAI.setScr(tb);
 			return;
 		case 1:
 			// popular
-			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[1], this, MangaObjs.getPopularList()));
+			NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[1], this, MangaObjs.getPopularList()));
 			return;
 		case 2:
 			// new
-			NJTAIM.setScr(new MangaList(NJTAI.getStrings("main")[2], this, MangaObjs.getNewList()));
+			NJTAI.setScr(new MangaList(NJTAI.getStrings("main")[2], this, MangaObjs.getNewList()));
 			return;
 		case 3:
 			// search
@@ -146,24 +147,24 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 4:
 			NJTAI.files = true;
-			NJTAIM.setScr(generateDownloadedScreen());
+			NJTAI.setScr(generateDownloadedScreen());
 			return;
 		case 5:
 			// sets
-			NJTAIM.setScr(new Prefs(this));
+			NJTAI.setScr(new Prefs(this));
 			return;
 		case 6:
 			try {
 
-				NJTAIM.setScr(generateControlsTipsScreen(this));
+				NJTAI.setScr(generateControlsTipsScreen(this));
 			} catch (RuntimeException e) {
-				NJTAIM.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
+				NJTAI.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
 						AlertType.ERROR));
 			}
 			return;
 		case 7:
 			Form ab = new Form(NJTAI.L_ACTS[12]);
-			ab.append(new StringItem("NJTAI v" + NJTAIM.ver() + " (r3)",
+			ab.append(new StringItem("NJTAI v" + NJTAI.ver() + " (r3)",
 					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
 							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
 			try {
@@ -189,7 +190,7 @@ public final class MMenu extends List implements CommandListener {
 			// setting up
 			ab.setCommandListener(this);
 			ab.addCommand(backCmd);
-			NJTAIM.setScr(ab);
+			NJTAI.setScr(ab);
 			return;
 		default:
 			return;
@@ -211,7 +212,7 @@ public final class MMenu extends List implements CommandListener {
 		tb.addCommand(searchCmd);
 		tb.addCommand(backCmd);
 		tb.setCommandListener(this);
-		NJTAIM.setScr(tb);
+		NJTAI.setScr(tb);
 	}
 
 	/**
@@ -227,7 +228,7 @@ public final class MMenu extends List implements CommandListener {
 			f.addCommand(backCmd);
 			String[] items = NJTAI.getStrings("tips");
 			for (int i = 0; i < items.length / 2; i++) {
-				if (NJTAIM.isS60v3fp2()) {
+				if (NJTAI.isS60v3fp2()) {
 					f.append(new StringItem(null, items[i * 2 + 1]));
 					f.append(new StringItem(items[i * 2], null));
 				} else {

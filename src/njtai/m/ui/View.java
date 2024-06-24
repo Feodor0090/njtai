@@ -10,7 +10,6 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 import njtai.NJTAI;
-import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -189,7 +188,7 @@ public abstract class View extends ViewBase {
 				null, AlertType.ERROR);
 		a.setTimeout(Alert.FOREVER);
 		try {
-			NJTAIM.setScr(a);
+			NJTAI.setScr(a);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

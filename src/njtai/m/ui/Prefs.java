@@ -15,7 +15,6 @@ import javax.microedition.lcdui.TextField;
 
 import njtai.NJTAI;
 import njtai.m.MDownloader;
-import njtai.m.NJTAIM;
 
 /**
  * Njtai preferences screen.
@@ -134,7 +133,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 	private final void cmd(Command c) {
 		if (c == dfC) {
 			MDownloader.useE_NJTAI(this);
-			NJTAIM.setScr(this);
+			NJTAI.setScr(this);
 		} else if (c == ccC) {
 			MDownloader.reselectWD(this);
 		} else if (c == changeC) {
@@ -143,7 +142,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			a.addCommand(ccC);
 			a.setCommandListener(this);
 			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a);
+			NJTAI.setScr(a);
 		} else if (c == bkC) {
 			NJTAI.cachingPolicy = cache.getSelectedIndex();
 			NJTAI.loadCoverAtPage = covers.isSelected(1);
@@ -159,19 +158,19 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
 					&& NJTAI.proxy.indexOf('.') != 0) {
 
-				NJTAIM.setScr(menu);
-				if (!NJTAI.pl.savePrefs()) {
+				NJTAI.setScr(menu);
+				if (!NJTAI.savePrefs()) {
 					Alert a = new Alert("Settings", "Failed to write settings. They will reset after exit.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);
-					NJTAIM.setScr(a, menu);
+					NJTAI.setScr(a, menu);
 				}
 			} else {
 				Alert a = new Alert("Settings",
 						"Incorrect proxy URL. Leave the field empty if you don't want to use it.", null,
 						AlertType.ERROR);
 				a.setTimeout(Alert.FOREVER);
-				NJTAIM.setScr(a);
+				NJTAI.setScr(a);
 			}
 		} else if (c == prC) {
 			Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
@@ -179,12 +178,12 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 					+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
 					null, AlertType.INFO);
 			a.setTimeout(Alert.FOREVER);
-			NJTAIM.setScr(a);
+			NJTAI.setScr(a);
 		} else if (c == cnclC) {
 			Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
 					NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
 			a.setTimeout(1500);
-			NJTAIM.setScr(a, menu);
+			NJTAI.setScr(a, menu);
 		}
 	}
 

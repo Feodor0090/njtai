@@ -11,8 +11,11 @@ import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.lcdui.*;
+import javax.microedition.rms.RecordStore;
 
+import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
+import njtai.m.ui.MMenu;
 
 /**
  * Main class of the application. Contains basic data and settings.
@@ -37,7 +40,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	/**
 	 * Instance of currently active platform.
 	 */
-	public static NJTAIM pl;
+	public static NJTAIM midlet;
 
 	/**
 	 * Home page content
@@ -92,8 +95,115 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 */
 	public static boolean rus = false;
 	
-	public static String[] L_ACTS = getStrings("acts");
-	public static String[] L_PAGE = getStrings("page");
+	public static String[] L_ACTS;
+	public static String[] L_PAGE;
+	
+	public static NJTAI inst;
+	
+	public static Display display;
+	
+	public static void startApp() {
+		if (NJTAI.running) return;
+		NJTAI.running = true;
+		String loc = System.getProperty("microedition.locale");
+		if (loc != null) {
+			loc = loc.toLowerCase();
+			NJTAI.rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
+					|| loc.indexOf("by") != -1);
+		}
+		inst = new NJTAI();
+		display = Display.getDisplay(midlet);
+		
+		loadPrefs();
+		L_ACTS = getStrings("acts");
+		L_PAGE = getStrings("page");
+		
+		setScr(new MMenu());
+	}
+
+	public static boolean savePrefs() {
+		try {
+			StringBuffer s = new StringBuffer();
+			s.append(NJTAI.files ? "1" : "0");
+			s.append('`');
+			s.append(String.valueOf(NJTAI.cachingPolicy));
+			s.append('`');
+			s.append(NJTAI.loadCoverAtPage ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI.keepLists ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI.loadCovers ? "1" : "0");
+			s.append('`');
+			// Keeping the value to avoid data breaking.
+			s.append('0');
+			//s.append(NJTAI._d1 ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI.keepBitmap ? "1" : "0");
+			s.append('`');
+			s.append(String.valueOf(NJTAI.view));
+			s.append('`');
+			s.append(NJTAI.invertPan ? "1" : "0");
+			s.append('`');
+//			s.append(NJTAI._f1 ? "1" : "0");
+			s.append('`');
+//			s.append(NJTAI._f2 ? "1" : "0");
+			s.append('`');
+//			s.append(NJTAI._f3 ? "1" : "0");
+			s.append('`');
+			s.append(NJTAI.proxy);
+			s.append('`');
+			String wd = MDownloader.currentWD;
+			s.append(wd == null ? " " : wd);
+			byte[] d = s.toString().getBytes();
+			RecordStore r = RecordStore.openRecordStore("njtai", true);
+
+			if (r.getNumRecords() == 0) {
+				r.addRecord(new byte[1], 0, 1);
+			}
+			r.setRecord(1, d, 0, d.length);
+			r.closeRecordStore();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static void loadPrefs() {
+		try {
+			RecordStore r = RecordStore.openRecordStore("njtai", true);
+
+			if (r.getNumRecords() < 1) {
+				r.closeRecordStore();
+				throw new RuntimeException();
+			}
+			byte[] d = r.getRecord(1);
+			r.closeRecordStore();
+			String[] s = NJTAI.splitFull(new String(d), '`');
+			NJTAI.files = s[0].equals("1");
+			NJTAI.cachingPolicy = Integer.parseInt(s[1]);
+			NJTAI.loadCoverAtPage = s[2].equals("1");
+			NJTAI.keepLists = s[3].equals("1");
+			NJTAI.loadCovers = s[4].equals("1");
+			//NJTAI._d1 = s[5].equals("1");
+			NJTAI.keepBitmap = s[6].equals("1");
+			NJTAI.view = Integer.parseInt(s[7]);
+			NJTAI.invertPan = s[8].equals("1");
+			NJTAI.proxy = s[12];
+			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
+		} catch (Exception e) {
+			System.out.println("There is no saved settings or they are broken.");
+			NJTAI.files = false;
+			NJTAI.cachingPolicy = 1;
+			NJTAI.loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
+			NJTAI.keepLists = true;
+			NJTAI.loadCovers = true;
+			NJTAI.keepBitmap = true;
+			NJTAI.proxy = "http://nnp.nnchan.ru/hproxy.php?";
+			NJTAI.view = 0;
+			NJTAI.invertPan = false;
+			MDownloader.currentWD = null;
+		}
+	}
 
 	public void commandAction(Command c, Item item) {
 		// TODO global command handler
@@ -105,6 +215,94 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	
 	public void run() {
 		// TODO threading
+	}
+
+	/**
+	 * @return Currently shown screen.
+	 */
+	public static Displayable getScr() {
+		return display.getCurrent();
+	}
+
+	/**
+	 * Sets current screen.
+	 * 
+	 * @param d Screen to activate.
+	 */
+	public static void setScr(Displayable d) {
+		display.setCurrent(d);
+	}
+
+	/**
+	 * Sets current screen.
+	 * 
+	 * @param a    Screen to activate.
+	 * @param prev Next screen.
+	 */
+	public static void setScr(Alert a, Displayable prev) {
+		display.setCurrent(a, prev);
+	}
+
+	public static void showNotification(String title, String text, int type, Object prev) {
+		AlertType at = null;
+		switch (type) {
+		case 0:
+			at = AlertType.INFO;
+			break;
+		case 1:
+			at = AlertType.CONFIRMATION;
+			break;
+		case 2:
+			at = AlertType.WARNING;
+			break;
+		case 3:
+			at = AlertType.ERROR;
+			break;
+		default:
+			return;
+		}
+
+		if (prev != null && prev instanceof Displayable) {
+			NJTAI.setScr((Displayable) prev);
+			NJTAI.pause(100);
+		}
+		NJTAI.setScr(new Alert(title, text, null, at));
+	}
+
+	public static void repaint() {
+		Displayable s = getScr();
+		if (s instanceof Canvas)
+			((Canvas) s).repaint();
+	}
+
+	public static Object decodeImage(byte[] data) {
+		return Image.createImage(data, 0, data.length);
+	}
+
+	public static Object prescaleCover(Object original) {
+		if (!(original instanceof Image))
+			return original;
+		Image i = (Image) original;
+		int h = getHeight() * 2 / 3;
+		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
+		return NJTAI.resize(i, w, h);
+	}
+
+	/**
+	 * @return Height of display.
+	 */
+	public static int getHeight() {
+		return getScr().getHeight();
+	}
+
+	public static void exit() {
+		midlet.notifyDestroyed();
+	}
+	/**
+	 * @return Midlet version.
+	 */
+	public static String ver() {
+		return midlet.getAppProperty("MIDlet-Version");
 	}
 
 	/**
@@ -691,4 +889,50 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		return ag | rb;
 
 	}
+	
+	// platform utils
+
+	/**
+	 * Are we working on 9.3?
+	 * 
+	 * @return Status of 9.3 detection.
+	 */
+	public static boolean isS60v3fp2() {
+		return System.getProperty("microedition.platform").indexOf("sw_platform_version=3.2") != -1;
+	}
+
+	/**
+	 * Are we working on J2ME Loader?
+	 * 
+	 * @return Status of j2meL detection.
+	 */
+	public static boolean isJ2MEL() {
+		String vendor = System.getProperty("java.vendor");
+		return (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1);
+	}
+
+	/**
+	 * Are we running on KEmulator?
+	 * 
+	 * @return KEmulator detection status.
+	 */
+	public static boolean isKem() {
+		return isClsExists("emulator.custom.CustomMethod");
+	}
+
+	/**
+	 * Checks class' existing.
+	 * 
+	 * @param clsName Class to check.
+	 * @return Can the class be instantiated or not.
+	 */
+	public static boolean isClsExists(String clsName) {
+		try {
+			Class.forName(clsName);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+
 }

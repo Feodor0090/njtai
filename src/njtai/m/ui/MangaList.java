@@ -11,7 +11,6 @@ import javax.microedition.lcdui.ItemCommandListener;
 import javax.microedition.lcdui.StringItem;
 
 import njtai.NJTAI;
-import njtai.m.NJTAIM;
 import njtai.models.MangaObj;
 import njtai.models.MangaObjs;
 
@@ -57,7 +56,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 				loader = null;
 				System.gc();
 				NJTAI.keepLists = false;
-				NJTAI.pl.savePrefs();
+				NJTAI.savePrefs();
 				append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
 						NJTAI.rus ? "Не хватило памяти для отображения полного списка"
 								: "Not enough memory to show full list"));
@@ -69,7 +68,7 @@ final class MangaList extends Form implements Runnable, CommandListener {
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == MMenu.backCmd)
-			NJTAIM.setScr(prev);
+			NJTAI.setScr(prev);
 	}
 
 	public static class OMBHdlr implements ItemCommandListener {
@@ -92,14 +91,14 @@ final class MangaList extends Form implements Runnable, CommandListener {
 
 		public void commandAction(Command c, Item i) {
 			if (wasOom) {
-				if (NJTAIM.getScr() instanceof Form) {
-					((Form) NJTAIM.getScr()).deleteAll();
+				if (NJTAI.getScr() instanceof Form) {
+					((Form) NJTAI.getScr()).deleteAll();
 				}
-				NJTAIM.setScr(new Form(NJTAI.rus ? "Загрузка..." : "Loading..."));
+				NJTAI.setScr(new Form(NJTAI.rus ? "Загрузка..." : "Loading..."));
 				System.gc();
 				Thread.yield();
 			}
-			NJTAIM.setScr(new MangaPage(n, wasOom ? null : p, null, ((ImageItem) i).getImage()));
+			NJTAI.setScr(new MangaPage(n, wasOom ? null : p, null, ((ImageItem) i).getImage()));
 		}
 	}
 

@@ -14,7 +14,6 @@ import javax.microedition.lcdui.TextBox;
 
 import njtai.NJTAI;
 import njtai.m.MDownloader;
-import njtai.m.NJTAIM;
 import njtai.models.ExtMangaObj;
 
 /**
@@ -267,9 +266,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			}
 		} catch (OutOfMemoryError e) {
 			cache = null;
-			NJTAIM.setScr(prev);
+			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			NJTAIM.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
+			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
 					AlertType.ERROR));
 			return;
 		}
@@ -412,7 +411,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
-			NJTAIM.setScr(prev == null ? new MMenu() : prev);
+			NJTAI.setScr(prev == null ? new MMenu() : prev);
 
 			cache = null;
 			return;
@@ -427,7 +426,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			tb.addCommand(MMenu.openCmd);
 			tb.addCommand(MMenu.openCmd);
 			tb.setCommandListener(this);
-			NJTAIM.setScr(tb);
+			NJTAI.setScr(tb);
 		}
 
 		if (k == KEY_NUM1) {
@@ -675,7 +674,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 */
 	public void commandAction(Command c, Displayable d) {
 		TextBox tb = (TextBox) d;
-		NJTAIM.setScr(this);
+		NJTAI.setScr(this);
 		if (c == MMenu.openCmd) {
 			try {
 				int n = Integer.parseInt(tb.getString());
@@ -689,7 +688,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				reload();
 			} catch (Exception e) {
 				NJTAI.pause(100);
-				NJTAIM.setScr(
+				NJTAI.setScr(
 						new Alert(NJTAI.L_ACTS[9], NJTAI.L_ACTS[10], null, AlertType.ERROR));
 			}
 		}

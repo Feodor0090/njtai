@@ -50,10 +50,10 @@ public class MangaObj {
 	public void loadCover() {
 		try {
 			byte[] d = NJTAI.getOrNull(NJTAI.proxyUrl(imgUrl));
-			Object i = NJTAI.pl.decodeImage(d);
+			Object i = NJTAI.decodeImage(d);
 			d = null;
 			System.gc();
-			img = NJTAI.pl.prescaleCover(i);
+			img = NJTAI.prescaleCover(i);
 		} catch (Exception e) {
 			e.printStackTrace();
 			img = null;

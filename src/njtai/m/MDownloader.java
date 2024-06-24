@@ -82,9 +82,9 @@ public class MDownloader extends Thread implements CommandListener {
 		if (dir == null)
 			dir = getWD();
 		if (dir == null) {
-			NJTAIM.setScr(prev);
+			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			NJTAIM.setScr(folderMissed());
+			NJTAI.setScr(folderMissed());
 			return;
 		}
 
@@ -159,7 +159,7 @@ public class MDownloader extends Thread implements CommandListener {
 		if (dir == null)
 			dir = getWD();
 		if (dir == null) {
-			NJTAIM.setScr(folderMissed(), prev);
+			NJTAI.setScr(folderMissed(), prev);
 			return null;
 		}
 
@@ -238,18 +238,18 @@ public class MDownloader extends Thread implements CommandListener {
 		Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
 		a.setIndicator(g);
 		a.setCommandListener(this);
-		NJTAIM.setScr(a);
+		NJTAI.setScr(a);
 		NJTAI.pause(1000);
 		if (stop)
 			return;
 		if (dir == null)
 			dir = getWD();
 		if (dir == null) {
-			NJTAIM.setScr(prev);
-			NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
+			NJTAI.setScr(prev);
+			NJTAI.pause(NJTAI.isJ2MEL() ? 200 : 100);
 			Alert a1 = folderMissed();
 			a1.setTimeout(-2);
-			NJTAIM.setScr(a1, prev);
+			NJTAI.setScr(a1, prev);
 			return;
 		}
 		g = new Gauge(null, false, 100, 0);
@@ -266,14 +266,14 @@ public class MDownloader extends Thread implements CommandListener {
 			if (!fc.exists()) {
 				if (repair) {
 					fc.close();
-					NJTAIM.setScr(prev);
-					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
+					NJTAI.setScr(prev);
+					NJTAI.pause(NJTAI.isJ2MEL() ? 200 : 100);
 					Alert a1 = new Alert(NJTAI.L_ACTS[21],
 							NJTAI.rus ? "Кэш отсутствует в данной рабочей папке. Сначала скачайте."
 									: "Cache is not present in current working folder. Download it first.",
 							null, AlertType.ERROR);
 					a1.setTimeout(-2);
-					NJTAIM.setScr(a1, prev);
+					NJTAI.setScr(a1, prev);
 					return;
 				}
 				fc.mkdir();
@@ -372,15 +372,15 @@ public class MDownloader extends Thread implements CommandListener {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-					NJTAIM.setScr(prev);
+					NJTAI.setScr(prev);
 					fc.close();
 					return;
 				}
 				if (url == null) {
 					fc.close();
-					NJTAIM.setScr(prev);
-					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[21], "Failed to get image's url.", null,
+					NJTAI.setScr(prev);
+					NJTAI.pause(NJTAI.isJ2MEL() ? 200 : 100);
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[21], "Failed to get image's url.", null,
 							AlertType.ERROR), prev);
 					return;
 				}
@@ -452,7 +452,7 @@ public class MDownloader extends Thread implements CommandListener {
 				return;
 		}
 
-		if (NJTAIM.isJ2MEL()) {
+		if (NJTAI.isJ2MEL()) {
 			g.setValue(100);
 			done = true;
 			if (ioError) {
@@ -467,7 +467,7 @@ public class MDownloader extends Thread implements CommandListener {
 				a.setString(NJTAI.L_ACTS[repair ? 23 : 24]);
 			}
 		} else {
-			NJTAIM.setScr(prev);
+			NJTAI.setScr(prev);
 			NJTAI.pause(100);
 			try {
 				Alert b;
@@ -485,7 +485,7 @@ public class MDownloader extends Thread implements CommandListener {
 				} else {
 					b = new Alert("NJTAI", NJTAI.L_ACTS[repair ? 23 : 24], null, AlertType.CONFIRMATION);
 				}
-				NJTAIM.setScr(b, prev);
+				NJTAI.setScr(b, prev);
 			} catch (Exception e) {
 			}
 		}
@@ -555,7 +555,7 @@ public class MDownloader extends Thread implements CommandListener {
 			return WDs;
 
 		String[] all;
-		if (NJTAIM.isJ2MEL()) {
+		if (NJTAI.isJ2MEL()) {
 			all = new String[] { "file:///c:/NJTAI/", "file:///c:/" };
 		} else {
 			all = new String[] { "file:///E:/NJTAI/", "file:///E:/Images/", "file:///E:/Data/Images/",
@@ -617,10 +617,10 @@ public class MDownloader extends Thread implements CommandListener {
 						((Prefs) prev).wd.setText(currentWD);
 					}
 				}
-				NJTAIM.setScr(prev);
+				NJTAI.setScr(prev);
 			}
 		});
-		NJTAIM.setScr(l);
+		NJTAI.setScr(l);
 	}
 
 	/**
@@ -655,11 +655,11 @@ public class MDownloader extends Thread implements CommandListener {
 		if (c == stopCmd) {
 			stop = true;
 
-			NJTAIM.setScr(prev);
+			NJTAI.setScr(prev);
 			if (!done) {
 				NJTAI.pause(100);
 				try {
-					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[21], "Downloading was canceled.", null,
+					NJTAI.setScr(new Alert(NJTAI.L_ACTS[21], "Downloading was canceled.", null,
 							AlertType.ERROR));
 				} catch (Exception e) {
 				}
