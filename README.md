@@ -1,18 +1,18 @@
 # NJTAI
 An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
-![image](njtai/res/njtai.svg)
+![image](res/njtai.svg)
 
 ## Project status
 
-This application works as parser (it downloads full page and extracts data from it). The site is under cloudflare now, so neither direct access or proxying won't work. There are some clones/mirrors without CF, but their CDNs (where the images stored) are under CF too. So, this project may be considered as dead.
+This application works as parser (it downloads full page and extracts data from it). 
 
 ## Releases
-R3 was planned, but isn't released. Compile yourself from `master` if you want fixed URL fetching.
+Latest releases can be found at https://nnp.nnchan.ru/arch/nj
 
 SiStore contains R1, consider updating.
 
-Links in the app are outdated, check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask me something.
+Check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask me something.
 
 ## Features
 - "Popular" list from site
