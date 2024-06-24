@@ -17,7 +17,6 @@ import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Gauge;
 import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
