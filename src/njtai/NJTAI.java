@@ -1103,33 +1103,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static Form loadingForm() {
 		return new Form(rus ? "Загрузка..." : "Loading...");
 	}
-
-	public static void showNotification(String title, String text, int type, Object prev) {
-		AlertType at = null;
-		switch (type) {
-		case 0:
-			at = AlertType.INFO;
-			break;
-		case 1:
-			at = AlertType.CONFIRMATION;
-			break;
-		case 2:
-			at = AlertType.WARNING;
-			break;
-		case 3:
-			at = AlertType.ERROR;
-			break;
-		default:
-			return;
-		}
-
-		if (prev != null && prev instanceof Displayable) {
-			setScr((Displayable) prev);
-			pause(100);
-		}
-		setScr(new Alert(title, text, null, at));
-	}
-
+	
 	public static void repaint() {
 		Displayable s = getScr();
 		if (s instanceof Canvas)
@@ -1140,8 +1114,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		return Image.createImage(data, 0, data.length);
 	}
 
-	public static Image prescaleCover(Image original) {
-		Image i = (Image) original;
+	public static Image prescaleCover(Image i) {
 		int h = getHeight() * 2 / 3;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
 		return resize(i, w, h);

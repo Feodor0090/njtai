@@ -232,7 +232,7 @@ public class ViewHWA extends ViewBase {
 	}
 
 	protected float panDeltaMul() {
-		return -1f * super.panDeltaMul() * (ih / (float) getHeight());
+		return -super.panDeltaMul() * (ih / (float) getHeight());
 	}
 
 	protected boolean useSmoothZoom() {
