@@ -152,8 +152,33 @@ public final class MangaPage extends Form implements Runnable, CommandListener, 
 
 	public void commandAction(Command c, Displayable d) {
 		if (c == back) {
+			if (d != this) {
+				NJTAI.setScr(this);
+				return;
+			}
 			stop = true;
 			NJTAI.setScr(p == null ? NJTAI.mmenu : p);
+			return;
+		}
+		if (c == repairFull) {
+			MDownloader md = new MDownloader(mo, this);
+			md.repair = true;
+			md.start();
+			return;
+		}
+		if (c == goTo) {
+			try {
+				int n = Integer.parseInt(((TextBox) d).getString());
+				if (n < 1)
+					n = 1;
+				if (n > mo.pages)
+					n = mo.pages;
+				NJTAI.setScr(ViewBase.create(mo, this, n - 1));
+			} catch (Exception e) {
+				NJTAI.setScr(this);
+				NJTAI.pause(100);
+				NJTAI.setScr(new Alert(loc[21], loc[22], null, AlertType.ERROR));
+			}
 		}
 	}
 
@@ -165,28 +190,7 @@ public final class MangaPage extends Form implements Runnable, CommandListener, 
 				final TextBox tb = new TextBox(loc[20], "", 7, 2);
 				tb.addCommand(goTo);
 				tb.addCommand(back);
-				final Displayable menu = this;
-				tb.setCommandListener(new CommandListener() {
-
-					public void commandAction(Command cmd, Displayable d) {
-						if (cmd == back) {
-							NJTAI.setScr(menu);
-						} else if (cmd == goTo) {
-							try {
-								int n = Integer.parseInt(tb.getString());
-								if (n < 1)
-									n = 1;
-								if (n > mo.pages)
-									n = mo.pages;
-								NJTAI.setScr(ViewBase.create(mo, menu, n - 1));
-							} catch (Exception e) {
-								NJTAI.setScr(menu);
-								NJTAI.pause(100);
-								NJTAI.setScr(new Alert(loc[21], loc[22], null, AlertType.ERROR));
-							}
-						}
-					}
-				});
+				tb.setCommandListener(this);
 				NJTAI.setScr(tb);
 			} else if (i == save) {
 				(new MDownloader(mo, this)).start();
@@ -195,17 +199,7 @@ public final class MangaPage extends Form implements Runnable, CommandListener, 
 				a.setTimeout(Alert.FOREVER);
 				a.addCommand(repairFull);
 				a.addCommand(back);
-				final Displayable menu = this;
-				a.setCommandListener(new CommandListener() {
-					public void commandAction(Command cmd, Displayable d) {
-						NJTAI.setScr(menu);
-						if (cmd == repairFull) {
-							MDownloader md = new MDownloader(mo, menu);
-							md.repair = true;
-							md.start();
-						}
-					}
-				});
+				a.setCommandListener(this);
 				NJTAI.setScr(a);
 			} else {
 				NJTAI.setScr(ViewBase.create(mo, this, 0));
