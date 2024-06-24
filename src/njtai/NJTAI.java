@@ -726,7 +726,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				if ((locale = System.getProperty("microedition.locale")) != null)
 					locale = locale.toLowerCase().substring(0, 2);
 			}
-			Class cls = inst.getClass();
+			Class cls = NJTAIM.class;
 			InputStream in = cls.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
 			if (in == null)
 				in = cls.getResourceAsStream("/text/" + cat + "_en.txt");
@@ -847,10 +847,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		v.copyInto(a);
 		v = null;
 		return a;
-	}
-
-	public static String toSingleLine(String s) {
-		return s.replace('\r', ' ').replace('\n', ' ').replace('\t', ' ');
 	}
 	
 	// SN
