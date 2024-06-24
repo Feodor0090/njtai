@@ -126,16 +126,35 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	private static boolean wasOom;
 	
+	static {
+		// localizations
+		
+		try {
+			String loc = System.getProperty("microedition.locale");
+			if (loc != null) {
+				loc = loc.toLowerCase();
+				NJTAI.rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
+						|| loc.indexOf("by") != -1);
+			}
+		} catch (Exception ignored) {}
+		
+		try {
+			L_ACTS = getStrings("acts");
+			L_PAGE = getStrings("page");
+
+			backCmd = new Command(NJTAI.L_ACTS[0], Command.BACK, 2);
+			openCmd = new Command(NJTAI.L_ACTS[1], Command.OK, 1);
+			exitCmd = new Command(NJTAI.L_ACTS[2], Command.EXIT, 2);
+			searchCmd = new Command(NJTAI.L_ACTS[3], Command.OK, 1);
+			
+			mangaItemCmd = new Command(NJTAI.L_ACTS[15], 8, 1);
+		} catch (Exception ignored) {}
+	}
+	
 	public static void startApp() {
 		if (NJTAI.started) return;
 		NJTAI.started = true;
 		display = Display.getDisplay(midlet);
-		String loc = System.getProperty("microedition.locale");
-		if (loc != null) {
-			loc = loc.toLowerCase();
-			NJTAI.rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
-					|| loc.indexOf("by") != -1);
-		}
 		inst = new NJTAI();
 		
 		// loadPrefs() inlined
@@ -173,18 +192,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			NJTAI.invertPan = false;
 			MDownloader.currentWD = null;
 		}
-		
-		// localizations
-		
-		L_ACTS = getStrings("acts");
-		L_PAGE = getStrings("page");
-
-		backCmd = new Command(NJTAI.L_ACTS[0], Command.BACK, 2);
-		openCmd = new Command(NJTAI.L_ACTS[1], Command.OK, 1);
-		exitCmd = new Command(NJTAI.L_ACTS[2], Command.EXIT, 2);
-		searchCmd = new Command(NJTAI.L_ACTS[3], Command.OK, 1);
-		
-		mangaItemCmd = new Command(NJTAI.L_ACTS[15], 8, 1);
 		
 		// main menu
 		
@@ -629,9 +636,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		return s;
 	}
 
-	public static Image getImage(String imgUrl) {
+	public static Image getImage(String imgUrl) throws IOException {
 		// TODO
-		byte[] d = NJTAI.getOrNull(NJTAI.proxyUrl(imgUrl));
+		byte[] d = NJTAI.get(NJTAI.proxyUrl(imgUrl));
 		return Image.createImage(d, 0, d.length);
 	}
 
