@@ -195,7 +195,7 @@ public class NJTAIM extends MIDlet implements IPlatform {
 			NJTAI.keepLists = true;
 			NJTAI.loadCovers = true;
 			NJTAI.keepBitmap = true;
-			NJTAI.proxy = "http://nnproject.cc/proxy.php?";
+			NJTAI.proxy = "http://nnp.nnchan.ru/hproxy.php?";
 			NJTAI.view = 0;
 			NJTAI.invertPan = false;
 			MDownloader.currentWD = null;

@@ -35,7 +35,7 @@ public class MangaObj {
 	 */
 	public MangaObj(String html) {
 		num = Integer.parseInt(StringUtil.range(html, "<a href=\"/g/", "/\"", false));
-		imgUrl = StringUtil.range(html, "<noscript><img src=\"", "\"", false);
+		imgUrl = StringUtil.range(StringUtil.range(html, "<noscript>", "</noscript>", false), "<img src=\"", "\"", false);
 		title = StringUtil.htmlString(StringUtil.range(html, "<div class=\"caption\">", "</div>", false));
 	}
 
@@ -43,6 +43,41 @@ public class MangaObj {
 	 * Creates empty object.
 	 */
 	public MangaObj() {
+	}
+	
+	public static String url(String url) {
+		StringBuffer sb = new StringBuffer();
+		char[] chars = url.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			int c = chars[i];
+			if (65 <= c && c <= 90) {
+				sb.append((char) c);
+			} else if (97 <= c && c <= 122) {
+				sb.append((char) c);
+			} else if (48 <= c && c <= 57) {
+				sb.append((char) c);
+			} else if (c == 32) {
+				sb.append("%20");
+			} else if (c == 45 || c == 95 || c == 46 || c == 33 || c == 126 || c == 42 || c == 39 || c == 40
+					|| c == 41) {
+				sb.append((char) c);
+			} else if (c <= 127) {
+				sb.append(hex(c));
+			} else if (c <= 2047) {
+				sb.append(hex(0xC0 | c >> 6));
+				sb.append(hex(0x80 | c & 0x3F));
+			} else {
+				sb.append(hex(0xE0 | c >> 12));
+				sb.append(hex(0x80 | c >> 6 & 0x3F));
+				sb.append(hex(0x80 | c & 0x3F));
+			}
+		}
+		return sb.toString();
+	}
+
+	private static String hex(int i) {
+		String s = Integer.toHexString(i);
+		return "%".concat(s.length() < 2 ? "0" : "").concat(s);
 	}
 
 	/**

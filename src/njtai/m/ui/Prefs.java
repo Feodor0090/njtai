@@ -155,7 +155,7 @@ public final class Prefs extends Form implements ItemCommandListener, CommandLis
 			NJTAI.proxy = proxy.getString();
 			NJTAI.invertPan = invert.getSelectedIndex() == 1;
 			if (NJTAI.proxy.length() == 0) {
-				NJTAI.proxy = "https://";
+				NJTAI.proxy = "";
 			} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
 					&& NJTAI.proxy.indexOf('.') != 0) {
 

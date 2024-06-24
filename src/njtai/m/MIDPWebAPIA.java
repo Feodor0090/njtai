@@ -28,7 +28,7 @@ public class MIDPWebAPIA extends WebAPIA {
 			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
 			int r = hc.getResponseCode();
-			if (r == 301) {
+			if (r == 301 || r == 302) {
 				String redir = hc.getHeaderField("Location");
 				if (redir.startsWith("/")) {
 					String tmp = url.substring(url.indexOf("//") + 2);

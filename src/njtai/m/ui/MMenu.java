@@ -175,7 +175,7 @@ public final class MMenu extends List implements CommandListener {
 			return;
 		case 7:
 			Form ab = new Form(NJTAI.getStrings("acts")[12]);
-			ab.append(new StringItem("NJTAI v" + NJTAIM.ver(),
+			ab.append(new StringItem("NJTAI v" + NJTAIM.ver() + " (r3)",
 					NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
 							: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support."));
 			try {

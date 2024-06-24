@@ -172,7 +172,7 @@ public class ExtMangaObj extends MangaObj {
 		}
 
 		try {
-			String html = WebAPIA.inst.getUtfOrNull(NJTAI.proxy + NJTAI.baseUrl + "/g/" + num + "/" + pageN);
+			String html = WebAPIA.inst.getUtfOrNull(NJTAI.baseUrl + "/g/" + num + "/" + pageN);
 			String body = html.substring(html.indexOf("<bo"));
 			html = null;
 			if (body.length() < 200 && body.indexOf("429") != -1) {

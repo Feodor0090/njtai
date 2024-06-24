@@ -98,7 +98,7 @@ public class MangaObjs implements Enumeration {
 	 * @throws IOException            Connection error.
 	 */
 	public static MangaObjs getSearchList(String query, Object caller) throws IOException {
-		String q = NJTAI.proxy + NJTAI.baseUrl + SEARCH_Q + query;
+		String q = NJTAI.baseUrl + SEARCH_Q + query;
 		String r = WebAPIA.inst.getUtf(q);
 		//if (r == null) {
 		//	NJTAI.pl.showNotification("Network error", "Check proxy and connection.", 3, caller);
