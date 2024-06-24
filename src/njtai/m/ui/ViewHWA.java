@@ -147,8 +147,12 @@ public class ViewHWA extends ViewBase {
 					g3.clear(bg);
 
 					setupM3G(g3);
-					for (int i = 0; i < p.length; i++) {
-						g3.render((Node) p[i][0], (Transform) p[i][1]);
+					
+					if (p != null) {
+						for (int i = 0; i < p.length; i++) {
+							if (p[i] == null) break;
+							g3.render((Node) p[i][0], (Transform) p[i][1]);
+						}
 					}
 				} catch (Throwable t) {
 					t.printStackTrace();
