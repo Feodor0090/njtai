@@ -133,7 +133,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			String loc = System.getProperty("microedition.locale");
 			if (loc != null) {
 				loc = loc.toLowerCase();
-				NJTAI.rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
+				rus = (loc.indexOf("ru") != -1 || loc.indexOf("ua") != -1 || loc.indexOf("kz") != -1
 						|| loc.indexOf("by") != -1);
 			}
 		} catch (Exception ignored) {}
@@ -142,18 +142,18 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			L_ACTS = getStrings("acts");
 			L_PAGE = getStrings("page");
 
-			backCmd = new Command(NJTAI.L_ACTS[0], Command.BACK, 2);
-			openCmd = new Command(NJTAI.L_ACTS[1], Command.OK, 1);
-			exitCmd = new Command(NJTAI.L_ACTS[2], Command.EXIT, 2);
-			searchCmd = new Command(NJTAI.L_ACTS[3], Command.OK, 1);
+			backCmd = new Command(L_ACTS[0], Command.BACK, 2);
+			openCmd = new Command(L_ACTS[1], Command.OK, 1);
+			exitCmd = new Command(L_ACTS[2], Command.EXIT, 2);
+			searchCmd = new Command(L_ACTS[3], Command.OK, 1);
 			
-			mangaItemCmd = new Command(NJTAI.L_ACTS[15], 8, 1);
+			mangaItemCmd = new Command(L_ACTS[15], 8, 1);
 		} catch (Exception ignored) {}
 	}
 	
 	public static void startApp() {
-		if (NJTAI.started) return;
-		NJTAI.started = true;
+		if (started) return;
+		started = true;
 		display = Display.getDisplay(midlet);
 		inst = new NJTAI();
 		
@@ -167,35 +167,35 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 			byte[] d = r.getRecord(1);
 			r.closeRecordStore();
-			String[] s = NJTAI.splitFull(new String(d), '`');
-			NJTAI.files = s[0].equals("1");
-			NJTAI.cachingPolicy = Integer.parseInt(s[1]);
-			NJTAI.loadCoverAtPage = s[2].equals("1");
-			NJTAI.keepLists = s[3].equals("1");
-			NJTAI.loadCovers = s[4].equals("1");
-			//NJTAI._d1 = s[5].equals("1");
-			NJTAI.keepBitmap = s[6].equals("1");
-			NJTAI.view = Integer.parseInt(s[7]);
-			NJTAI.invertPan = s[8].equals("1");
-			NJTAI.proxy = s[12];
+			String[] s = splitFull(new String(d), '`');
+			files = s[0].equals("1");
+			cachingPolicy = Integer.parseInt(s[1]);
+			loadCoverAtPage = s[2].equals("1");
+			keepLists = s[3].equals("1");
+			loadCovers = s[4].equals("1");
+			//_d1 = s[5].equals("1");
+			keepBitmap = s[6].equals("1");
+			view = Integer.parseInt(s[7]);
+			invertPan = s[8].equals("1");
+			proxy = s[12];
 			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
-			NJTAI.files = false;
-			NJTAI.cachingPolicy = 1;
-			NJTAI.loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
-			NJTAI.keepLists = true;
-			NJTAI.loadCovers = true;
-			NJTAI.keepBitmap = true;
-			NJTAI.proxy = "http://nnp.nnchan.ru/hproxy.php?";
-			NJTAI.view = 0;
-			NJTAI.invertPan = false;
+			files = false;
+			cachingPolicy = 1;
+			loadCoverAtPage = (Runtime.getRuntime().totalMemory() != 2048 * 1024);
+			keepLists = true;
+			loadCovers = true;
+			keepBitmap = true;
+			proxy = "http://nnp.nnchan.ru/hproxy.php?";
+			view = 0;
+			invertPan = false;
 			MDownloader.currentWD = null;
 		}
 		
 		// main menu
 		
-		mmenu = new List("NJTAI", List.IMPLICIT, NJTAI.getStrings("main"), null);
+		mmenu = new List("NJTAI", List.IMPLICIT, getStrings("main"), null);
 		mmenu.addCommand(exitCmd);
 		mmenu.setCommandListener(inst);
 		
@@ -205,33 +205,33 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static boolean savePrefs() {
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append(NJTAI.files ? "1" : "0");
+			s.append(files ? "1" : "0");
 			s.append('`');
-			s.append(String.valueOf(NJTAI.cachingPolicy));
+			s.append(String.valueOf(cachingPolicy));
 			s.append('`');
-			s.append(NJTAI.loadCoverAtPage ? "1" : "0");
+			s.append(loadCoverAtPage ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI.keepLists ? "1" : "0");
+			s.append(keepLists ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI.loadCovers ? "1" : "0");
+			s.append(loadCovers ? "1" : "0");
 			s.append('`');
 			// Keeping the value to avoid data breaking.
 			s.append('0');
-			//s.append(NJTAI._d1 ? "1" : "0");
+			//s.append(_d1 ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI.keepBitmap ? "1" : "0");
+			s.append(keepBitmap ? "1" : "0");
 			s.append('`');
-			s.append(String.valueOf(NJTAI.view));
+			s.append(String.valueOf(view));
 			s.append('`');
-			s.append(NJTAI.invertPan ? "1" : "0");
+			s.append(invertPan ? "1" : "0");
 			s.append('`');
-//			s.append(NJTAI._f1 ? "1" : "0");
+//			s.append(_f1 ? "1" : "0");
 			s.append('`');
-//			s.append(NJTAI._f2 ? "1" : "0");
+//			s.append(_f2 ? "1" : "0");
 			s.append('`');
-//			s.append(NJTAI._f3 ? "1" : "0");
+//			s.append(_f3 ? "1" : "0");
 			s.append('`');
-			s.append(NJTAI.proxy);
+			s.append(proxy);
 			s.append('`');
 			String wd = MDownloader.currentWD;
 			s.append(wd == null ? " " : wd);
@@ -255,14 +255,14 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			try {
 				int n = Integer.parseInt(((ImageItem) item).getAltText());
 				if (wasOom) {
-					if (NJTAI.getScr() instanceof Form) {
-						((Form) NJTAI.getScr()).deleteAll();
+					if (getScr() instanceof Form) {
+						((Form) getScr()).deleteAll();
 					}
-					NJTAI.setScr(loadingForm());
+					setScr(loadingForm());
 					System.gc();
 					Thread.yield();
 				}
-				NJTAI.setScr(new MangaPage(n, wasOom ? null : mangaList, null, ((ImageItem) item).getImage()));
+				setScr(new MangaPage(n, wasOom ? null : mangaList, null, ((ImageItem) item).getImage()));
 				mangaList = null;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -280,59 +280,59 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					return;
 				case 0: {
 					// number;
-					final TextBox tb = new TextBox(NJTAI.L_ACTS[11], "", 7, 2);
+					final TextBox tb = new TextBox(L_ACTS[11], "", 7, 2);
 					tb.addCommand(openCmd);
 					tb.addCommand(backCmd);
 					tb.setCommandListener(this);
-					NJTAI.setScr(tb);
+					setScr(tb);
 					return;
 				}
 				case 1: {
 					// popular
 					if (running) return;
-					mangaList = new Form(NJTAI.getStrings("main")[1]);
+					mangaList = new Form(getStrings("main")[1]);
 					mangaList.setCommandListener(this);
-					mangaList.addCommand(NJTAI.backCmd);
-					NJTAI.setScr(mangaList);
+					mangaList.addCommand(backCmd);
+					setScr(mangaList);
 					start(RUN_MANGALIST);
 					return;
 				}
 				case 2: {
 					// new
 					if (running) return;
-					mangaList = new Form(NJTAI.getStrings("main")[2]);
+					mangaList = new Form(getStrings("main")[2]);
 					mangaList.setCommandListener(this);
-					mangaList.addCommand(NJTAI.backCmd);
+					mangaList.addCommand(backCmd);
 					start(RUN_MANGALIST_NEW);
 					return;
 				}
 				case 3: {
 					// search
-					final TextBox tb = new TextBox(NJTAI.L_ACTS[3], "", 80, 0);
+					final TextBox tb = new TextBox(L_ACTS[3], "", 80, 0);
 					tb.addCommand(searchCmd);
 					tb.addCommand(backCmd);
 					tb.setCommandListener(this);
-					NJTAI.setScr(tb);
+					setScr(tb);
 					return;
 				}
 				case 4:
-					NJTAI.files = true;
+					files = true;
 					List l = new List("Loading...", List.IMPLICIT);
 					(new SavedManager(l)).start();
-					NJTAI.setScr(l);
+					setScr(l);
 					return;
 				case 5:
 					// sets
-					NJTAI.setScr(new Prefs());
+					setScr(new Prefs());
 					return;
 				case 6:
 					try {
-						Form f = new Form(NJTAI.L_ACTS[13]);
+						Form f = new Form(L_ACTS[13]);
 						f.setCommandListener(this);
 						f.addCommand(backCmd);
-						String[] items = NJTAI.getStrings("tips");
+						String[] items = getStrings("tips");
 						for (int i = 0; i < items.length / 2; i++) {
-							if (NJTAI.isS60v3fp2()) {
+							if (isS60v3fp2()) {
 								f.append(new StringItem(null, items[i * 2 + 1]));
 								f.append(new StringItem(items[i * 2], null));
 							} else {
@@ -342,37 +342,37 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 							}
 						}
 					} catch (RuntimeException e) {
-						NJTAI.setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
+						setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
 								AlertType.ERROR));
 					}
 					return;
 				case 7:
-					Form ab = new Form(NJTAI.L_ACTS[12]);
+					Form ab = new Form(L_ACTS[12]);
 					try {
 						ImageItem img = new ImageItem(null, Image.createImage("/njtai.png"), Item.LAYOUT_LEFT, null);
 						ab.append(img);
 					} catch (Throwable ignored) {}
 					StringItem s;
-					s = new StringItem(null, "NJTAI v" + NJTAI.midlet.getAppProperty("MIDlet-Version"));
+					s = new StringItem(null, "NJTAI v" + midlet.getAppProperty("MIDlet-Version"));
 					s.setFont(Font.getFont(0, 0, Font.SIZE_LARGE));
 					s.setLayout(Item.LAYOUT_LEFT | Item.LAYOUT_VCENTER);
 					ab.append(s);
 					
-					s = new StringItem(null, NJTAI.rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
+					s = new StringItem(null, rus ? "Клиент для nhentai.net под J2ME устройства, поддерживающие MIDP 2.0 и CLDC 1.1"
 									: "nhentai.net client for J2ME devices with MIDP 2.0 and CLDC 1.1 support.");
 					s.setFont(Font.getDefaultFont());
 					s.setLayout(Item.LAYOUT_NEWLINE_BEFORE | Item.LAYOUT_NEWLINE_AFTER | Item.LAYOUT_LEFT);
 					ab.append(s);
-					ab.append(new StringItem(NJTAI.rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Тестирование и ревью" : "Review and testing",
+					ab.append(new StringItem(rus ? "Основные разработчики" : "Main developers", "Feodor0090, Shinovon\n"));
+					ab.append(new StringItem(rus ? "Иконка и прокси" : "Icon and proxy", "Shinovon\n"));
+					ab.append(new StringItem(rus ? "Тестирование и ревью" : "Review and testing",
 							"stacorp, ales_alte, mineshanya\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Отдельное спасибо" : "Special thanks to",
+					ab.append(new StringItem(rus ? "Локализация" : "Localization", "ales_alte, Jazmin Rocio\n"));
+					ab.append(new StringItem(rus ? "Отдельное спасибо" : "Special thanks to",
 							"SIStore, Symbian Zone, Jazmin Rocio\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Поддержать разработчика" : "Support the developer",
+					ab.append(new StringItem(rus ? "Поддержать разработчика" : "Support the developer",
 							"donate.stream/f0090\nboosty.to/nnproject/donate\n"));
-					ab.append(new StringItem(NJTAI.rus ? "Больше информации:" : "More info:",
+					ab.append(new StringItem(rus ? "Больше информации:" : "More info:",
 							"github.com/Feodor0090/njtai\nhttps://t.me/nnmidletschat\n"));
 					
 					s = new StringItem(null, "\n\n\n\n\n\n\n\nИ помните: порода Махо - чёрный пудель!\n292 labs (tm)");
@@ -382,7 +382,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					// setting up
 					ab.setCommandListener(this);
 					ab.addCommand(backCmd);
-					NJTAI.setScr(ab);
+					setScr(ab);
 					return;
 				default:
 					return;
@@ -402,10 +402,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					return;
 				}
 	
-				query = NJTAI.url(st.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
+				query = url(st.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace('\0', ' '));
 				mangaList = new Form(L_ACTS[4]);
 				mangaList.setCommandListener(this);
-				mangaList.addCommand(NJTAI.backCmd);
+				mangaList.addCommand(backCmd);
 				start(RUN_MANGALIST);
 				return;
 			}
@@ -447,7 +447,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			try {
 				MangaObjs objs = null;
 				try {
-					NJTAI.setScr(NJTAI.loadingAlert(), mangaList);
+					setScr(loadingAlert(), mangaList);
 					try {
 						if (query != null) {
 							objs = MangaObjs.getSearchList(query, null);
@@ -459,7 +459,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-						NJTAI.setScr(new Alert(NJTAI.L_ACTS[7], NJTAI.L_ACTS[14].concat(" ").concat(e.toString()), null, AlertType.ERROR), NJTAI.mmenu);
+						setScr(new Alert(L_ACTS[7], L_ACTS[14].concat(" ").concat(e.toString()), null, AlertType.ERROR), mmenu);
 						return;
 					}
 					boolean show = true;
@@ -471,7 +471,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						img.setItemCommandListener(this);
 						mangaList.append(img);
 						if (show) {
-							NJTAI.setScr(mangaList);
+							setScr(mangaList);
 							show = false;
 						}
 					}
@@ -480,10 +480,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					wasOom = true;
 					objs = null;
 					System.gc();
-					NJTAI.keepLists = false;
-					NJTAI.savePrefs();
-					mangaList.append(new StringItem(NJTAI.rus ? "Ошибка" : "Error",
-							NJTAI.rus ? "Не хватило памяти для отображения полного списка"
+					keepLists = false;
+					savePrefs();
+					mangaList.append(new StringItem(rus ? "Ошибка" : "Error",
+							rus ? "Не хватило памяти для отображения полного списка"
 									: "Not enough memory to show full list"));
 				}
 			} catch (Throwable e) {
@@ -540,14 +540,14 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	}
 	
 	public static Alert loadingAlert() {
-		Alert a = new Alert(" ", NJTAI.rus ? "Загрузка..." : "Loading...", null, null);
+		Alert a = new Alert(" ", rus ? "Загрузка..." : "Loading...", null, null);
 		a.setIndicator(new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING));
 		a.setTimeout(30000);
 		return a;
 	}
 	
 	public static Form loadingForm() {
-		return new Form(NJTAI.rus ? "Загрузка..." : "Loading...");
+		return new Form(rus ? "Загрузка..." : "Loading...");
 	}
 
 	public static void showNotification(String title, String text, int type, Object prev) {
@@ -570,10 +570,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		}
 
 		if (prev != null && prev instanceof Displayable) {
-			NJTAI.setScr((Displayable) prev);
-			NJTAI.pause(100);
+			setScr((Displayable) prev);
+			pause(100);
 		}
-		NJTAI.setScr(new Alert(title, text, null, at));
+		setScr(new Alert(title, text, null, at));
 	}
 
 	public static void repaint() {
@@ -590,7 +590,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		Image i = (Image) original;
 		int h = getHeight() * 2 / 3;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
-		return NJTAI.resize(i, w, h);
+		return resize(i, w, h);
 	}
 
 	/**
@@ -638,7 +638,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	public static Image getImage(String imgUrl) throws IOException {
 		// TODO
-		byte[] d = NJTAI.get(NJTAI.proxyUrl(imgUrl));
+		byte[] d = get(proxyUrl(imgUrl));
 		return Image.createImage(d, 0, d.length);
 	}
 
@@ -726,9 +726,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				if ((locale = System.getProperty("microedition.locale")) != null)
 					locale = locale.toLowerCase().substring(0, 2);
 			}
-			InputStream in = NJTAI.class.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
+			Class cls = inst.getClass();
+			InputStream in = cls.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
 			if (in == null)
-				in = NJTAI.class.getResourceAsStream("/text/" + cat + "_en.txt");
+				in = cls.getResourceAsStream("/text/" + cat + "_en.txt");
 			String[] l = new String["main".equals(cat) ? 8 : 50];
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			StringBuffer s = new StringBuffer();
@@ -1005,7 +1006,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			return array(str.substring(1, str.length() - 1));
 		}*/
 		if(f == '"') {
-			return NJTAI.replace(NJTAI.replace(str.substring(1, str.length() - 1), "\\n", "\n"), "\\\"", "\"");
+			return replace(replace(str.substring(1, str.length() - 1), "\\n", "\n"), "\\\"", "\"");
 		}
 		return str;
 	}
@@ -1079,8 +1080,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 		} else if(obj instanceof String) {
 			String s = (String) obj;
-			s = NJTAI.replace(s, "\n", "\\n");
-			s = NJTAI.replace(s, "\"", "\\\"");
+			s = replace(s, "\n", "\\n");
+			s = replace(s, "\"", "\\\"");
 			return "\"".concat(s).concat("\"");
 		} else {
 			return String.valueOf(obj);
@@ -1177,12 +1178,12 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					int c2 = buffer2[x_a1];
 					int c4 = buffer2[x_b1];
 
-					c12 = NJTAI.blend(c2, c1, y_d);
-					c34 = NJTAI.blend(c4, c3, y_d);
+					c12 = blend(c2, c1, y_d);
+					c34 = blend(c4, c3, y_d);
 				}
 
 				// final result
-				dst[index1++] = NJTAI.blend(c34, c12, x_d);
+				dst[index1++] = blend(c34, c12, x_d);
 			}
 		}
 	}
