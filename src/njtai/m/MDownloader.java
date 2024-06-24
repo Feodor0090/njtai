@@ -21,7 +21,6 @@ import javax.microedition.lcdui.List;
 
 import njtai.NJTAI;
 import njtai.models.ExtMangaObj;
-import njtai.m.ui.Prefs;
 
 /**
  * Class, responsible for caching/reading images.

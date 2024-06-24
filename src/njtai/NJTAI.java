@@ -16,7 +16,6 @@ import javax.microedition.rms.RecordStore;
 
 import njtai.m.MDownloader;
 import njtai.m.NJTAIM;
-import njtai.m.Prefs;
 import njtai.m.ui.MangaPage;
 import njtai.models.ExtMangaObj;
 import njtai.models.MangaObj;
@@ -541,16 +540,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, MDownloader.getWDs(false), null);
 				l.addCommand(NJTAI.backCmd);
 				l.setCommandListener(this);
-				l.setCommandListener(new CommandListener() {
-
-					public void commandAction(Command c, Displayable d) {
-						if (c == List.SELECT_COMMAND) {
-							MDownloader.currentWD = ((List) d).getString(((List) d).getSelectedIndex());
-							if(wdBtn != null) wdBtn.setText(MDownloader.currentWD);
-						}
-						NJTAI.setScr(prefs);
-					}
-				});
 				NJTAI.setScr(l);
 				return;
 			}
@@ -722,7 +711,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				MDownloader.useE_NJTAI();
 				NJTAI.setScr(prefs);
 			} else if (c == ccC) {
-				MDownloader.reselectWD(prefs);
+				List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, MDownloader.getWDs(false), null);
+				l.addCommand(NJTAI.backCmd);
+				l.setCommandListener(this);
+				NJTAI.setScr(l);
 			} else if (c == changeC) {
 				Alert a = new Alert("", "Working folder", null, AlertType.INFO);
 				a.addCommand(dfC);
