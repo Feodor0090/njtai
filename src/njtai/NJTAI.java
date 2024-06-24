@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.*;
 
 import njtai.m.NJTAIM;
 
@@ -18,7 +18,7 @@ import njtai.m.NJTAIM;
  * @author Feodor0090
  *
  */
-public class NJTAI {
+public class NJTAI implements CommandListener, ItemCommandListener {
 
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
@@ -89,6 +89,17 @@ public class NJTAI {
 	 * Use russian localization?
 	 */
 	public static boolean rus = false;
+	
+	public static String[] L_ACTS = getStrings("acts");
+	public static String[] L_PAGE = getStrings("page");
+
+	public void commandAction(Command c, Item item) {
+		
+	}
+
+	public void commandAction(Command c, Displayable d) {
+		
+	}
 
 	/**
 	 * Gets home page.
@@ -204,7 +215,7 @@ public class NJTAI {
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			StringBuffer s = new StringBuffer();
 			int c;
-			int i = 1;
+			int i = 0;
 			while((c = r.read()) > 0) {
 				if(c == '\r') continue;
 				if(c == '\\') {

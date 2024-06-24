@@ -45,7 +45,7 @@ public class MDownloader extends Thread implements CommandListener {
 		this.prev = prev;
 	}
 
-	Command stopCmd = new Command(NJTAI.getStrings("acts")[18], Command.STOP, 1);
+	Command stopCmd = new Command(NJTAI.L_ACTS[18], Command.STOP, 1);
 	boolean stop = false;
 
 	static String dir;
@@ -59,8 +59,7 @@ public class MDownloader extends Thread implements CommandListener {
 	private boolean done = false;
 
 	private static Alert folderMissed() {
-		String[] l = NJTAI.getStrings("acts");
-		return new Alert(l[21], l[22], null, AlertType.ERROR);
+		return new Alert(NJTAI.L_ACTS[21], NJTAI.L_ACTS[22], null, AlertType.ERROR);
 	}
 
 	/**
@@ -233,7 +232,7 @@ public class MDownloader extends Thread implements CommandListener {
 	public void run() {
 		done = false;
 		NJTAI.pause(500);
-		Alert a = new Alert(o.title, NJTAI.getStrings("acts")[19], null, AlertType.INFO);
+		Alert a = new Alert(o.title, NJTAI.L_ACTS[19], null, AlertType.INFO);
 		a.setTimeout(Alert.FOREVER);
 		a.addCommand(stopCmd);
 		Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
@@ -269,7 +268,7 @@ public class MDownloader extends Thread implements CommandListener {
 					fc.close();
 					NJTAIM.setScr(prev);
 					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-					Alert a1 = new Alert(NJTAI.getStrings("acts")[21],
+					Alert a1 = new Alert(NJTAI.L_ACTS[21],
 							NJTAI.rus ? "Кэш отсутствует в данной рабочей папке. Сначала скачайте."
 									: "Cache is not present in current working folder. Download it first.",
 							null, AlertType.ERROR);
@@ -381,7 +380,7 @@ public class MDownloader extends Thread implements CommandListener {
 					fc.close();
 					NJTAIM.setScr(prev);
 					NJTAI.pause(NJTAIM.isJ2MEL() ? 200 : 100);
-					NJTAIM.setScr(new Alert(NJTAI.getStrings("acts")[21], "Failed to get image's url.", null,
+					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[21], "Failed to get image's url.", null,
 							AlertType.ERROR), prev);
 					return;
 				}
@@ -465,7 +464,7 @@ public class MDownloader extends Thread implements CommandListener {
 			} else if (filesExisted && !repair) {
 				a.setString("Some files existed - they were not overwritten.");
 			} else {
-				a.setString(NJTAI.getStrings("acts")[repair ? 23 : 24]);
+				a.setString(NJTAI.L_ACTS[repair ? 23 : 24]);
 			}
 		} else {
 			NJTAIM.setScr(prev);
@@ -484,7 +483,7 @@ public class MDownloader extends Thread implements CommandListener {
 				} else if (filesExisted && !repair) {
 					b = new Alert("NJTAI", "Some files existed - they were not overwritten.", null, AlertType.WARNING);
 				} else {
-					b = new Alert("NJTAI", NJTAI.getStrings("acts")[repair ? 23 : 24], null, AlertType.CONFIRMATION);
+					b = new Alert("NJTAI", NJTAI.L_ACTS[repair ? 23 : 24], null, AlertType.CONFIRMATION);
 				}
 				NJTAIM.setScr(b, prev);
 			} catch (Exception e) {
@@ -607,7 +606,7 @@ public class MDownloader extends Thread implements CommandListener {
 	 * @param prev Calling screen.
 	 */
 	public static void reselectWD(final Displayable prev) {
-		List l = new List(NJTAI.getStrings("acts")[20], List.IMPLICIT, getWDs(false), null);
+		List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, getWDs(false), null);
 		l.addCommand(MMenu.backCmd);
 		l.setCommandListener(new CommandListener() {
 
@@ -660,7 +659,7 @@ public class MDownloader extends Thread implements CommandListener {
 			if (!done) {
 				NJTAI.pause(100);
 				try {
-					NJTAIM.setScr(new Alert(NJTAI.getStrings("acts")[21], "Downloading was canceled.", null,
+					NJTAIM.setScr(new Alert(NJTAI.L_ACTS[21], "Downloading was canceled.", null,
 							AlertType.ERROR));
 				} catch (Exception e) {
 				}

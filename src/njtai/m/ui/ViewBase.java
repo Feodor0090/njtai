@@ -382,7 +382,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 */
 	protected abstract void resize(int size);
 
-	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "goto", "->", NJTAI.getStrings("acts")[16] };
+	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "goto", "->", NJTAI.L_ACTS[16] };
 
 	boolean touchCtrlShown = true;
 
@@ -423,7 +423,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 
 		if (k == KEY_NUM7 || k == -10 || k == 8) {
-			TextBox tb = new TextBox(NJTAI.getStrings("acts")[17], "", 7, 2);
+			TextBox tb = new TextBox(NJTAI.L_ACTS[17], "", 7, 2);
 			tb.addCommand(MMenu.openCmd);
 			tb.addCommand(MMenu.openCmd);
 			tb.setCommandListener(this);
@@ -689,9 +689,8 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				reload();
 			} catch (Exception e) {
 				NJTAI.pause(100);
-				String[] l = NJTAI.getStrings("acts");
 				NJTAIM.setScr(
-						new Alert(l[9], l[10], null, AlertType.ERROR));
+						new Alert(NJTAI.L_ACTS[9], NJTAI.L_ACTS[10], null, AlertType.ERROR));
 			}
 		}
 		repaint();
