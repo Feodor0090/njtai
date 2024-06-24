@@ -275,13 +275,11 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			((Canvas) s).repaint();
 	}
 
-	public static Object decodeImage(byte[] data) {
+	public static Image decodeImage(byte[] data) {
 		return Image.createImage(data, 0, data.length);
 	}
 
-	public static Object prescaleCover(Object original) {
-		if (!(original instanceof Image))
-			return original;
+	public static Image prescaleCover(Image original) {
 		Image i = (Image) original;
 		int h = getHeight() * 2 / 3;
 		int w = (int) (((float) h / i.getHeight()) * i.getWidth());
@@ -329,6 +327,12 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			}
 		}
 		return s;
+	}
+
+	public static Image getImage(String imgUrl) {
+		// TODO
+		byte[] d = NJTAI.getOrNull(NJTAI.proxyUrl(imgUrl));
+		return Image.createImage(d, 0, d.length);
 	}
 
 	/**
