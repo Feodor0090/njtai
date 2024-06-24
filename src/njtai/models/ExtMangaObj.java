@@ -113,9 +113,6 @@ public class ExtMangaObj extends MangaObj {
 		this.num = num;
 		offline = true;
 
-		if (h == null)
-			throw new NullPointerException();
-
 		title = h.get("title").toString();
 		if (h.containsKey("tags")) {
 			tags = h.get("tags").toString();

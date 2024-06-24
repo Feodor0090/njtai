@@ -1,6 +1,5 @@
 package njtai;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -909,13 +908,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	// Web
 	
 	public static byte[] get(String url) throws IOException {
-		if (url == null)
-			throw new IllegalArgumentException("URL is null");
-		ByteArrayOutputStream o = null;
 		HttpConnection hc = null;
 		InputStream i = null;
 		try {
-			o = new ByteArrayOutputStream();
 			hc = (HttpConnection) Connector.open(url);
 			hc.setRequestMethod("GET");
 			int r = hc.getResponseCode();
@@ -930,16 +925,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				hc = (HttpConnection) Connector.open(redir);
 				hc.setRequestMethod("GET");
 			}
+			// TODO
+//			if (r >= 400) throw new IOException("HTTP ".concat(Integer.toString(r)));
 			i = hc.openInputStream();
-			byte[] b = new byte[16384];
-
-			int c;
-			while ((c = i.read(b)) != -1) {
-				o.write(b, 0, c);
-				o.flush();
-			}
-
-			return o.toByteArray();
+			return readBytes(i, (int) hc.getLength(), 16384, 16384);
 		} finally {
 			try {
 				if (i != null) i.close();
@@ -949,11 +938,30 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				if (hc != null) hc.close();
 			} catch (IOException e) {
 			}
-			try {
-				if (o != null) o.close();
-			} catch (IOException e) {
-			}
 		}
+	}
+	
+	private static byte[] readBytes(InputStream inputStream, int initialSize, int bufferSize, int expandSize) throws IOException {
+		if (initialSize <= 0) initialSize = bufferSize;
+		byte[] buf = new byte[initialSize];
+		int count = 0;
+		byte[] readBuf = new byte[bufferSize];
+		int readLen;
+		while ((readLen = inputStream.read(readBuf)) != -1) {
+			if(count + readLen > buf.length) {
+				byte[] newbuf = new byte[count + expandSize];
+				System.arraycopy(buf, 0, newbuf, 0, count);
+				buf = newbuf;
+			}
+			System.arraycopy(readBuf, 0, buf, count, readLen);
+			count += readLen;
+		}
+		if(buf.length == count) {
+			return buf;
+		}
+		byte[] res = new byte[count];
+		System.arraycopy(buf, 0, res, 0, count);
+		return res;
 	}
 
 	public static byte[] getOrNull(String url) {
