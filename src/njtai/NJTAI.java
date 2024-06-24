@@ -35,7 +35,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	/**
 	 * Base site URL.
 	 */
-	public static final String baseUrl = "nhentai.net";
+	public static final String baseUrl = "https://nhentai.net";
 
 	/**
 	 * Instance of currently active platform.
@@ -315,7 +315,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public synchronized static String getHP() throws IOException, IllegalAccessException {
 		String s = hp;
 		if (s == null) {
-			s = getUtfOrNull(proxy + baseUrl);
+			String url = baseUrl;
+			if (proxy.length() > 0 && !"https://".equals(proxy))
+				url = proxy.concat(url(url));
+			s = getUtfOrNull(url);
 			if (s == null)
 				throw new IOException();
 			if (s.length() < 2)
@@ -345,10 +348,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		if (url == null)
 			return null;
 
-		if(NJTAI.proxy.length() == 0) {
+		if(proxy.length() == 0 || "https://".equals(proxy)) {
 			return url;
 		}
-		return NJTAI.proxy + url(url);
+		return proxy + url(url);
 	}
 	
 	public static String url(String url) {
