@@ -2,7 +2,6 @@ package njtai.models;
 
 import java.util.Hashtable;
 
-import cc.nnproject.utils.*;
 import njtai.NJTAI;
 
 /**
@@ -258,7 +257,7 @@ public class ExtMangaObj extends MangaObj {
 		h.put("pages", new Integer(pages));
 
 		try {
-			return JSONUtil.build(h);
+			return NJTAI.build(h);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
