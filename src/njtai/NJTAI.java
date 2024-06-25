@@ -298,6 +298,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			s.append('`');
 			String wd = MDownloader.currentWD;
 			s.append(wd == null ? " " : wd);
+			s.append('`');
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
 
@@ -353,7 +354,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				case 1: {
 					// popular
 					if (running) return;
-					mangaList = new Form(getStrings("main")[1]);
+					mangaList = new Form(mmenu.getString(1));
 					mangaList.setCommandListener(this);
 					mangaList.addCommand(backCmd);
 					setScr(mangaList);
@@ -363,7 +364,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				case 2: {
 					// new
 					if (running) return;
-					mangaList = new Form(getStrings("main")[2]);
+					mangaList = new Form(mmenu.getString(2));
 					mangaList.setCommandListener(this);
 					mangaList.addCommand(backCmd);
 					start(RUN_MANGALIST_NEW);
@@ -531,7 +532,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					return;
 				}
 			}
-			return;
 		}
 		
 		if (d == savedList) {
@@ -882,7 +882,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						break;
 					}
 					boolean show = true;
-					while (objs.hasMoreElements()) {
+					while (objs.hasMoreElements() && mangaList != null) {
 						MangaObj o = (MangaObj) objs.nextElement();
 						ImageItem img = new ImageItem(o.title, (Image) o.img, 3, Integer.toString(o.num), Item.HYPERLINK);
 						img.addCommand(mangaItemCmd);
@@ -1320,7 +1320,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			if ("main".equals(cat) || "tips".equals(cat)) {
 				int l;
 				for (l = 0; l < res.length && res[l] != null; l++);
-				System.arraycopy(res, 0, res = new String[l + 1], 0, l);
+				System.arraycopy(res, 0, res = new String[l], 0, l);
 			}
 			return res;
 		} catch (IOException e) {

@@ -141,8 +141,7 @@ public class MDownloader extends Thread implements CommandListener {
 		} finally {
 			try {
 				fc.close();
-			} catch (IOException e) {
-			}
+			} catch (Exception e) {}
 		}
 	}
 
