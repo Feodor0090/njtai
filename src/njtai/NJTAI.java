@@ -470,8 +470,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						f.setCommandListener(this);
 						f.addCommand(backCmd);
 						String[] items = getStrings("tips");
+						boolean b = isS60v3fp2();
 						for (int i = 0; i < items.length / 2; i++) {
-							if (isS60v3fp2()) {
+							if (b) {
 								f.append(new StringItem(null, items[i * 2 + 1]));
 								f.append(new StringItem(items[i * 2], null));
 							} else {
@@ -480,6 +481,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 								f.append(s);
 							}
 						}
+						setScr(f);
 					} catch (RuntimeException e) {
 						setScr(new Alert("Failed to read texts", "JAR is corrupted. Reinstall the application.", null,
 								AlertType.ERROR));
