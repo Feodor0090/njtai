@@ -1290,30 +1290,36 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			InputStream in = cls.getResourceAsStream("/text/" + cat + "_" + locale + ".txt");
 			if (in == null)
 				in = cls.getResourceAsStream("/text/" + cat + "_en.txt");
-			String[] l = new String["main".equals(cat) ? 8 : 32]; // FIXME hard code!
+			String[] res = new String[32];
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			StringBuffer s = new StringBuffer();
 			int c;
 			int i = 0;
-			while((c = r.read()) > 0) {
-				if(c == '\r') continue;
-				if(c == '\\') {
+			while ((c = r.read()) > 0) {
+				if (c == '\r') continue;
+				if (c == '\\') {
 					s.append((c = r.read()) == 'n' ? '\n' : (char) c);
 					continue;
 				}
-				if(c == '\n') {
-					l[i++] = s.toString();
+				if (c == '\n') {
+					res[i++] = s.toString();
 					s.setLength(0);
 					continue;
 				}
 				s.append((char) c);
 			}
-			if(s.length() > 0) {
-				l[i++] = s.toString();
+			if (s.length() > 0) {
+				res[i++] = s.toString();
 			}
 			r.close();
-			return l;
-		} catch (Exception e) {
+			
+			if ("main".equals(cat) || "tips".equals(cat)) {
+				int l;
+				for (l = 0; l < res.length && res[l] != null; l++);
+				System.arraycopy(res, 0, res = new String[l + 1], 0, l);
+			}
+			return res;
+		} catch (IOException e) {
 			e.printStackTrace();
 			// null is returned to avoid massive try-catch constructions near every call.
 			// Normally, it always return english file.
