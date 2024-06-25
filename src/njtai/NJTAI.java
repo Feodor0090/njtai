@@ -838,6 +838,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		
 		// common
 		if (c == backCmd) {
+			if (d instanceof List) { // wd list
+				NJTAI.setScr(savedList != null ? (Displayable) savedList : prefs);
+				return;
+			}
 			setScr(mmenu);
 			return;
 		}
