@@ -460,7 +460,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					f.append(viewChoice);
 					f.append(proxyField);
 					f.append(aboutProxyBtn);
-					setScr(f);
+					setScr(prefs = f);
 					return;
 				}
 				case 6: {
@@ -556,8 +556,12 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					NJTAI.setScr(a, savedList);
 					return;
 				}
+				
+				int i = savedList.getSelectedIndex();
+				if (i == -1) return;
+				
 				// loading EMO from the site
-				String item = savedList.getString(savedList.getSelectedIndex());
+				String item = savedList.getString(i);
 				String n = item.substring(0, item.indexOf('-')).trim();
 				String html = NJTAI.getUtfOrNull(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + n + "/"));
 				if (html == null) {
@@ -583,7 +587,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					return;
 				}
 
-				String item = savedList.getString(savedList.getSelectedIndex());
+				int i = savedList.getSelectedIndex();
+				if (i == -1) return;
+				
+				String item = savedList.getString(i);
 				Alert a = new Alert(item, NJTAI.rus
 						? "Папка и её содержимое будет удалено. Если вы храните в ней свои данные, они могут быть повреждены."
 						: "The folder and it's content will be deleted. If you keep you data there, it may be damaged.",
@@ -610,9 +617,15 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				ExtMangaObj o;
 				String data = null;
 				FileConnection fc = null;
+				
+				if (savedList.size() == 0) return;
+
+				int i = savedList.getSelectedIndex();
+				if (i == -1) return;
+				
 
 				// path of folder where we will work
-				final String item = savedList.getString(savedList.getSelectedIndex()) + "/";
+				final String item = savedList.getString(i) + "/";
 
 				// reading metadata
 				try {
@@ -711,22 +724,16 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		}
 		
 		if (d == prefs) {
-			if (c == dfC) {
-				MDownloader.useE_NJTAI();
-				NJTAI.setScr(prefs);
-			} else if (c == ccC) {
-				List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, MDownloader.getWDs(false), null);
-				l.addCommand(NJTAI.backCmd);
-				l.setCommandListener(this);
-				NJTAI.setScr(l);
-			} else if (c == changeC) {
+			if (c == changeC) {
 				Alert a = new Alert("", "Working folder", null, AlertType.INFO);
 				a.addCommand(dfC);
 				a.addCommand(ccC);
 				a.setCommandListener(this);
 				a.setTimeout(Alert.FOREVER);
-				NJTAI.setScr(a);
-			} else if (c == bkC) {
+				NJTAI.setScr(a, d);
+				return;
+			}
+			if (c == bkC) {
 				NJTAI.cachingPolicy = cacheChoice.getSelectedIndex();
 				NJTAI.loadCoverAtPage = coversChoice.isSelected(1);
 				NJTAI.keepLists = listsChoice.getSelectedIndex() == 1;
@@ -748,26 +755,46 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 						a.setTimeout(Alert.FOREVER);
 						NJTAI.setScr(a, NJTAI.mmenu);
 					}
+					prefs = null;
 				} else {
 					Alert a = new Alert("Settings",
 							"Incorrect proxy URL. Leave the field empty if you don't want to use it.", null,
 							AlertType.ERROR);
 					a.setTimeout(Alert.FOREVER);
-					NJTAI.setScr(a);
+					NJTAI.setScr(a, d);
 				}
-			} else if (c == prC) {
+				return;
+			}
+			if (c == prC) {
 				Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
 						+ "To setup your own server, just create a PHP script that will take URL from query params, "
 						+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
 						null, AlertType.INFO);
 				a.setTimeout(Alert.FOREVER);
-				NJTAI.setScr(a);
-			} else if (c == cnclC) {
+				NJTAI.setScr(a, d);
+				return;
+			}
+			if (c == cnclC) {
 				Alert a = new Alert(NJTAI.rus ? "Настройки" : "Settings",
 						NJTAI.rus ? "Изменения отменены." : "Made changes were canceled.", null, AlertType.WARNING);
 				a.setTimeout(1500);
 				NJTAI.setScr(a, NJTAI.mmenu);
+				prefs = null;
+				return;
 			}
+			return;
+		}
+		
+		if (c == dfC) {
+			MDownloader.useE_NJTAI();
+			NJTAI.setScr(prefs);
+			return;
+		}
+		if (c == ccC) {
+			List l = new List(NJTAI.L_ACTS[20], List.IMPLICIT, MDownloader.getWDs(false), null);
+			l.addCommand(NJTAI.backCmd);
+			l.setCommandListener(this);
+			NJTAI.setScr(l);
 			return;
 		}
 		
@@ -804,7 +831,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		// WD selected
 		if (c == List.SELECT_COMMAND) {
 			MDownloader.currentWD = ((List) d).getString(((List) d).getSelectedIndex());
-			if(wdBtn != null) wdBtn.setText(MDownloader.currentWD);
+			if (wdBtn != null) wdBtn.setText(MDownloader.currentWD);
+			NJTAI.setScr(savedList != null ? (Displayable) savedList : prefs);
+			return;
 		}
 		
 		// common
@@ -891,7 +920,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			break;
 		}
 		case RUN_SAVEDMANAGER_DELETE: {
-			String item = savedList.getString(savedList.getSelectedIndex());
+			int i = savedList.getSelectedIndex();
+			if (i == -1) break;
+			String item = savedList.getString(i);
 
 			// alert
 			{
