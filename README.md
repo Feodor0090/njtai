@@ -11,7 +11,9 @@ Cloudflare was recently disabled on the site, so application works again.
 ## Releases
 [Latest releases on nnchan](https://nnp.nnchan.ru/nj)
 
-Check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask us something.
+Check nnproject chats in TG if you want to ask us something:
+- [Russian](https://t.me/nnmidletschat_ru)
+- [International](https://t.me/nnmidletschat)
 
 ## Features
 - "Popular" list from site
