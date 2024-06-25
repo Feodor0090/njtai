@@ -1,18 +1,19 @@
 # NJTAI
 An unofficial nhentai.net client for J2ME devices with MIDP 2.0 support.
 
-![image](njtai/res/njtai.svg)
+![image](res/njtai.svg)
 
 ## Project status
 
-This application works as parser (it downloads full page and extracts data from it). The site is under cloudflare now, so neither direct access or proxying won't work. There are some clones/mirrors without CF, but their CDNs (where the images stored) are under CF too. So, this project may be considered as dead.
+This application works as parser (it downloads full page and extracts data from it). 
+Cloudflare was recently disabled on the site, so application works again.
 
 ## Releases
-R3 was planned, but isn't released. Compile yourself from `master` if you want fixed URL fetching.
+[Latest releases on nnchan](https://nnp.nnchan.ru/nj)
 
-SiStore contains R1, consider updating.
-
-Links in the app are outdated, check [nnproject chat in TG](https://t.me/nnmidletschat) if you want to ask me something.
+Check nnproject chats in TG if you want to ask us something:
+- [Russian](https://t.me/nnmidletschat_ru)
+- [International](https://t.me/nnmidletschat)
 
 ## Features
 - "Popular" list from site
@@ -22,10 +23,10 @@ Links in the app are outdated, check [nnproject chat in TG](https://t.me/nnmidle
 - Online view with zoom an optional preloading
 - Downloading titles to your phone memory
 - Both touchscreen/keys support
-- Working via bultin proxy (for bans bypassing and avoiding HTTPS use) (configurable)
+- Working via built-in proxy (for bans bypassing and avoiding HTTPS use) (configurable)
 
 ## System requirements
-Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Erricsons with 176x220+ screens, and may be some other advanced 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
+Basically, it will work on S40v5, S40v6, Symbian 9.1+, most Sony Ericssons with 176x220+ screens, and may be some other advanced 2007-2013 phones. J2MELoader and KEmulator 1.0.3+ are supported.
 
 ### Memory
 - At least 2048 kb of heap to download titles (with disabled covers loading)
@@ -40,7 +41,7 @@ We don't use any special units. Everything is done on CPU, HWA view can use your
 - CLDC 1.1
 - Full LCDUI support on MIDP2 level
 - JSR-75 to download titles
-- Nokia/SE keyboard layout (it's different from very old motorolla/siemens devices)
+- Nokia/SE keyboard layout (it's different from very old motorola/siemens devices)
 
 ## Setting your own proxy up
 You need an http server. Create a script that will take URL from request params, query it via curl or something else and return it's content.
