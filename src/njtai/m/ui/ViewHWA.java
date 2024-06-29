@@ -1,6 +1,5 @@
 package njtai.m.ui;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Vector;
 
 import javax.microedition.lcdui.*;
@@ -89,9 +88,8 @@ public class ViewHWA extends ViewBase {
 		p = null;
 	}
 
-	protected void prepare(ByteArrayOutputStream data) throws InterruptedException {
+	protected void prepare(byte[] d) throws InterruptedException {
 		reset();
-		byte[] d = data.toByteArray();
 		Image i = Image.createImage(d, 0, d.length);
 		d = null;
 		ih = i.getHeight();

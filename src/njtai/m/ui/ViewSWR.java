@@ -1,7 +1,5 @@
 package njtai.m.ui;
 
-import java.io.ByteArrayOutputStream;
-
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.AlertType;
 import javax.microedition.lcdui.Displayable;
@@ -47,7 +45,7 @@ public class ViewSWR extends ViewBase {
 			} else {
 				int l = -1;
 				try {
-					byte[] b = getImage(page).toByteArray();
+					byte[] b = getImage(page);
 					l = b.length;
 					origImg = Image.createImage(b, 0, b.length);
 					b = null;
@@ -59,7 +57,7 @@ public class ViewSWR extends ViewBase {
 					if (NJTAI.files) {
 						showBrokenNotify();
 						try {
-							byte[] b = getImage(page, true).toByteArray();
+							byte[] b = getImage(page, true);
 							origImg = Image.createImage(b, 0, b.length);
 							b = null;
 							System.gc();
@@ -157,11 +155,10 @@ public class ViewSWR extends ViewBase {
 		orig = null;
 	}
 
-	protected void prepare(ByteArrayOutputStream d) throws InterruptedException {
+	protected void prepare(byte[] b) throws InterruptedException {
 		if (NJTAI.keepBitmap) {
 			int l = -1;
 			try {
-				byte[] b = d.toByteArray();
 				l = b.length;
 				orig = Image.createImage(b, 0, b.length);
 				b = null;
@@ -173,8 +170,7 @@ public class ViewSWR extends ViewBase {
 				if (NJTAI.files) {
 					showBrokenNotify();
 					try {
-						byte[] b = getImage(page, true).toByteArray();
-						orig = Image.createImage(b, 0, b.length);
+						orig = Image.createImage(b = getImage(page, true), 0, b.length);
 						b = null;
 						System.gc();
 					} catch (RuntimeException e1) {

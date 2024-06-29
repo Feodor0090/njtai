@@ -267,6 +267,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	public static boolean savePrefs() {
 		try {
+			RecordStore.deleteRecordStore("njtai");
+		} catch (Exception e) {}
+		try {
 			StringBuffer s = new StringBuffer();
 			s.append(files ? "1" : "0");
 			s.append('`');

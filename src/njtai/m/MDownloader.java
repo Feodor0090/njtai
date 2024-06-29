@@ -151,7 +151,7 @@ public class MDownloader extends Thread implements CommandListener {
 	 * @param i Number of the image, [1; pages].
 	 * @return Content of the file.
 	 */
-	public synchronized ByteArrayOutputStream read(int i) {
+	public synchronized byte[] read(int i) {
 		if (dir == null)
 			dir = getWD();
 		if (dir == null) {
@@ -190,7 +190,7 @@ public class MDownloader extends Thread implements CommandListener {
 			}
 			di.close();
 			fc.close();
-			return b;
+			return b.toByteArray();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {

@@ -33,7 +33,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 */
 	protected int page;
 
-	protected ByteArrayOutputStream[] cache;
+	protected byte[][] cache;
 	protected MDownloader fs;
 
 	protected float zoom = 1;
@@ -84,7 +84,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * @return Data of loaded image.
 	 * @throws InterruptedException
 	 */
-	protected ByteArrayOutputStream getImage(int n) throws InterruptedException {
+	protected byte[] getImage(int n) throws InterruptedException {
 		return getImage(n, false);
 	}
 
@@ -95,16 +95,15 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * @return Data of loaded image.
 	 * @throws InterruptedException
 	 */
-	protected ByteArrayOutputStream getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
+	protected byte[] getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
 		if (forceCacheIgnore)
 			Thread.sleep(500);
 		if (NJTAI.files && !forceCacheIgnore) {
-			ByteArrayOutputStream a = fs.read(n);
-			if (a != null)
-				return a;
-			byte[] b = emo.getPage(n);
+			byte[] a = fs.read(n);
+			if (a != null) return a;
+			a = emo.getPage(n);
 			try {
-				if (b == null) {
+				if (a == null) {
 					error = true;
 					repaint();
 					return null;
@@ -115,14 +114,10 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 					fs.createFolder();
 					fs.writeModel(fs.getFolderName());
 				}
-
-				a = new ByteArrayOutputStream(b.length);
-
-				fs.cache(b, n);
-
-				a.write(b);
+				
+				fs.cache(a, n);
 				return a;
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return null;
 			}
@@ -130,7 +125,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 		try {
 			if (cache == null) {
-				cache = new ByteArrayOutputStream[emo.pages];
+				cache = new byte[emo.pages][];
 			}
 			if (forceCacheIgnore) {
 				cache[n] = null;
@@ -153,8 +148,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
 					s.write(b);
 
-					cache[n] = s;
-					return s;
+					return cache[n] = s.toByteArray();
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;
@@ -373,7 +367,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	/**
 	 * Implementation must prepare {@link #page} for drawing. No resizing is needed.
 	 */
-	protected abstract void prepare(ByteArrayOutputStream data) throws InterruptedException;
+	protected abstract void prepare(byte[] data) throws InterruptedException;
 
 	/**
 	 * Called when image must change it's zoom.
