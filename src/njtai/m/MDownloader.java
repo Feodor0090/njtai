@@ -81,7 +81,7 @@ public class MDownloader extends Thread implements CommandListener {
 		if (dir == null) {
 			NJTAI.setScr(prev);
 			NJTAI.pause(100);
-			NJTAI.setScr(folderMissed());
+			NJTAI.setScr(folderMissed(), prev);
 			return;
 		}
 
@@ -628,7 +628,7 @@ public class MDownloader extends Thread implements CommandListener {
 				NJTAI.pause(100);
 				try {
 					NJTAI.setScr(new Alert(NJTAI.L_ACTS[21], "Downloading was canceled.", null,
-							AlertType.ERROR));
+							AlertType.ERROR), prev);
 				} catch (Exception e) {
 				}
 			}

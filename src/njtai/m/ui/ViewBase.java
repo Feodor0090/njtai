@@ -1,6 +1,5 @@
 package njtai.m.ui;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.microedition.lcdui.Alert;
@@ -24,7 +23,7 @@ import njtai.models.ExtMangaObj;
  * @author Feodor0090
  *
  */
-public abstract class ViewBase extends Canvas implements Runnable, CommandListener {
+public class ViewBase extends Canvas implements Runnable, CommandListener {
 
 	protected ExtMangaObj emo;
 	protected Displayable prev;
@@ -49,6 +48,14 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	private boolean cacheOk = false;
 
 	Image slider;
+	
+	private boolean hwa;
+	
+	// SWR only
+	private Image toDraw;
+	private Image orig;
+
+	private boolean firstDraw = true;
 
 	/**
 	 * Creates the view.
@@ -57,10 +64,11 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * @param prev Previous screen.
 	 * @param page Number of page to start.
 	 */
-	public ViewBase(ExtMangaObj emo, Displayable prev, int page) {
+	public ViewBase(ExtMangaObj emo, Displayable prev, int page, boolean hwa) {
 		this.emo = emo;
 		this.prev = prev;
 		this.page = page;
+		this.hwa = hwa;
 		nokiaRam = (System.getProperty("microedition.platform").indexOf("sw_platform_version=5.") == -1)
 				? (15 * 1024 * 1024)
 				: (40 * 1024 * 1024);
@@ -78,24 +86,13 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	}
 
 	/**
-	 * Loads an image and saves it.
-	 * 
-	 * @param n Number of image (not page!) [0; emo.pages)
-	 * @return Data of loaded image.
-	 * @throws InterruptedException
-	 */
-	protected byte[] getImage(int n) throws InterruptedException {
-		return getImage(n, false);
-	}
-
-	/**
 	 * Loads an image, optionally ignoring the cache.
 	 * 
 	 * @param n Number of image (not page!) [0; emo.pages)
 	 * @return Data of loaded image.
 	 * @throws InterruptedException
 	 */
-	protected byte[] getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
+	protected final byte[] getImage(int n, boolean forceCacheIgnore) throws InterruptedException {
 		if (forceCacheIgnore)
 			Thread.sleep(500);
 		if (NJTAI.files && !forceCacheIgnore) {
@@ -145,11 +142,9 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 						repaint();
 						return null;
 					}
-					ByteArrayOutputStream s = new ByteArrayOutputStream(b.length);
-					s.write(b);
 
-					return cache[n] = s.toByteArray();
-				} catch (IOException e) {
+					return cache[n] = b;
+				} catch (Exception e) {
 					e.printStackTrace();
 					return null;
 				}
@@ -163,7 +158,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	/**
 	 * Releases some images to prevent OOM errors.
 	 */
-	protected synchronized void emergencyCacheClear() {
+	protected synchronized final void emergencyCacheClear() {
 		try {
 			if (NJTAI.files) {
 				cache = null;
@@ -192,7 +187,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * 
 	 * @return Aproximatry count of pages that is safe to load.
 	 */
-	protected int canStorePages() {
+	protected final int canStorePages() {
 		if (NJTAI.files) {
 			return 999;
 		}
@@ -210,7 +205,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		return p;
 	}
 
-	protected synchronized void checkCacheAfterPageSwitch() {
+	protected synchronized final void checkCacheAfterPageSwitch() {
 		if (NJTAI.files) {
 			cache = null;
 			return;
@@ -248,7 +243,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	long lastTime = System.currentTimeMillis();
 
-	public void run() {
+	public final void run() {
 		try {
 			synchronized (this) {
 				error = false;
@@ -257,7 +252,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 				y = 0;
 				reset();
 				try {
-					prepare(getImage(page));
+					prepare(getImage(page, false));
 					repaint();
 					resize(1);
 					zoom = 1;
@@ -278,7 +273,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 	}
 
-	private void runPreloader() {
+	private final void runPreloader() {
 		if (preloader == null && NJTAI.cachingPolicy == 2) {
 			preloader = NJTAI.inst.start(NJTAI.RUN_PRELOADER);
 		}
@@ -286,12 +281,12 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	int preloadProgress = 101;
 
-	public void preload() throws InterruptedException {
+	public final void preload() throws InterruptedException {
 		Thread.sleep(1000);
 		if (NJTAI.files) {
 			for (int i = 0; i < emo.pages; i++) {
 				try {
-					getImage(i);
+					getImage(i, false);
 					if (preloadProgress != 100) {
 						preloadProgress = i * 100 / emo.pages;
 					}
@@ -327,7 +322,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 					preloader = null;
 					return;
 				}
-				getImage(i);
+				getImage(i, false);
 				Thread.sleep(300);
 				if (preloadProgress != 100) {
 					preloadProgress = i * 100 / emo.pages;
@@ -357,39 +352,180 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	protected abstract void limitOffset();
+	protected void limitOffset() {
+		if (hwa) return;
+		int hw = toDraw.getWidth() / 2;
+		int hh = toDraw.getHeight() / 2;
+		if (x < -hw) x = -hw;
+		if (x > hw) x = hw;
+		if (y < -hh) y = -hh;
+		if (y > hh) y = hh;
+	}
 
 	/**
 	 * Clears any data, used for rendering.
 	 */
-	protected abstract void reset();
+	protected void reset() {
+		if (hwa) return;
+		toDraw = null;
+		orig = null;
+	}
 
 	/**
 	 * Implementation must prepare {@link #page} for drawing. No resizing is needed.
 	 */
-	protected abstract void prepare(byte[] data) throws InterruptedException;
+	protected void prepare(byte[] data) throws InterruptedException {
+		if (hwa) return;
+		if (NJTAI.keepBitmap) {
+			int l = -1;
+			try {
+				l = data.length;
+				orig = Image.createImage(data, 0, data.length);
+				data = null;
+				System.gc();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				orig = null;
+				System.out.println("Failed to decode an image in preparing. Size=" + l + "bytes");
+				if (NJTAI.files) {
+					showBrokenNotify();
+					try {
+						orig = Image.createImage(data = getImage(page, true), 0, data.length);
+						data = null;
+						System.gc();
+					} catch (RuntimeException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Called when image must change it's zoom.
 	 * 
 	 * @param size New zoom to apply.
 	 */
-	protected abstract void resize(int size);
+	protected void resize(int size) {
+		if (hwa) return;
+		try {
+			toDraw = null;
+			System.gc();
+			repaint();
+			Image origImg;
+			if (NJTAI.keepBitmap && orig != null && orig.getHeight() != 1 && orig.getWidth() != 1) {
+				origImg = orig;
+			} else {
+				int l = -1;
+				try {
+					byte[] b = getImage(page, false);
+					l = b.length;
+					origImg = Image.createImage(b, 0, b.length);
+					b = null;
+					System.gc();
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					System.out.println("Failed to decode an image in resizing. Size=" + l + "bytes");
+					origImg = null;
+					if (NJTAI.files) {
+						showBrokenNotify();
+						try {
+							byte[] b = getImage(page, true);
+							origImg = Image.createImage(b, 0, b.length);
+							b = null;
+							System.gc();
+						} catch (RuntimeException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+			if (origImg == null) {
+				error = true;
+				toDraw = null;
+				return;
+			}
+			int h = getHeight();
+			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
+
+			if (w > getWidth()) {
+				w = getWidth();
+				h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+			}
+
+			h = h * size;
+			w = w * size;
+			toDraw = NJTAI.resize(origImg, w, h);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			error = true;
+			toDraw = null;
+			return;
+		}
+	}
+	
+	protected void paint(Graphics g) {
+		if (hwa) return;
+		try {
+			Font f = Font.getFont(0, 0, 8);
+			g.setFont(f);
+			if (toDraw == null) {
+				if (firstDraw) {
+					firstDraw = false;
+					g.setGrayScale(0);
+					g.fillRect(0, 0, getWidth(), getHeight());
+				}
+				paintNullImg(g, f);
+			} else {
+				// bg fill
+				g.setGrayScale(0);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				limitOffset();
+				if (zoom != 1) {
+					g.drawImage(toDraw, (int) x + getWidth() / 2, (int) y + getHeight() / 2,
+							Graphics.HCENTER | Graphics.VCENTER);
+				} else {
+					g.drawImage(toDraw, (getWidth() - toDraw.getWidth()) / 2, (getHeight() - toDraw.getHeight()) / 2,
+							0);
+				}
+				// touch captions
+				if (hasPointerEvents() && touchCtrlShown) {
+					drawTouchControls(g, f);
+				}
+			}
+			paintHUD(g, f, true, !touchCtrlShown || !hasPointerEvents());
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				NJTAI.setScr(new Alert("Repaint error", e.toString(), null, AlertType.ERROR));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 
 	String[] touchCaps = new String[] { "x1", "x2", "x3", "<-", "goto", "->", NJTAI.L_ACTS[16] };
 
 	boolean touchCtrlShown = true;
 
-	protected abstract void reload();
+	protected void reload() {
+		if (hwa) return;
+		toDraw = null;
+		System.gc();
+		loader = new Thread(this);
+		loader.start();
+	}
 
 	/**
 	 * Is there something to draw?
 	 * 
 	 * @return False if view is blocked.
 	 */
-	public abstract boolean canDraw();
+	public boolean canDraw() {
+		return toDraw != null;
+	}
 
-	protected void keyPressed(int k) {
+	protected final void keyPressed(int k) {
 		k = qwertyToNum(k);
 		if (k == -7 || k == KEY_NUM9) {
 			try {
@@ -479,7 +615,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	protected void keyRepeated(int k) {
+	protected final void keyRepeated(int k) {
 		k = qwertyToNum(k);
 		if (!canDraw()) {
 			repaint();
@@ -502,7 +638,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	protected void changePage(int delta) {
+	protected final void changePage(int delta) {
 		if (delta < 0) {
 			if (page > 0) {
 				page--;
@@ -535,7 +671,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	int lx, ly;
 	int sx, sy;
 
-	protected void pointerPressed(int tx, int ty) {
+	protected final void pointerPressed(int tx, int ty) {
 		if (!canDraw() && ty > getHeight() - 50 && tx > getWidth() * 2 / 3) {
 			keyPressed(-7);
 			return;
@@ -545,7 +681,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		ly = (sy = ty);
 		if (!touchCtrlShown)
 			return;
-		if (ty < 50 && useSmoothZoom()) {
+		if (ty < 50 && hwa) {
 			setSmoothZoom(tx, getWidth());
 			touchHoldPos = 8;
 		} else if (ty < 50) {
@@ -574,7 +710,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		repaint();
 	}
 
-	protected void setSmoothZoom(int dx, int w) {
+	protected final void setSmoothZoom(int dx, int w) {
 		dx -= 25;
 		w -= 50;
 		zoom = 1 + 4f * ((float) dx / w);
@@ -584,8 +720,6 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 			zoom = 5;
 	}
 
-	protected abstract boolean useSmoothZoom();
-
 	/**
 	 * @return -1 if drag must be inverted, 1 overwise.
 	 */
@@ -593,7 +727,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		return NJTAI.invertPan ? -1 : 1;
 	}
 
-	protected void pointerDragged(int tx, int ty) {
+	protected final void pointerDragged(int tx, int ty) {
 		if (touchHoldPos == 8) {
 			setSmoothZoom(tx, getWidth());
 			repaint();
@@ -601,14 +735,14 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 		if (touchHoldPos != 0)
 			return;
-		x += (tx - lx) * panDeltaMul() / (useSmoothZoom() ? zoom : 1f);
-		y += (ty - ly) * panDeltaMul() / (useSmoothZoom() ? zoom : 1f);
+		x += (tx - lx) * panDeltaMul() / (hwa ? zoom : 1f);
+		y += (ty - ly) * panDeltaMul() / (hwa ? zoom : 1f);
 		lx = tx;
 		ly = ty;
 		repaint();
 	}
 
-	protected void pointerReleased(int tx, int ty) {
+	protected final void pointerReleased(int tx, int ty) {
 		if (!touchCtrlShown || touchHoldPos == 0) {
 			if (Math.abs(sx - tx) < 10 && Math.abs(sy - ty) < 10) {
 				touchCtrlShown = !touchCtrlShown;
@@ -667,7 +801,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 * @param c
 	 * @param d
 	 */
-	public void commandAction(Command c, Displayable d) {
+	public final void commandAction(Command c, Displayable d) {
 		TextBox tb = (TextBox) d;
 		NJTAI.setScr(this);
 		if (c == NJTAI.openCmd) {
@@ -689,9 +823,10 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 		repaint();
 	}
-	protected void paintHUD(Graphics g, Font f, boolean drawZoom, boolean drawPages) {
+	
+	protected final void paintHUD(Graphics g, Font f, boolean drawZoom, boolean drawPages) {
 		String pageNum = (page + 1) + "/" + emo.pages;
-		String zoomN = useSmoothZoom() ? String.valueOf(zoom) : String.valueOf((int) zoom);
+		String zoomN = hwa ? String.valueOf(zoom) : Integer.toString((int) zoom);
 		if (zoomN.length() > 3)
 			zoomN = zoomN.substring(0, 3);
 		zoomN = "x" + zoomN;
@@ -729,7 +864,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 
 	}
 
-	protected void drawTouchControls(Graphics g, Font f) {
+	protected final void drawTouchControls(Graphics g, Font f) {
 		int fh = f.getHeight();
 
 		// captions
@@ -748,7 +883,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		g.drawLine(getWidth() * 2 / 4, getHeight() - 50, getWidth() * 2 / 4, getHeight());
 		g.drawLine(getWidth() * 3 / 4, getHeight() - 50, getWidth() * 3 / 4, getHeight());
 
-		if (useSmoothZoom()) {
+		if (hwa) {
 			drawZoomSlider(g, f);
 			return;
 		}
@@ -766,7 +901,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		g.drawLine(getWidth() * 2 / 3, 0, getWidth() * 2 / 3, 50);
 	}
 
-	private void drawZoomSlider(Graphics g, Font f) {
+	private final void drawZoomSlider(Graphics g, Font f) {
 		int px = (int) (25 + ((getWidth() - 50) * (zoom - 1) / 4));
 
 		// slider's body
@@ -803,7 +938,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		g.drawString(ft, px, 25 - f.getHeight() / 2, Graphics.TOP | Graphics.HCENTER);
 	}
 
-	protected void paintNullImg(Graphics g, Font f) {
+	protected final void paintNullImg(Graphics g, Font f) {
 		String info;
 		if (error) {
 			g.setGrayScale(0);
@@ -832,7 +967,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		}
 	}
 
-	protected void showBrokenNotify() {
+	protected final void showBrokenNotify() {
 		Alert a = new Alert("Image file is corrupted",
 				"It is recommended to run cache repairer from manga's page. The image will be downloaded again for now.",
 				null, AlertType.ERROR);
@@ -936,7 +1071,7 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 	 */
 	public static ViewBase create(ExtMangaObj mo, Displayable d, int i) {
 		if (NJTAI.view == 1) {
-			return new ViewSWR(mo, d, i);
+			return new ViewBase(mo, d, i, false);
 		}
 		if (NJTAI.view == 2) {
 			return new ViewHWA(mo, d, i);
@@ -945,6 +1080,6 @@ public abstract class ViewBase extends Canvas implements Runnable, CommandListen
 		if (vram != null && !vram.equals("0")) {
 			return new ViewHWA(mo, d, i);
 		}
-		return new ViewSWR(mo, d, i);
+		return new ViewBase(mo, d, i, false);
 	}
 }

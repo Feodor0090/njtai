@@ -23,7 +23,7 @@ public class ViewHWA extends ViewBase {
 	 * @param page Number of page to start.
 	 */
 	public ViewHWA(ExtMangaObj emo, Displayable prev, int page) {
-		super(emo, prev, page);
+		super(emo, prev, page, true);
 
 		// material
 		mat = new Material();
@@ -231,10 +231,6 @@ public class ViewHWA extends ViewBase {
 
 	protected float panDeltaMul() {
 		return -super.panDeltaMul() * (ih / (float) getHeight());
-	}
-
-	protected boolean useSmoothZoom() {
-		return true;
 	}
 
 }
