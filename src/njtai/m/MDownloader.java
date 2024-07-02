@@ -234,7 +234,7 @@ public class MDownloader extends Thread implements CommandListener {
 		Gauge g = new Gauge(null, false, Gauge.INDEFINITE, Gauge.CONTINUOUS_RUNNING);
 		a.setIndicator(g);
 		a.setCommandListener(this);
-		NJTAI.setScr(a);
+		NJTAI.setScr(a, prev);
 		NJTAI.pause(1000);
 		if (stop)
 			return;
@@ -293,9 +293,12 @@ public class MDownloader extends Thread implements CommandListener {
 		// writing model
 		Exception modelExc = writeModel(folder);
 
+		byte[] buf = new byte[1024 * 64];
+		String url = null;
+		int s = 0;
 		for (int i = (o.imgUrl == null ? 0 : -1); i < o.pages; i++) {
 			int percs = Math.max(0, i * 100 / o.pages);
-			String url = null;
+			url = null;
 
 			DataOutputStream ou = null;
 			HttpConnection httpCon = null;
@@ -371,6 +374,8 @@ public class MDownloader extends Thread implements CommandListener {
 					NJTAI.setScr(prev);
 					fc.close();
 					return;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				if (url == null) {
 					fc.close();
@@ -405,7 +410,7 @@ public class MDownloader extends Thread implements CommandListener {
 
 				ins = httpCon.openInputStream();
 				ou = fc.openDataOutputStream();
-				byte[] buf = new byte[1024 * 64];
+				
 
 				int len = 1;
 				if (ins == null) {

@@ -1,5 +1,6 @@
 package njtai.models;
 
+import java.io.IOException;
 import java.util.Hashtable;
 
 import njtai.NJTAI;
@@ -134,16 +135,20 @@ public class ExtMangaObj extends MangaObj {
 	 * @throws InterruptedException If web pages fetching was canceled.
 	 */
 	public byte[] getPage(int i) throws InterruptedException {
-		if (location == null || true) { // TODO
-			String u = loadUrl(i+1);
-			int sp = u.lastIndexOf('/');
-			location = u.substring(0, sp + 1);
-			imgSuffix = u.substring(u.lastIndexOf('.'));
+		try {
+			if (location == null || true) { // TODO
+				String u = loadUrl(i+1);
+				int sp = u.lastIndexOf('/');
+				location = u.substring(0, sp + 1);
+				imgSuffix = u.substring(u.lastIndexOf('.'));
+			}
+			
+			String url = location+(i+1)+imgSuffix;
+			
+			return NJTAI.getOrNull(NJTAI.proxyUrl(url));
+		} catch (IOException e) {
+			return null;
 		}
-		
-		String url = location+(i+1)+imgSuffix;
-		
-		return NJTAI.getOrNull(NJTAI.proxyUrl(url));
 	}
 
 	/**
@@ -153,11 +158,11 @@ public class ExtMangaObj extends MangaObj {
 	 * @return Page's image's URL.
 	 * @throws InterruptedException
 	 */
-	public String loadUrl(int pageN) throws InterruptedException {
+	public String loadUrl(int pageN) throws InterruptedException, IOException {
 		return loadUrl(pageN, 0);
 	}
 
-	protected synchronized String loadUrl(int pageN, int attempt) throws InterruptedException {
+	protected synchronized String loadUrl(int pageN, int attempt) throws InterruptedException, IOException {
 		// pauses in 429 case
 		if (attempt > 5) {
 			return null;
@@ -167,7 +172,7 @@ public class ExtMangaObj extends MangaObj {
 		}
 
 		try {
-			String html = NJTAI.getUtfOrNull(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + num + "/" + pageN));
+			String html = NJTAI.getUtf(NJTAI.proxyUrl(NJTAI.baseUrl + "/g/" + num + "/" + pageN));
 			String body = html.substring(html.indexOf("<bo"));
 			html = null;
 			if (body.length() < 200 && body.indexOf("429") != -1) {
