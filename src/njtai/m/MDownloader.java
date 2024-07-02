@@ -295,7 +295,6 @@ public class MDownloader extends Thread implements CommandListener {
 
 		byte[] buf = new byte[1024 * 64];
 		String url = null;
-		int s = 0;
 		for (int i = (o.imgUrl == null ? 0 : -1); i < o.pages; i++) {
 			int percs = Math.max(0, i * 100 / o.pages);
 			url = null;
