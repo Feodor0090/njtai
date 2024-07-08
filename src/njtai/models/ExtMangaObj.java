@@ -150,6 +150,9 @@ public class ExtMangaObj extends MangaObj {
 			return null;
 		}
 	}
+	public byte[] getPage(int i, String s) throws InterruptedException, IOException {
+		return NJTAI.getOrNull(NJTAI.proxyUrl(loadUrl(i+1).concat(s)));
+	}
 
 	/**
 	 * Gets page's url.

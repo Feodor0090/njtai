@@ -88,7 +88,8 @@ public class ViewHWA extends ViewBase {
 		p = null;
 	}
 
-	protected void prepare(byte[] d) throws InterruptedException {
+	protected void prepare() throws InterruptedException {
+		byte[] d = getImage(page, false);
 		reset();
 		Image i = Image.createImage(d, 0, d.length);
 		d = null;

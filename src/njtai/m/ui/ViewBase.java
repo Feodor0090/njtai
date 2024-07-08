@@ -12,7 +12,6 @@ import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.TextBox;
-
 import njtai.NJTAI;
 import njtai.m.MDownloader;
 import njtai.models.ExtMangaObj;
@@ -154,6 +153,16 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 		}
 
 	}
+	
+	private final byte[] getResizedImage(int n, int size) {
+		String s = ";tw="+(getWidth()*size)+";th="+(getHeight()*size);
+		try {
+			return emo.getPage(n, s);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	/**
 	 * Releases some images to prevent OOM errors.
@@ -252,7 +261,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 				y = 0;
 				reset();
 				try {
-					prepare(getImage(page, false));
+					prepare();
 					repaint();
 					resize(1);
 					zoom = 1;
@@ -374,8 +383,9 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 	/**
 	 * Implementation must prepare {@link #page} for drawing. No resizing is needed.
 	 */
-	protected void prepare(byte[] data) throws InterruptedException {
-		if (hwa) return;
+	protected void prepare() throws InterruptedException {
+		if (hwa || NJTAI.onlineResize || !NJTAI.keepBitmap) return;
+		byte[] data = getImage(page, false);
 		if (NJTAI.keepBitmap) {
 			int l = -1;
 			try {
@@ -413,12 +423,12 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 			System.gc();
 			repaint();
 			Image origImg;
-			if (NJTAI.keepBitmap && orig != null && orig.getHeight() != 1 && orig.getWidth() != 1) {
+			if (!NJTAI.onlineResize && NJTAI.keepBitmap && orig != null && orig.getHeight() != 1 && orig.getWidth() != 1) {
 				origImg = orig;
 			} else {
 				int l = -1;
 				try {
-					byte[] b = getImage(page, false);
+					byte[] b = NJTAI.onlineResize ? getResizedImage(page, size) : getImage(page, false);
 					l = b.length;
 					origImg = Image.createImage(b, 0, b.length);
 					b = null;
@@ -445,17 +455,22 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 				toDraw = null;
 				return;
 			}
-			int h = getHeight();
-			int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
-
-			if (w > getWidth()) {
-				w = getWidth();
-				h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+			
+			if (NJTAI.onlineResize) {
+				toDraw = origImg;
+			} else {
+				int h = getHeight();
+				int w = (int) (((float) h / origImg.getHeight()) * origImg.getWidth());
+	
+				if (w > getWidth()) {
+					w = getWidth();
+					h = (int) (((float) w / origImg.getWidth()) * origImg.getHeight());
+				}
+	
+				h = h * size;
+				w = w * size;
+				toDraw = NJTAI.resize(origImg, w, h);
 			}
-
-			h = h * size;
-			w = w * size;
-			toDraw = NJTAI.resize(origImg, w, h);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			error = true;

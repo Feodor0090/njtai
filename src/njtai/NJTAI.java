@@ -107,6 +107,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 */
 	public static boolean rus = false;
 	
+	public static boolean onlineResize;
+	
 	// localizations
 	public static String[] L_ACTS;
 	public static String[] L_PAGE;
@@ -172,6 +174,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 
 	private Command dfC = new Command("Use E:/NJTAI", 8, 1);
 	private Command ccC = new Command("Choose", 8, 2);
+
+	private ChoiceGroup onlineChoice;
 	
 	static {
 		// localizations
@@ -242,6 +246,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			invertPan = s[8].equals("1");
 			proxy = s[12];
 			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
+			onlineResize = s.length > 14 && s[14].equals("1");
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			files = false;
@@ -301,6 +306,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			s.append('`');
 			String wd = MDownloader.currentWD;
 			s.append(wd == null ? " " : wd);
+			s.append('`');
+			s.append(onlineResize ? "1" : "0");
 			s.append('`');
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
@@ -430,6 +437,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					viewChoice = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
 					filesChoice = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
 							4, yn, null);
+					onlineChoice = new ChoiceGroup(NJTAI.rus ? "Масштабирование на стороне сервера" : "Server-side resizing",
+							4, yn, null);
 
 					String vendor = System.getProperty("java.vendor");
 					if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
@@ -446,6 +455,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					filesChoice.setSelectedIndex(NJTAI.files ? 1 : 0, true);
 					viewChoice.setSelectedIndex(NJTAI.view, true);
 					invertChoice.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
+					onlineChoice.setSelectedIndex(NJTAI.onlineResize ? 1 : 0, true);
 					aboutProxyBtn.setDefaultCommand(prC);
 					aboutProxyBtn.setItemCommandListener(this);
 					wdBtn.setDefaultCommand(changeC);
@@ -462,6 +472,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					f.append(invertChoice);
 					//append(bitmaps);
 					f.append(viewChoice);
+					f.append(onlineChoice);
 					f.append(proxyField);
 					f.append(aboutProxyBtn);
 					setScr(prefs = f);
@@ -746,6 +757,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				NJTAI.files = filesChoice.getSelectedIndex() == 1;
 				NJTAI.proxy = proxyField.getString();
 				NJTAI.invertPan = invertChoice.getSelectedIndex() == 1;
+				NJTAI.onlineResize = onlineChoice.isSelected(1);
 				if (NJTAI.proxy.length() == 0) {
 					NJTAI.proxy = "";
 				} else if (NJTAI.proxy.startsWith("http") && NJTAI.proxy.indexOf("://") != 0
