@@ -109,7 +109,7 @@ public class ViewHWA extends ViewBase {
 		y = ih / 2;
 	}
 
-	protected void resize(int size) {
+	public void resize(int size) {
 		// do nothing for now
 	}
 
