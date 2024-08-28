@@ -34,7 +34,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 	protected byte[][] cache;
 	protected MDownloader fs;
 
-	protected float zoom = 1;
+	public float zoom = 1;
 	protected float x = 0;
 	protected float y = 0;
 
@@ -55,6 +55,8 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 	private Image orig;
 
 	private boolean firstDraw = true;
+	
+	private int loaderAction;
 
 	/**
 	 * Creates the view.
@@ -74,7 +76,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 		NJTAI.clearHP();
 		if (NJTAI.files)
 			fs = new MDownloader(emo, this);
-		reload();
+		reload(0);
 		setFullScreenMode(true);
 		try {
 			slider = Image.createImage("/slider.png");
@@ -254,6 +256,9 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 
 	public final void run() {
 		try {
+			if (loaderAction == 1) {
+				Thread.sleep(500);
+			}
 			synchronized (this) {
 				error = false;
 				zoom = 1;
@@ -279,7 +284,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 			NJTAI.setScr(new Alert("Error", "Not enough memory to continue viewing. Try to disable caching.", null,
 					AlertType.ERROR));
 			return;
-		}
+		} catch (Exception e) {}
 	}
 
 	private final void runPreloader() {
@@ -416,7 +421,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 	 * 
 	 * @param size New zoom to apply.
 	 */
-	protected void resize(int size) {
+	public void resize(int size) {
 		if (hwa) return;
 		try {
 			toDraw = null;
@@ -523,11 +528,18 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 
 	boolean touchCtrlShown = true;
 
-	protected void reload() {
+	protected void reload(int i) {
 		if (hwa) return;
 		toDraw = null;
 		System.gc();
+		if (i == 1) {
+			if (loader != null) {
+				loader.interrupt();
+			}
+		}
+		loaderAction = i;
 		loader = new Thread(this);
+		loader.setPriority(9);
 		loader.start();
 	}
 
@@ -584,15 +596,15 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 		// zooming via *0#
 		if (k == KEY_STAR) {
 			zoom = 1;
-			resize((int) zoom);
+			NJTAI.inst.start(NJTAI.RUN_ZOOM_VIEW);
 		}
 		if (k == KEY_NUM0) {
 			zoom = 2;
-			resize((int) zoom);
+			NJTAI.inst.start(NJTAI.RUN_ZOOM_VIEW);
 		}
 		if (k == KEY_POUND) {
 			zoom = 3;
-			resize((int) zoom);
+			NJTAI.inst.start(NJTAI.RUN_ZOOM_VIEW);
 		}
 
 		// zoom is active
@@ -602,7 +614,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 				if (zoom > 3)
 					zoom = 1;
 
-				resize((int) zoom);
+				NJTAI.inst.start(NJTAI.RUN_ZOOM_VIEW);
 			} else if (k == -1 || k == KEY_NUM2 || k == 'w') {
 				// up
 				y += getHeight() / 4;
@@ -658,13 +670,13 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 			if (page > 0) {
 				page--;
 				checkCacheAfterPageSwitch();
-				reload();
+				reload(1);
 			}
 		} else if (delta > 0) {
 			if (page < emo.pages - 1) {
 				page++;
 				checkCacheAfterPageSwitch();
-				reload();
+				reload(1);
 			}
 		}
 	}
@@ -829,7 +841,7 @@ public class ViewBase extends Canvas implements Runnable, CommandListener {
 				}
 				page = n - 1;
 				checkCacheAfterPageSwitch();
-				reload();
+				reload(2);
 			} catch (Exception e) {
 				NJTAI.pause(100);
 				NJTAI.setScr(

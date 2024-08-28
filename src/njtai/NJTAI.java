@@ -40,6 +40,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static final int RUN_SAVEDMANAGER = 3;
 	public static final int RUN_SAVEDMANAGER_DELETE = 4;
 	public static final int RUN_PRELOADER = 5;
+	public static final int RUN_ZOOM_VIEW = 6;
 
 	/**
 	 * Currently used URL prefix. Check {@link #getHP() home page downloading
@@ -108,6 +109,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	public static boolean rus = false;
 	
 	public static boolean onlineResize;
+	public static boolean useProxy = true;
 	
 	// localizations
 	public static String[] L_ACTS;
@@ -147,7 +149,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	// Prefs
 	private static Command bkC;
 	private static Command cnclC;
-	private static Command prC;
 	private static Command changeC;
 
 	private static String[] yn;
@@ -162,7 +163,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	private ChoiceGroup listsChoice;
 	private ChoiceGroup bitmapsChoice;
 	protected TextField proxyField;
-	private StringItem aboutProxyBtn;
 
 	/**
 	 * Working folder switcher button.
@@ -209,7 +209,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			
 			bkC = new Command(NJTAI.rus ? "Применить" : "Apply", Command.SCREEN, 2);
 			cnclC = new Command(NJTAI.rus ? "Отмена" : "Revert", Command.BACK, 3);
-			prC = new Command("Proxy setup", 8, 1);
 			changeC = new Command(NJTAI.rus ? "Изменить" : "Change", Command.OK, 1);
 
 			yn = new String[] { NJTAI.rus ? "Нет" : "No", NJTAI.rus ? "Да" : "Yes" };
@@ -247,6 +246,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			proxy = s[12];
 			MDownloader.currentWD = s[13].equals(" ") ? null : s[13];
 			onlineResize = s.length > 14 && s[14].equals("1");
+			useProxy = s.length > 15 && s[15].equals("1");
 		} catch (Exception e) {
 			System.out.println("There is no saved settings or they are broken.");
 			files = false;
@@ -276,25 +276,25 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 		} catch (Exception e) {}
 		try {
 			StringBuffer s = new StringBuffer();
-			s.append(files ? "1" : "0");
+			s.append(files ? '1' : '0');
 			s.append('`');
 			s.append(String.valueOf(cachingPolicy));
 			s.append('`');
-			s.append(loadCoverAtPage ? "1" : "0");
+			s.append(loadCoverAtPage ? '1' : '0');
 			s.append('`');
-			s.append(keepLists ? "1" : "0");
+			s.append(keepLists ? '1' : '0');
 			s.append('`');
-			s.append(loadCovers ? "1" : "0");
+			s.append(loadCovers ? '1' : '0');
 			s.append('`');
 			// Keeping the value to avoid data breaking.
 			s.append('0');
 			//s.append(_d1 ? "1" : "0");
 			s.append('`');
-			s.append(keepBitmap ? "1" : "0");
+			s.append(keepBitmap ? '1' : '0');
 			s.append('`');
 			s.append(String.valueOf(view));
 			s.append('`');
-			s.append(invertPan ? "1" : "0");
+			s.append(invertPan ? '1' : '0');
 			s.append('`');
 //			s.append(_f1 ? "1" : "0");
 			s.append('`');
@@ -307,7 +307,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			String wd = MDownloader.currentWD;
 			s.append(wd == null ? " " : wd);
 			s.append('`');
-			s.append(onlineResize ? "1" : "0");
+			s.append(onlineResize ?'1' : '0');
+			s.append('`');
+			s.append(useProxy ? '1' : '0');
 			s.append('`');
 			byte[] d = s.toString().getBytes();
 			RecordStore r = RecordStore.openRecordStore("njtai", true);
@@ -426,8 +428,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					bitmapsChoice = new ChoiceGroup(NJTAI.rus ? "Декодировать JPEG единожды (повысит плавность)"
 							: "Decode JPEG only once (improves perfomance)", 4, ynr, null);
 					proxyField = new TextField(NJTAI.rus ? "Префикс прокси" : "Proxy prefix", NJTAI.proxy, 100, 0);
-					aboutProxyBtn = new StringItem(null,
-							NJTAI.rus ? "Настройка вашего прокси" : "Setting your own proxy", StringItem.BUTTON);
 					
 					wdBtn = new StringItem(NJTAI.rus ? "Рабочая папка" : "Working folder",
 							MDownloader.currentWD == null ? (NJTAI.rus ? "Автоматически" : "Automatically")
@@ -437,8 +437,10 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					viewChoice = new ChoiceGroup("View type", 4, new String[] { "Auto", "SWR", "HWA" }, null);
 					filesChoice = new ChoiceGroup(NJTAI.rus ? "Кэшировать на карту памяти" : "Cache to memory card",
 							4, yn, null);
-					onlineChoice = new ChoiceGroup(NJTAI.rus ? "Масштабирование на стороне сервера" : "Server-side resizing",
-							4, yn, null);
+					onlineChoice = new ChoiceGroup("", Choice.MULTIPLE, new String[] {
+							NJTAI.rus ? "Использовать прокси" : "Use proxy",
+							NJTAI.rus ? "Масштабирование на стороне сервера" : "Server-side resizing"
+							}, null);
 
 					String vendor = System.getProperty("java.vendor");
 					if (vendor != null && vendor.toLowerCase().indexOf("ndroid") != -1) {
@@ -455,9 +457,8 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					filesChoice.setSelectedIndex(NJTAI.files ? 1 : 0, true);
 					viewChoice.setSelectedIndex(NJTAI.view, true);
 					invertChoice.setSelectedIndex(NJTAI.invertPan ? 1 : 0, true);
-					onlineChoice.setSelectedIndex(NJTAI.onlineResize ? 1 : 0, true);
-					aboutProxyBtn.setDefaultCommand(prC);
-					aboutProxyBtn.setItemCommandListener(this);
+					onlineChoice.setSelectedIndex(0, NJTAI.useProxy);
+					onlineChoice.setSelectedIndex(1, NJTAI.onlineResize);
 					wdBtn.setDefaultCommand(changeC);
 					wdBtn.setItemCommandListener(this);
 
@@ -474,7 +475,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					f.append(viewChoice);
 					f.append(onlineChoice);
 					f.append(proxyField);
-					f.append(aboutProxyBtn);
 					setScr(prefs = f);
 					return;
 				}
@@ -757,6 +757,7 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 				NJTAI.files = filesChoice.getSelectedIndex() == 1;
 				NJTAI.proxy = proxyField.getString();
 				NJTAI.invertPan = invertChoice.getSelectedIndex() == 1;
+				NJTAI.useProxy = onlineChoice.isSelected(0);
 				NJTAI.onlineResize = onlineChoice.isSelected(1);
 				if (NJTAI.proxy.length() == 0) {
 					NJTAI.proxy = "";
@@ -778,15 +779,6 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 					a.setTimeout(Alert.FOREVER);
 					NJTAI.setScr(a, d);
 				}
-				return;
-			}
-			if (c == prC) {
-				Alert a = new Alert("Proxy", "Proxy is necessary due to bad TLS support on java and domain blocks. "
-						+ "To setup your own server, just create a PHP script that will take URL from query params, "
-						+ "request it via CURL and return content. Read more info on github. To disable proxy, write \"https://\".",
-						null, AlertType.INFO);
-				a.setTimeout(Alert.FOREVER);
-				NJTAI.setScr(a, d);
 				return;
 			}
 			if (c == cnclC) {
@@ -1038,6 +1030,15 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 			} catch (Exception ignored) {}
 			return;
 		}
+		case RUN_ZOOM_VIEW: {
+			try {
+				ViewBase view = (ViewBase) getScr();
+				if (view == null) break;
+				view.resize((int) view.zoom);
+				view.repaint();
+			} catch (Exception ignored) {}
+			break;
+		}
 		}
 		running = false;
 	}
@@ -1235,10 +1236,9 @@ public class NJTAI implements CommandListener, ItemCommandListener, Runnable {
 	 * @return URL, ready to be loaded.
 	 */
 	public static String proxyUrl(String url) {
-		if (url == null)
-			return null;
-
-		if(proxy.length() == 0 || "https://".equals(proxy)) {
+		if (url == null
+				|| (!useProxy && (url.indexOf(";tw=") == -1 || !onlineResize))
+				|| proxy == null || proxy.length() == 0 || "https://".equals(proxy)) {
 			return url;
 		}
 		return proxy + url(url);
